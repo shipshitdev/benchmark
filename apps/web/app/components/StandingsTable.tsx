@@ -9,13 +9,17 @@ import {
   formatScorePerDollar,
   formatTokens,
 } from '@/lib/format';
+import { firstTaskSlugByCategory } from '@/lib/tests';
 import { TelemetryBadge } from './TelemetryBadge';
 
 /** Leaderboard for one release. Every cell links to the agent's drill-down page, where the same
- *  numbers break down per task with links to the exact runs they were measured from. */
+ *  numbers break down per task with links to the exact runs they were measured from. Category
+ *  column headers link to that category's test page instead, since the category score itself
+ *  isn't a run — it's an aggregate over the one task in that category. */
 export function StandingsTable({ release }: { release: Release }) {
   const categories = CATEGORIES.filter((c) => release.categoryWeights[c] !== undefined);
   const ranked = [...release.standings].sort((a, b) => (b.overall ?? -1) - (a.overall ?? -1));
+  const taskSlugByCategory = firstTaskSlugByCategory(release);
 
   return (
     <div className="overflow-x-auto">
@@ -24,11 +28,20 @@ export function StandingsTable({ release }: { release: Release }) {
           <tr className="border-b border-border-strong text-left text-[11px] uppercase tracking-[0.1em] text-text-faint">
             <th className="py-3 pr-4">Agent</th>
             <th className="py-3 pr-4 text-right">Overall</th>
-            {categories.map((c) => (
-              <th key={c} className="py-3 pr-4 text-right">
-                {formatCategory(c)}
-              </th>
-            ))}
+            {categories.map((c) => {
+              const slug = taskSlugByCategory[c];
+              return (
+                <th key={c} className="py-3 pr-4 text-right">
+                  {slug ? (
+                    <Link href={`/tests/${slug}/`} className="hover:text-accent">
+                      {formatCategory(c)}
+                    </Link>
+                  ) : (
+                    formatCategory(c)
+                  )}
+                </th>
+              );
+            })}
             <th className="py-3 pr-4 text-right">Tokens in</th>
             <th className="py-3 pr-4 text-right">Tokens out</th>
             <th className="py-3 pr-4 text-right">Turns</th>

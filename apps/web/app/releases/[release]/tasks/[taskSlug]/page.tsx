@@ -79,7 +79,15 @@ export default async function TaskPage({ params }: { params: Promise<Params> }) 
         · {formatCategory(task.category)}
       </p>
       <div className="mt-2 flex flex-wrap items-start justify-between gap-6">
-        <h1 className="font-display text-4xl italic text-text">{task.title}</h1>
+        <div>
+          <h1 className="font-display text-4xl italic text-text">{task.title}</h1>
+          <Link
+            href={`/tests/${slugParam}/`}
+            className="mt-2 inline-block text-sm text-text-dim underline decoration-dotted underline-offset-4 hover:text-accent"
+          >
+            Prompt, fixture and scoring for this task
+          </Link>
+        </div>
         <ShareButton
           text={shareText}
           url={canonicalUrl(`/releases/${release.release}/tasks/${slugParam}/`)}
