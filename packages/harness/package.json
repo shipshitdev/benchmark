@@ -1,0 +1,27 @@
+{
+  "name": "@benchmark/harness",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "bench": "./src/cli.ts"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "bench": "bun run src/cli.ts",
+    "lint": "biome check src/",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@benchmark/adapters": "workspace:*",
+    "@benchmark/schema": "workspace:*",
+    "@playwright/test": "1.63.0",
+    "commander": "15.0.0",
+    "yaml": "2.9.0",
+    "zod": "4.5.4"
+  }
+}
