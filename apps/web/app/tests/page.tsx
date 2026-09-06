@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { ScoringBadges } from '@/app/components/ScoringBadges';
 import { getLatestRelease, loadTasks } from '@/lib/data';
 import { formatCategory, formatScore } from '@/lib/format';
-import { pageMetadata, SITE_NAME } from '@/lib/site';
+import { pageMetadata } from '@/lib/site';
 import { leaderForTask, scoringBadges, TASK_QUESTIONS } from '@/lib/tests';
 
 export const metadata: Metadata = pageMetadata({
