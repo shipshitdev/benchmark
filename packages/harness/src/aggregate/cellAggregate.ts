@@ -77,9 +77,12 @@ export function buildCell(
     .filter((value): value is number => value !== null);
 
   const allGateFailed = runs.length > 0 && runs.every((run) => run.status === 'gate_failed');
-  const combinedScores = runs.map((run) => {
-    if (run.status === 'gate_failed') return 0;
-    return combineScore(run.objective, runSubjective(run), weights) ?? 0;
+  // A run with neither an objective score nor a judgment is not yet scored; it is skipped
+  // rather than counted as 0 so a missing judge never reads as a failing agent.
+  const combinedScores = runs.flatMap((run) => {
+    if (run.status === 'gate_failed') return [0];
+    const combined = combineScore(run.objective, runSubjective(run), weights);
+    return combined === null ? [] : [combined];
   });
 
   return {
@@ -89,7 +92,7 @@ export function buildCell(
     gatePassRate,
     objective: computeSpread(objectiveScores),
     subjective: computeSpread(subjectiveScores),
-    score: allGateFailed || runs.length === 0 ? null : computeSpread(combinedScores),
+    score: allGateFailed || combinedScores.length === 0 ? null : computeSpread(combinedScores),
     usage: buildUsageTotals(runs),
   };
 }

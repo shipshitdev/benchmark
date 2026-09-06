@@ -129,7 +129,9 @@ async function judgeSubjective(
   );
   const parsed = extractFirstJsonObject(finalText) as JudgeResponseJson | undefined;
   if (!parsed) {
-    log.warn(`${task.manifest.id}: judge ${judge.cli}:${judge.model} returned no parseable JSON`);
+    log.warn(
+      `${task.manifest.id}: judge ${judge.cli}:${judge.model} returned no parseable JSON: ${finalText.slice(0, 160).replace(/\s+/g, ' ')}`,
+    );
     return;
   }
 

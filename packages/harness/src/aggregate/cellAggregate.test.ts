@@ -99,6 +99,16 @@ describe('buildCell', () => {
     expect(cell.objective?.mean).toBe(80);
   });
 
+  test('an unjudged subjective-only run is unscored rather than zero', () => {
+    const cell = buildCell(
+      task,
+      agent,
+      [makeRun({ attempt: 1, objective: null, judgments: [] })],
+      weights,
+    );
+    expect(cell.score).toBeNull();
+  });
+
   test('a cell whose every attempt errored has no score', () => {
     const cell = buildCell(
       task,
