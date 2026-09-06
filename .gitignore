@@ -1,0 +1,14 @@
+node_modules
+.turbo
+.vercel
+.worktrees
+dist
+out
+.next
+coverage
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
+.agents/sessions/
