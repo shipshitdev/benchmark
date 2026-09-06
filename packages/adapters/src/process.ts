@@ -18,26 +18,45 @@ export interface SpawnCaptureResult {
   durationMs: number;
 }
 
+/** Deepest-first list of every live descendant of `pid`, via `pgrep -P` (present on macOS and Linux). */
+function descendants(pid: number): number[] {
+  const result = Bun.spawnSync(['pgrep', '-P', String(pid)]);
+  const children = result.stdout
+    .toString()
+    .split(/\s+/)
+    .map(Number)
+    .filter((child) => Number.isInteger(child) && child > 0);
+  return children.flatMap((child) => [...descendants(child), child]);
+}
+
 /**
- * Kills a spawned CLI and its direct children. Bun.spawn does not expose process-group creation
- * (no `detached` option as of 1.3.14), so this reaps one level of children via `pkill -P` before
- * killing the CLI itself; a tool the CLI shells out to that itself forks further is not reached.
+ * Bun.spawn cannot create a process group (no `detached` option as of 1.3.14), so the whole tree is
+ * walked and killed explicitly. Descendants first, so a shell cannot respawn a child on SIGCHLD.
  */
 function killTree(pid: number): void {
-  try {
-    Bun.spawnSync(['pkill', '-TERM', '-P', String(pid)]);
-  } catch {
-    // pkill unavailable or no matching children; fall through to killing the pid directly
+  for (const target of [...descendants(pid), pid]) {
+    try {
+      process.kill(target, 'SIGKILL');
+    } catch {
+      // already exited
+    }
   }
+}
+
+interface ByteReader {
+  read(): Promise<{ done: boolean; value?: Uint8Array }>;
+}
+
+async function drainLines(reader: ByteReader, onText: (text: string) => void): Promise<void> {
+  const decoder = new TextDecoder();
   try {
-    Bun.spawnSync(['pkill', '-KILL', '-P', String(pid)]);
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done || !value) break;
+      onText(decoder.decode(value, { stream: true }));
+    }
   } catch {
-    // as above
-  }
-  try {
-    process.kill(pid, 'SIGKILL');
-  } catch {
-    // already exited
+    // reader cancelled by the timebox; whatever arrived is already consumed
   }
 }
 
@@ -52,24 +71,25 @@ export async function spawnAndCapture(
   const [bin, ...args] = command;
   if (!bin) throw new Error('spawnAndCapture: empty command');
   const proc = Bun.spawn([bin, ...args], { cwd, env, stdout: 'pipe', stderr: 'pipe' });
+  const stdoutReader = proc.stdout.getReader();
+  const stderrReader = proc.stderr.getReader();
 
   let timedOut = false;
   const timeoutHandle = setTimeout(() => {
     timedOut = true;
     killTree(proc.pid);
+    // An orphaned grandchild could still hold the pipes open; stop waiting on them.
+    void stdoutReader.cancel();
+    void stderrReader.cancel();
   }, timeboxMinutes * 60_000);
 
   const transcriptWriter = Bun.file(transcriptPath).writer();
   const lines: string[] = [];
   let buffer = '';
+  const stderrChunks: string[] = [];
 
-  const drainStdout = async () => {
-    const decoder = new TextDecoder();
-    const reader = proc.stdout.getReader();
-    for (;;) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      const text = decoder.decode(value, { stream: true });
+  await Promise.all([
+    drainLines(stdoutReader, (text) => {
       transcriptWriter.write(text);
       buffer += text;
       let newlineIndex = buffer.indexOf('\n');
@@ -79,23 +99,12 @@ export async function spawnAndCapture(
         buffer = buffer.slice(newlineIndex + 1);
         newlineIndex = buffer.indexOf('\n');
       }
-    }
-    if (buffer.length > 0) lines.push(buffer);
-  };
-
-  const drainStderr = async () => {
-    const decoder = new TextDecoder();
-    const reader = proc.stderr.getReader();
-    const chunks: string[] = [];
-    for (;;) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      chunks.push(decoder.decode(value, { stream: true }));
-    }
-    return chunks.join('').slice(-4000);
-  };
-
-  const [, stderrTail] = await Promise.all([drainStdout(), drainStderr()]);
+    }),
+    drainLines(stderrReader, (text) => {
+      stderrChunks.push(text);
+    }),
+  ]);
+  if (buffer.length > 0) lines.push(buffer);
   await transcriptWriter.end();
   const exitCode = await proc.exited;
   clearTimeout(timeoutHandle);
@@ -105,7 +114,13 @@ export async function spawnAndCapture(
     : exitCode === 0
       ? 'ok'
       : 'error';
-  return { exitCode, status, lines, stderrTail, durationMs: Date.now() - startedAt };
+  return {
+    exitCode,
+    status,
+    lines,
+    stderrTail: stderrChunks.join('').slice(-4000),
+    durationMs: Date.now() - startedAt,
+  };
 }
 
 /** Runs `<cli> --version` and returns the trimmed output verbatim, stdout preferred over stderr. */
