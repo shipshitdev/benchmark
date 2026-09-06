@@ -1,6 +1,10 @@
 import { cp, mkdir } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import type { Gate, GateResult } from '@benchmark/schema';
+
+/** What a single gate runner reports; `runGates` adds the mode and penalty from the manifest. */
+type GateOutcome = Omit<GateResult, 'mode' | 'penalty'>;
+
 import { parsePlaywrightJson } from '../aggregate/playwrightJson';
 import { startServe } from './serve';
 
@@ -60,7 +64,7 @@ async function runCommandGate(
   gate: Extract<Gate, { type: 'command' }>,
   workspaceDir: string,
   logPath: string,
-): Promise<GateResult> {
+): Promise<GateOutcome> {
   const startedAt = Date.now();
   const { exitCode, output } = await runWithTimeout(
     ['sh', '-c', gate.run],
@@ -82,7 +86,7 @@ async function runPlaywrightGate(
   taskDir: string,
   workspaceDir: string,
   logPath: string,
-): Promise<GateResult> {
+): Promise<GateOutcome> {
   const startedAt = Date.now();
   const specPath = await copySpecIntoWorkspace(taskDir, workspaceDir, gate.id, gate.spec);
   const serveHandle = await startServe(gate.serve, workspaceDir);
@@ -113,7 +117,7 @@ async function runHttpContractGate(
   taskDir: string,
   workspaceDir: string,
   logPath: string,
-): Promise<GateResult> {
+): Promise<GateOutcome> {
   const startedAt = Date.now();
   const specPath = await copySpecIntoWorkspace(taskDir, workspaceDir, gate.id, gate.spec);
   const serveHandle = await startServe(gate.serve, workspaceDir);
@@ -143,7 +147,7 @@ async function runAxeGate(
   gate: Extract<Gate, { type: 'axe' }>,
   workspaceDir: string,
   logPath: string,
-): Promise<GateResult> {
+): Promise<GateOutcome> {
   const startedAt = Date.now();
   const serveHandle = await startServe(gate.serve, workspaceDir);
   const threshold = IMPACT_RANK[gate.failOn];
@@ -196,36 +200,39 @@ export async function runGates(
   const results: GateResult[] = [];
   for (const gate of gates) {
     const logPath = join(gatesLogDir, `${gate.id}.log`);
-    let result: GateResult;
+    let outcome: GateOutcome;
     const startedAt = Date.now();
     try {
       switch (gate.type) {
         case 'command':
-          result = await runCommandGate(gate, workspaceDir, logPath);
+          outcome = await runCommandGate(gate, workspaceDir, logPath);
           break;
         case 'playwright':
-          result = await runPlaywrightGate(gate, taskDir, workspaceDir, logPath);
+          outcome = await runPlaywrightGate(gate, taskDir, workspaceDir, logPath);
           break;
         case 'axe':
-          result = await runAxeGate(gate, workspaceDir, logPath);
+          outcome = await runAxeGate(gate, workspaceDir, logPath);
           break;
         case 'http-contract':
-          result = await runHttpContractGate(gate, taskDir, workspaceDir, logPath);
+          outcome = await runHttpContractGate(gate, taskDir, workspaceDir, logPath);
           break;
       }
     } catch (error) {
       // A gate that cannot run is a failed gate for this run, never a crashed release.
       const message = error instanceof Error ? error.message : String(error);
       await writeLog(logPath, `gate error: ${message}`);
-      result = {
+      outcome = {
         id: gate.id,
         pass: false,
         durationMs: Date.now() - startedAt,
         detail: `gate error: ${message.split('\n')[0]}`,
       };
     }
-    result.mode = gate.mode;
-    result.penalty = gate.mode === 'penalty' ? gate.penalty : 0;
+    const result: GateResult = {
+      ...outcome,
+      mode: gate.mode,
+      penalty: gate.mode === 'penalty' ? gate.penalty : 0,
+    };
     results.push(result);
     if (!result.pass && gate.mode === 'block') break;
   }

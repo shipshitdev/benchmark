@@ -35,7 +35,7 @@ function makeRun(overrides: Partial<RunResult> & { attempt: number }): RunResult
       durationMs: 60_000,
       costUsdEquivalent: 0.01,
     },
-    gates: [{ id: 'build', pass: true, durationMs: 1000, detail: 'ok' }],
+    gates: [{ id: 'build', pass: true, mode: 'block', penalty: 0, durationMs: 1000, detail: 'ok' }],
     objective: null,
     judgments: [],
     artifacts: {
@@ -74,7 +74,16 @@ describe('buildCell', () => {
         attempt: 2,
         status: 'gate_failed',
         objective: null,
-        gates: [{ id: 'build', pass: false, durationMs: 500, detail: 'failed' }],
+        gates: [
+          {
+            id: 'build',
+            pass: false,
+            mode: 'block',
+            penalty: 0,
+            durationMs: 500,
+            detail: 'failed',
+          },
+        ],
       }),
     ];
     const cell = buildCell(task, agent, runs, weights);
@@ -136,7 +145,16 @@ describe('buildCell', () => {
         attempt: 1,
         status: 'gate_failed',
         objective: null,
-        gates: [{ id: 'build', pass: false, durationMs: 500, detail: 'failed' }],
+        gates: [
+          {
+            id: 'build',
+            pass: false,
+            mode: 'block',
+            penalty: 0,
+            durationMs: 500,
+            detail: 'failed',
+          },
+        ],
       }),
     ];
     const cell = buildCell(task, agent, runs, weights);
