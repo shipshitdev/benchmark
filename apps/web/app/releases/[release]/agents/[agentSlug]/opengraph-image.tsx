@@ -1,6 +1,13 @@
 import { ImageResponse } from 'next/og';
 import { allAgentParams, EMPTY_PARAM, getRelease, getStanding } from '@/lib/data';
-import { formatAgentLabel, formatCost, formatScore } from '@/lib/format';
+import {
+  formatAgentLabel,
+  formatCategory,
+  formatCost,
+  formatScore,
+  formatScorePerDollar,
+  formatTokens,
+} from '@/lib/format';
 import { SITE_NAME } from '@/lib/site';
 
 export const dynamic = 'force-static';
@@ -129,9 +136,35 @@ export default async function OgImage({ params }: { params: Promise<Params> }) {
           paddingTop: 20,
         }}
       >
-        <div style={{ display: 'flex', gap: 24, fontSize: 22, color: TEXT }}>
-          <div>{`telemetry: ${standing.telemetry}`}</div>
+        <div style={{ display: 'flex', gap: 28, fontSize: 20, color: TEXT }}>
+          {standing.categories
+            .filter((category) => category.tasks > 0)
+            .map((category) => (
+              <div
+                key={category.category}
+                style={{ display: 'flex', flexDirection: 'column', gap: 4 }}
+              >
+                <div
+                  style={{
+                    fontSize: 14,
+                    color: FAINT,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.12em',
+                  }}
+                >
+                  {formatCategory(category.category)}
+                </div>
+                <div style={{ fontWeight: 700, color: category.score === null ? FAINT : TEXT }}>
+                  {formatScore(category.score)}
+                </div>
+              </div>
+            ))}
+        </div>
+        <div style={{ display: 'flex', gap: 24, fontSize: 20, color: DIM }}>
           <div>{`${formatCost(standing.usage.costUsdEquivalent)} API-equiv.`}</div>
+          <div>{`${formatScorePerDollar(standing.scorePerDollar)} score / $`}</div>
+          <div>{`${formatTokens(standing.usage.input)} in · ${formatTokens(standing.usage.output)} out`}</div>
+          <div>{`${standing.telemetry} telemetry`}</div>
         </div>
         <div
           style={{

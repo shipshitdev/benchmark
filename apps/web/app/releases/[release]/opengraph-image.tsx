@@ -97,7 +97,7 @@ export default async function OgImage({ params }: { params: Promise<Params> }) {
             letterSpacing: '0.14em',
           }}
         >
-          {release.release}
+          {`${release.agents.length} agents · ${release.tasks.length} tasks · suite ${release.suiteVersion}`}
         </div>
         <div
           style={{
