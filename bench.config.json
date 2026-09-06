@@ -9,11 +9,7 @@
     "signature": 0,
     "taste": 1
   },
-  "judges": [
-    "claude:opus@high",
-    "codex:gpt-6-astra@high",
-    "grok:grok-4.6@high"
-  ],
+  "judges": ["claude:opus@high", "codex:gpt-6-astra@high", "grok:grok-4.6@high"],
   "repeat": 3,
   "dataDir": "data",
   "tasksDir": "tasks"
