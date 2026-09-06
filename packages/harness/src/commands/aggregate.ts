@@ -162,7 +162,9 @@ export function registerAggregate(program: Command): void {
         );
 
         const overall = combineOverall(categoryScores, config.categoryWeights);
-        const usage = buildUsageTotals(runsByKey.get(key) ?? []);
+        // Runs the CLI could not start (auth, quota) carry no usage worth summing or classifying.
+        const executedRuns = (runsByKey.get(key) ?? []).filter((run) => run.status !== 'error');
+        const usage = buildUsageTotals(executedRuns);
         const scorePerDollar =
           overall !== null && usage.costUsdEquivalent !== null && usage.costUsdEquivalent > 0
             ? overall / usage.costUsdEquivalent
@@ -174,7 +176,7 @@ export function registerAggregate(program: Command): void {
           categories: categoryScores,
           usage,
           scorePerDollar,
-          telemetry: telemetryOf(usage),
+          telemetry: executedRuns.length === 0 ? 'none' : telemetryOf(usage),
         };
       });
 

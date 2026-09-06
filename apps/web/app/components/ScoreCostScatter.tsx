@@ -5,7 +5,7 @@ const WIDTH = 640;
 const HEIGHT = 380;
 const PAD_LEFT = 56;
 const PAD_BOTTOM = 40;
-const PAD_TOP = 20;
+const PAD_TOP = 32;
 const PAD_RIGHT = 20;
 
 /** Score-vs-cost scatter, inline SVG, no chart library. X axis is API-equivalent cost per run set
@@ -100,11 +100,7 @@ export function ScoreCostScatter({ standings }: { standings: Standing[] }) {
         stroke="var(--color-border-strong)"
         strokeWidth={1}
       />
-      <text
-        x={4}
-        y={PAD_TOP - 4}
-        className="fill-text-faint text-[10px] uppercase tracking-[0.1em]"
-      >
+      <text x={4} y={12} className="fill-text-faint text-[10px] uppercase tracking-[0.1em]">
         score
       </text>
       <text
@@ -124,9 +120,20 @@ export function ScoreCostScatter({ standings }: { standings: Standing[] }) {
             fill="var(--color-accent)"
             fillOpacity={0.85}
           />
-          <text x={x(p.cost) + 9} y={y(p.score) + 4} className="fill-text text-[11px]">
-            {formatAgentLabel(p.standing.agent)}
-          </text>
+          {x(p.cost) > WIDTH * 0.6 ? (
+            <text
+              x={x(p.cost) - 10}
+              y={y(p.score) + 4}
+              textAnchor="end"
+              className="fill-text text-[11px]"
+            >
+              {formatAgentLabel(p.standing.agent)}
+            </text>
+          ) : (
+            <text x={x(p.cost) + 10} y={y(p.score) + 4} className="fill-text text-[11px]">
+              {formatAgentLabel(p.standing.agent)}
+            </text>
+          )}
           <title>
             {formatAgentLabel(p.standing.agent)}: {p.score.toFixed(1)} score, {formatCost(p.cost)}
           </title>

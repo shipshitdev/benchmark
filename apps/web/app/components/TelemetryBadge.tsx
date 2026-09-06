@@ -1,7 +1,7 @@
 const LABEL: Record<string, string> = {
-  full: 'full telemetry',
-  partial: 'partial telemetry',
-  none: 'no telemetry',
+  full: 'full',
+  partial: 'partial',
+  none: 'none',
 };
 const CLASS: Record<string, string> = {
   full: 'text-good border-good/40',
@@ -12,7 +12,8 @@ const CLASS: Record<string, string> = {
 export function TelemetryBadge({ telemetry }: { telemetry: 'full' | 'partial' | 'none' }) {
   return (
     <span
-      className={`rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-[0.1em] ${CLASS[telemetry]}`}
+      className={`inline-block whitespace-nowrap rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-[0.1em] ${CLASS[telemetry]}`}
+      title={`${LABEL[telemetry]} telemetry`}
     >
       {LABEL[telemetry]}
     </span>

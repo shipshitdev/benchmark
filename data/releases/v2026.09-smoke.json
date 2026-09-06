@@ -2,7 +2,7 @@
   "release": "v2026.09-smoke",
   "title": "v2026.09-smoke",
   "suiteVersion": "v2026.09",
-  "generatedAt": "2026-09-06T13:58:54.963Z",
+  "generatedAt": "2026-09-06T14:02:47.398Z",
   "pricesAsOf": "2026-09-06",
   "categoryWeights": {
     "ux-ui": 1,
@@ -701,17 +701,17 @@
         }
       ],
       "usage": {
-        "input": null,
-        "output": null,
-        "cacheRead": null,
-        "cacheWrite": null,
-        "turns": null,
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0,
+        "turns": 0,
         "toolCalls": 0,
-        "durationMs": 32764,
-        "costUsdEquivalent": null
+        "durationMs": 0,
+        "costUsdEquivalent": 0
       },
       "scorePerDollar": null,
-      "telemetry": "partial"
+      "telemetry": "none"
     },
     {
       "agent": {

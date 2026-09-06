@@ -19,7 +19,7 @@ export function StandingsTable({ release }: { release: Release }) {
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[960px] border-collapse text-sm">
+      <table className="w-full min-w-[1120px] border-collapse text-sm">
         <thead>
           <tr className="border-b border-border-strong text-left text-[11px] uppercase tracking-[0.1em] text-text-faint">
             <th className="py-3 pr-4">Agent</th>
@@ -49,7 +49,7 @@ export function StandingsTable({ release }: { release: Release }) {
                     <span className="tabular text-text-faint">
                       {String(rank + 1).padStart(2, '0')}
                     </span>
-                    <span className="text-text hover:text-accent">
+                    <span className="whitespace-nowrap text-text hover:text-accent">
                       {formatAgentLabel(standing.agent)}
                     </span>
                   </Link>
@@ -86,7 +86,9 @@ export function StandingsTable({ release }: { release: Release }) {
                 </td>
                 <td className="py-3 pr-4 text-right">
                   <Link href={href} className="tabular text-text-dim hover:text-accent">
-                    {formatDuration(standing.usage.durationMs)}
+                    {standing.usage.durationMs > 0
+                      ? formatDuration(standing.usage.durationMs)
+                      : '—'}
                   </Link>
                 </td>
                 <td className="py-3 pr-4 text-right">

@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { allReleaseParams, EMPTY_PARAM, getRelease, listReleases } from '@/lib/data';
-import { formatDate } from '@/lib/format';
-import { canonicalUrl, SITE_NAME } from '@/lib/site';
+import { formatAgentLabel, formatDate, formatScore } from '@/lib/format';
+import { canonicalUrl, pageMetadata, SITE_NAME } from '@/lib/site';
 import { EmptyState } from '../../components/EmptyState';
 import { ReleasePicker } from '../../components/ReleasePicker';
 import { ScoreCostScatter } from '../../components/ScoreCostScatter';
@@ -19,10 +19,13 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const { release: releaseId } = await params;
   const release = getRelease(releaseId);
   if (!release) return {};
-  return {
-    title: release.title,
-    alternates: { canonical: `/releases/${release.release}/` },
-  };
+  const ranked = [...release.standings].sort((a, b) => (b.overall ?? -1) - (a.overall ?? -1));
+  const leader = ranked[0];
+  return pageMetadata({
+    title: `${release.release} leaderboard · ${SITE_NAME}`,
+    description: `${release.agents.length} agents, ${release.tasks.length} tasks${leader?.overall !== null && leader ? `. Leader: ${formatAgentLabel(leader.agent)} at ${formatScore(leader.overall)}` : ''}. Scored on gates, hidden tests and blind judging, with tokens and API-equivalent cost.`,
+    path: `/releases/${release.release}/`,
+  });
 }
 
 export default async function ReleasePage({ params }: { params: Promise<Params> }) {

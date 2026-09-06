@@ -14,7 +14,7 @@ import {
   screenshotUrl,
 } from '@/lib/data';
 import { formatAgentLabel, formatCategory } from '@/lib/format';
-import { canonicalUrl, SITE_NAME } from '@/lib/site';
+import { canonicalUrl, pageMetadata, SITE_NAME } from '@/lib/site';
 import { EmptyState } from '../../../../components/EmptyState';
 import { PairwiseChart } from '../../../../components/PairwiseChart';
 import { ScreenshotGallery, type ShotEntry } from '../../../../components/ScreenshotGallery';
@@ -32,10 +32,11 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const release = getRelease(releaseId);
   const task = release && getTask(release, slug);
   if (!release || !task) return {};
-  return {
-    title: `${task.title} — ${release.release}`,
-    alternates: { canonical: `/releases/${release.release}/tasks/${slug}/` },
-  };
+  return pageMetadata({
+    title: `${task.title} · ${release.release}`,
+    description: `${formatCategory(task.category)} task across ${release.agents.length} agents: screenshots side by side, objective and judged scores, links to every run.`,
+    path: `/releases/${release.release}/tasks/${slug}/`,
+  });
 }
 
 export default async function TaskPage({ params }: { params: Promise<Params> }) {

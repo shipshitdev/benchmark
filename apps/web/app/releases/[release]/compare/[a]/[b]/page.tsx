@@ -13,7 +13,7 @@ import {
   screenshotUrl,
 } from '@/lib/data';
 import { formatAgentLabel, formatCost, formatScore } from '@/lib/format';
-import { canonicalUrl, SITE_NAME } from '@/lib/site';
+import { canonicalUrl, pageMetadata, SITE_NAME } from '@/lib/site';
 import { EmptyState } from '../../../../../components/EmptyState';
 import { RunLink } from '../../../../../components/RunLink';
 import { ShareButton } from '../../../../../components/ShareButton';
@@ -32,10 +32,13 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const agentA = release && getAgentBySlug(release, a);
   const agentB = release && getAgentBySlug(release, b);
   if (!release || !agentA || !agentB) return {};
-  return {
-    title: `${formatAgentLabel(agentA)} vs ${formatAgentLabel(agentB)} — ${release.release}`,
-    alternates: { canonical: `/releases/${release.release}/compare/${a}/${b}/` },
-  };
+  const standingA = getStanding(release, a);
+  const standingB = getStanding(release, b);
+  return pageMetadata({
+    title: `${formatAgentLabel(agentA)} vs ${formatAgentLabel(agentB)} · ${release.release}`,
+    description: `${formatScore(standingA?.overall ?? null)} vs ${formatScore(standingB?.overall ?? null)} overall, ${formatCost(standingA?.usage.costUsdEquivalent ?? null)} vs ${formatCost(standingB?.usage.costUsdEquivalent ?? null)} API-equivalent, task by task.`,
+    path: `/releases/${release.release}/compare/${a}/${b}/`,
+  });
 }
 
 function desktopShot(runId: string | undefined) {

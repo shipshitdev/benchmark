@@ -11,7 +11,7 @@ import {
   formatScore,
   formatTokens,
 } from '@/lib/format';
-import { canonicalUrl } from '@/lib/site';
+import { canonicalUrl, pageMetadata } from '@/lib/site';
 import { EmptyState } from '../../../../components/EmptyState';
 import { RunLink } from '../../../../components/RunLink';
 import { ShareButton } from '../../../../components/ShareButton';
@@ -29,10 +29,11 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const release = getRelease(releaseId);
   const standing = release && getStanding(release, slug);
   if (!release || !standing) return {};
-  return {
-    title: `${formatAgentLabel(standing.agent)} — ${release.release}`,
-    alternates: { canonical: `/releases/${release.release}/agents/${slug}/` },
-  };
+  return pageMetadata({
+    title: `${formatAgentLabel(standing.agent)} · ${release.release}`,
+    description: `${formatScore(standing.overall)} overall on the ${release.release} suite, ${formatCost(standing.usage.costUsdEquivalent)} API-equivalent, ${standing.telemetry} telemetry. Every number links to its run.`,
+    path: `/releases/${release.release}/agents/${slug}/`,
+  });
 }
 
 export default async function AgentPage({ params }: { params: Promise<Params> }) {

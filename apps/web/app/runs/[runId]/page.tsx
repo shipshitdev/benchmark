@@ -19,6 +19,7 @@ import {
   formatDuration,
   formatTokens,
 } from '@/lib/format';
+import { pageMetadata } from '@/lib/site';
 import { DiffViewer } from '../../components/DiffViewer';
 import { EmptyState } from '../../components/EmptyState';
 import { TranscriptViewer } from '../../components/TranscriptViewer';
@@ -33,7 +34,11 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const { runId } = await params;
   const run = getRun(runId);
   if (!run) return {};
-  return { title: run.id, alternates: { canonical: `/runs/${run.id}/` } };
+  return pageMetadata({
+    title: `${run.task} · ${formatAgentLabel(run.agent)} · attempt ${run.attempt}`,
+    description: `Status ${run.status}, ${formatCost(run.usage.costUsdEquivalent)} API-equivalent, ${run.usage.turns ?? 'unknown'} turns. Transcript, diff, gates, screenshots and judgments.`,
+    path: `/runs/${run.id}/`,
+  });
 }
 
 export default async function RunPage({ params }: { params: Promise<Params> }) {
