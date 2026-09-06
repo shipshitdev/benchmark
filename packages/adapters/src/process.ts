@@ -43,21 +43,34 @@ function killTree(pid: number): void {
   }
 }
 
-interface ByteReader {
-  read(): Promise<{ done: boolean; value?: Uint8Array }>;
+interface Drain {
+  done: Promise<void>;
+  cancel: () => void;
 }
 
-async function drainLines(reader: ByteReader, onText: (text: string) => void): Promise<void> {
+function drain(
+  stream: ReadableStream<Uint8Array<ArrayBuffer>>,
+  onText: (text: string) => void,
+): Drain {
+  const reader = stream.getReader();
   const decoder = new TextDecoder();
-  try {
-    for (;;) {
-      const { done, value } = await reader.read();
-      if (done || !value) break;
-      onText(decoder.decode(value, { stream: true }));
+  const done = (async () => {
+    try {
+      for (;;) {
+        const { done: finished, value } = await reader.read();
+        if (finished) break;
+        onText(decoder.decode(value, { stream: true }));
+      }
+    } catch {
+      // reader cancelled by the timebox; whatever arrived is already consumed
     }
-  } catch {
-    // reader cancelled by the timebox; whatever arrived is already consumed
-  }
+  })();
+  return {
+    done,
+    cancel: () => {
+      void reader.cancel();
+    },
+  };
 }
 
 export async function spawnAndCapture(
@@ -71,39 +84,35 @@ export async function spawnAndCapture(
   const [bin, ...args] = command;
   if (!bin) throw new Error('spawnAndCapture: empty command');
   const proc = Bun.spawn([bin, ...args], { cwd, env, stdout: 'pipe', stderr: 'pipe' });
-  const stdoutReader = proc.stdout.getReader();
-  const stderrReader = proc.stderr.getReader();
+  const transcriptWriter = Bun.file(transcriptPath).writer();
+  const lines: string[] = [];
+  let buffer = '';
+  const stderrChunks: string[] = [];
+  const stdout = drain(proc.stdout, (text) => {
+    transcriptWriter.write(text);
+    buffer += text;
+    let newlineIndex = buffer.indexOf('\n');
+    while (newlineIndex !== -1) {
+      const line = buffer.slice(0, newlineIndex);
+      if (line.length > 0) lines.push(line);
+      buffer = buffer.slice(newlineIndex + 1);
+      newlineIndex = buffer.indexOf('\n');
+    }
+  });
+  const stderr = drain(proc.stderr, (text) => {
+    stderrChunks.push(text);
+  });
 
   let timedOut = false;
   const timeoutHandle = setTimeout(() => {
     timedOut = true;
     killTree(proc.pid);
     // An orphaned grandchild could still hold the pipes open; stop waiting on them.
-    void stdoutReader.cancel();
-    void stderrReader.cancel();
+    stdout.cancel();
+    stderr.cancel();
   }, timeboxMinutes * 60_000);
 
-  const transcriptWriter = Bun.file(transcriptPath).writer();
-  const lines: string[] = [];
-  let buffer = '';
-  const stderrChunks: string[] = [];
-
-  await Promise.all([
-    drainLines(stdoutReader, (text) => {
-      transcriptWriter.write(text);
-      buffer += text;
-      let newlineIndex = buffer.indexOf('\n');
-      while (newlineIndex !== -1) {
-        const line = buffer.slice(0, newlineIndex);
-        if (line.length > 0) lines.push(line);
-        buffer = buffer.slice(newlineIndex + 1);
-        newlineIndex = buffer.indexOf('\n');
-      }
-    }),
-    drainLines(stderrReader, (text) => {
-      stderrChunks.push(text);
-    }),
-  ]);
+  await Promise.all([stdout.done, stderr.done]);
   if (buffer.length > 0) lines.push(buffer);
   await transcriptWriter.end();
   const exitCode = await proc.exited;
