@@ -40,48 +40,158 @@
     ]
   },
   "attempt": 1,
-  "startedAt": "2026-09-06T15:12:49.190Z",
-  "finishedAt": "2026-09-06T15:17:12.634Z",
+  "startedAt": "2026-09-06T15:49:40.391Z",
+  "finishedAt": "2026-09-06T15:54:30.676Z",
   "host": "unknown-host",
-  "status": "gate_failed",
+  "status": "ok",
   "usage": {
-    "input": 329,
-    "output": 28244,
-    "cacheRead": 2085300,
-    "cacheWrite": 65290,
-    "turns": 41,
-    "toolCalls": 40,
-    "durationMs": 256737,
-    "costUsdEquivalent": 0.4317,
-    "reportedCostUsd": 0.4821869999999999,
+    "input": 201,
+    "output": 25118,
+    "cacheRead": 961539,
+    "cacheWrite": 41795,
+    "turns": 25,
+    "toolCalls": 24,
+    "durationMs": 265021,
+    "costUsdEquivalent": 0.2742,
+    "reportedCostUsd": 0.30706789999999995,
     "priceKey": "claude-haiku-4-5"
   },
   "gates": [
     {
       "id": "install",
       "pass": true,
-      "durationMs": 20,
-      "detail": "bun install v1.4.2 (744846f84)\n\nChecked 50 installs across 127 packages (no changes) [11.00ms]"
+      "mode": "block",
+      "penalty": 0,
+      "durationMs": 15,
+      "detail": "bun install v1.4.2 (744846f84)\n\nChecked 50 installs across 127 packages (no changes) [6.00ms]"
     },
     {
       "id": "build",
       "pass": true,
-      "durationMs": 2497,
-      "detail": "▲ Next.js 16.3.4 (Turbopack)\n✓ Running next.config.ts took 15ms\n\n  Creating an optimized production build ...\n✓ Compiled successfully in 251ms\n  Running TypeScript ...\n  Finished TypeScript in 192ms ...\n  Collecting page data using 9 workers ...\n  Generating static pages using 9 workers (0/8) ...\n  Generating static pages using 9 workers (2/8) \r\n  Generating static pages using 9 workers (4/8) \r\n  Generating static pages using 9 workers (6/8) \r\n✓ Generating static pages using 9 workers (8/8) in 273ms\n  Finalizing page optimization ...\n\nRoute (app)\n┌ ○ /\n├ ○ /_not-found\n├ ○ /themes/1\n├ ○ /themes/2\n├ ○ /themes/3\n├ ○ /themes/4\n└ ○ /themes/5\n\n\n○  (Static)  prerendered as static content\n\n\n$ next build\n⚠ Warning: Next.js ignored package.json in /Users/decod3rslabs/www/shipshitdev/public/benchmark because it is outside the current Git repository (/Users/decod3rslabs/www/shipshitdev/public/benchmark/.runs/v2026.09-smoke__taste--landing-page-themes__claude--haiku--low__1/workspace).\n To use this directory, set `turbopack.root` in your Next.js config."
+      "mode": "block",
+      "penalty": 0,
+      "durationMs": 2456,
+      "detail": "▲ Next.js 16.3.4 (Turbopack)\n✓ Running next.config.ts took 15ms\n\n  Creating an optimized production build ...\n✓ Compiled successfully in 254ms\n  Running TypeScript ...\n  Finished TypeScript in 213ms ...\n  Collecting page data using 9 workers ...\n  Generating static pages using 9 workers (0/8) ...\n  Generating static pages using 9 workers (2/8) \r\n  Generating static pages using 9 workers (4/8) \r\n  Generating static pages using 9 workers (6/8) \r\n✓ Generating static pages using 9 workers (8/8) in 259ms\n  Finalizing page optimization ...\n\nRoute (app)\n┌ ○ /\n├ ○ /_not-found\n├ ○ /themes/1\n├ ○ /themes/2\n├ ○ /themes/3\n├ ○ /themes/4\n└ ○ /themes/5\n\n\n○  (Static)  prerendered as static content\n\n\n$ next build\n⚠ Warning: Next.js ignored package.json in /Users/decod3rslabs/www/shipshitdev/public/benchmark because it is outside the current Git repository (/Users/decod3rslabs/www/shipshitdev/public/benchmark/.runs/v2026.09-smoke__taste--landing-page-themes__claude--haiku--low__1/workspace).\n To use this directory, set `turbopack.root` in your Next.js config."
     },
     {
       "id": "axe-themes",
       "pass": false,
-      "durationMs": 3031,
-      "detail": "1 violation(s) at or above serious"
+      "mode": "penalty",
+      "penalty": 15,
+      "durationMs": 2995,
+      "detail": "3 violation(s) at or above serious"
     }
   ],
   "objective": null,
-  "judgments": [],
+  "judgments": [
+    {
+      "judge": {
+        "cli": "codex",
+        "model": "gpt-5.6-sol",
+        "version": "codex-cli 0.153.4"
+      },
+      "blindLabel": "A",
+      "scores": {
+        "conversion-structure": 4,
+        "distinctiveness": 4,
+        "craft": 3,
+        "copy": 3,
+        "judgment": 3
+      },
+      "subjective": 88.75,
+      "rationale": "The five pages collectively include essentially the full conversion playbook: clear first-viewport propositions and actions, pricing, credibility, objection handling, and closing CTAs. Theme 5 leans more toward feature-led capabilities, but the set still clears the top conversion threshold. All five directions are coherent and recognizably distinct in typography, layout, tone, and buyer emphasis. Responsive execution is strong, though some small text, low-contrast secondary copy, simplistic graphics, and excessive whitespace keep the craft below agency-best level. Copy is specific and well matched to each direction, but several claims and testimonials feel manufactured rather than founder-ready. Theme 2 is a defensible recommendation and among the strongest pages; the report addresses audience, activation, positioning, and tradeoffs, although unsupported CAC and lifetime-value claims prevent top marks.",
+      "usage": {
+        "input": 131290,
+        "output": 1118,
+        "cacheRead": 98304,
+        "cacheWrite": null,
+        "turns": 1,
+        "toolCalls": 1,
+        "durationMs": 40238,
+        "costUsdEquivalent": null
+      }
+    }
+  ],
   "artifacts": {
     "transcript": "transcript.jsonl.gz",
     "diff": "diff.patch",
-    "screenshots": [],
+    "screenshots": [
+      {
+        "path": "/themes/1",
+        "viewport": "mobile",
+        "file": "screenshots/themes-1-mobile.png"
+      },
+      {
+        "path": "/themes/1",
+        "viewport": "tablet",
+        "file": "screenshots/themes-1-tablet.png"
+      },
+      {
+        "path": "/themes/1",
+        "viewport": "desktop",
+        "file": "screenshots/themes-1-desktop.png"
+      },
+      {
+        "path": "/themes/2",
+        "viewport": "mobile",
+        "file": "screenshots/themes-2-mobile.png"
+      },
+      {
+        "path": "/themes/2",
+        "viewport": "tablet",
+        "file": "screenshots/themes-2-tablet.png"
+      },
+      {
+        "path": "/themes/2",
+        "viewport": "desktop",
+        "file": "screenshots/themes-2-desktop.png"
+      },
+      {
+        "path": "/themes/3",
+        "viewport": "mobile",
+        "file": "screenshots/themes-3-mobile.png"
+      },
+      {
+        "path": "/themes/3",
+        "viewport": "tablet",
+        "file": "screenshots/themes-3-tablet.png"
+      },
+      {
+        "path": "/themes/3",
+        "viewport": "desktop",
+        "file": "screenshots/themes-3-desktop.png"
+      },
+      {
+        "path": "/themes/4",
+        "viewport": "mobile",
+        "file": "screenshots/themes-4-mobile.png"
+      },
+      {
+        "path": "/themes/4",
+        "viewport": "tablet",
+        "file": "screenshots/themes-4-tablet.png"
+      },
+      {
+        "path": "/themes/4",
+        "viewport": "desktop",
+        "file": "screenshots/themes-4-desktop.png"
+      },
+      {
+        "path": "/themes/5",
+        "viewport": "mobile",
+        "file": "screenshots/themes-5-mobile.png"
+      },
+      {
+        "path": "/themes/5",
+        "viewport": "tablet",
+        "file": "screenshots/themes-5-tablet.png"
+      },
+      {
+        "path": "/themes/5",
+        "viewport": "desktop",
+        "file": "screenshots/themes-5-desktop.png"
+      }
+    ],
     "report": "THEMES.md"
   },
   "notes": []

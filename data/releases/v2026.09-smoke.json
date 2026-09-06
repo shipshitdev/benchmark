@@ -2,7 +2,7 @@
   "release": "v2026.09-smoke",
   "title": "v2026.09-smoke",
   "suiteVersion": "v2026.09",
-  "generatedAt": "2026-09-06T15:48:10.177Z",
+  "generatedAt": "2026-09-06T15:56:40.986Z",
   "pricesAsOf": "2026-09-06",
   "categoryWeights": {
     "ux-ui": 1,
@@ -561,17 +561,27 @@
       ],
       "gatePassRate": 0,
       "objective": null,
-      "subjective": null,
-      "score": null,
+      "subjective": {
+        "mean": 88.75,
+        "min": 88.75,
+        "max": 88.75,
+        "n": 1
+      },
+      "score": {
+        "mean": 73.75,
+        "min": 73.75,
+        "max": 73.75,
+        "n": 1
+      },
       "usage": {
-        "input": 329,
-        "output": 28244,
-        "cacheRead": 2085300,
-        "cacheWrite": 65290,
-        "turns": 41,
-        "toolCalls": 40,
-        "durationMs": 256737,
-        "costUsdEquivalent": 0.4317
+        "input": 201,
+        "output": 25118,
+        "cacheRead": 961539,
+        "cacheWrite": 41795,
+        "turns": 25,
+        "toolCalls": 24,
+        "durationMs": 265021,
+        "costUsdEquivalent": 0.2742
       }
     },
     {
@@ -587,15 +597,15 @@
       "gatePassRate": 1,
       "objective": null,
       "subjective": {
-        "mean": 93.75,
-        "min": 93.75,
-        "max": 93.75,
+        "mean": 100,
+        "min": 100,
+        "max": 100,
         "n": 1
       },
       "score": {
-        "mean": 93.75,
-        "min": 93.75,
-        "max": 93.75,
+        "mean": 100,
+        "min": 100,
+        "max": 100,
         "n": 1
       },
       "usage": {
@@ -795,7 +805,7 @@
         "model": "haiku",
         "effort": "low"
       },
-      "overall": 78.58333333333334,
+      "overall": 77.61666666666667,
       "categories": [
         {
           "category": "frontend",
@@ -854,7 +864,7 @@
             "model": "haiku",
             "effort": "low"
           },
-          "score": null,
+          "score": 73.75,
           "tasks": 1
         },
         {
@@ -869,16 +879,16 @@
         }
       ],
       "usage": {
-        "input": 1397,
-        "output": 96980,
-        "cacheRead": 6593252,
-        "cacheWrite": 259599,
-        "turns": 189,
-        "toolCalls": 180,
-        "durationMs": 1007154,
-        "costUsdEquivalent": 1.4701
+        "input": 1269,
+        "output": 93854,
+        "cacheRead": 5469491,
+        "cacheWrite": 236104,
+        "turns": 173,
+        "toolCalls": 164,
+        "durationMs": 1015438,
+        "costUsdEquivalent": 1.3125999999999998
       },
-      "scorePerDollar": 53.45441353195928,
+      "scorePerDollar": 59.13200264106863,
       "telemetry": "full"
     },
     {
@@ -887,7 +897,7 @@
         "model": "gpt-5.6-sol",
         "effort": "low"
       },
-      "overall": 88.21666666666667,
+      "overall": 89.46666666666667,
       "categories": [
         {
           "category": "frontend",
@@ -946,7 +956,7 @@
             "model": "gpt-5.6-sol",
             "effort": "low"
           },
-          "score": 93.75,
+          "score": 100,
           "tasks": 1
         },
         {
@@ -970,7 +980,7 @@
         "durationMs": 1711332,
         "costUsdEquivalent": 18.453400000000002
       },
-      "scorePerDollar": 4.780510186018113,
+      "scorePerDollar": 4.848248380605561,
       "telemetry": "partial"
     }
   ],

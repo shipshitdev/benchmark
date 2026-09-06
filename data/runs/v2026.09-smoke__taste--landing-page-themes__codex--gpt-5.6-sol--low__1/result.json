@@ -54,18 +54,24 @@
     {
       "id": "install",
       "pass": true,
+      "mode": "block",
+      "penalty": 0,
       "durationMs": 18,
       "detail": "bun install v1.4.2 (744846f84)\n\nChecked 50 installs across 127 packages (no changes) [8.00ms]"
     },
     {
       "id": "build",
       "pass": true,
+      "mode": "block",
+      "penalty": 0,
       "durationMs": 2430,
       "detail": "▲ Next.js 16.3.4 (Turbopack)\n✓ Running next.config.ts took 14ms\n\n  Creating an optimized production build ...\n✓ Compiled successfully in 243ms\n  Running TypeScript ...\n  Finished TypeScript in 189ms ...\n  Collecting page data using 5 workers ...\n  Generating static pages using 5 workers (0/8) ...\n  Generating static pages using 5 workers (2/8) \r\n  Generating static pages using 5 workers (4/8) \r\n  Generating static pages using 5 workers (6/8) \r\n✓ Generating static pages using 5 workers (8/8) in 266ms\n  Finalizing page optimization ...\n\nRoute (app)\n┌ ○ /\n├ ○ /_not-found\n└   /themes/[id]\n  ├ ● /themes/1\n  ├ ● /themes/2\n  ├ ● /themes/3\n  └ ● [+2 more paths]\n\n\n○  (Static)  prerendered as static content\n●  (SSG)     prerendered as static HTML (uses generateStaticParams)\n\n\n$ next build\n⚠ Warning: Next.js ignored package.json in /Users/decod3rslabs/www/shipshitdev/public/benchmark because it is outside the current Git repository (/Users/decod3rslabs/www/shipshitdev/public/benchmark/.runs/v2026.09-smoke__taste--landing-page-themes__codex--gpt-5.6-sol--low__1/workspace).\n To use this directory, set `turbopack.root` in your Next.js config."
     },
     {
       "id": "axe-themes",
       "pass": true,
+      "mode": "block",
+      "penalty": 0,
       "durationMs": 2023,
       "detail": "no violations at or above serious"
     }
@@ -83,21 +89,21 @@
         "conversion-structure": 4,
         "distinctiveness": 4,
         "craft": 4,
-        "copy": 3,
-        "judgment": 3
+        "copy": 4,
+        "judgment": 4
       },
-      "subjective": 93.75,
-      "rationale": "Conversion structure: All 35 elements present across five themes. Every page has clear value prop in first viewport, unmistakable primary CTA on mobile, closing CTA, benefit-led sections (not features), credibility signals (founder quotes, beta badges), objection handling (FAQ or guarantee), and visible pricing. Distinctiveness: Five genuine design directions. Theme 1 (Quiet Edit) is editorial and premium; Theme 2 (Signal System) is Swiss-modernist with fluorescent accents; Theme 3 (Worktable) is tactile and playful with illustrated elements; Theme 4 (Feedback.exe) is terminal-inspired and technical; Theme 5 (Client Notes) is warm and notebook-like. Each differs in type, layout, typography system, and tone—not recolors. Craft: Excellent across all themes. Type pairings are considered (serif/sans hierarchy), spacing is generous and rhythmic, alignment is optical, responsive layouts were designed rather than collapsed. Details reward second look (tape elements, scan-lines, margin notes). No broken layouts; text is readable at all widths. Copy: Specific and benefit-led throughout. Headlines match visual tone of each theme and are credible to their audience. Theme 3's \"Monday morning used to mean 46 client emails\" and Theme 1's final_v7 quote are memorable. Voices are distinct (editorial, operational, playful, technical, warm). Some polish leans corporate rather than founder-authentic. Judgment: Theme 1 recommended. Pick is among the two strongest (Theme 3 is equally strong). Reasoning cites audience taste, workflow clarity, and strategic restraint for future-proofing. Honest about a tradeoff. Project itself (Patchwork: $24/mo feedback portal for small studios) is plausible and well-positioned. Reasoning could be sharper on why Theme 1 over Theme 3's stronger memorability.",
+      "subjective": 100,
+      "rationale": "All 35 conversion elements present across five themes with unmistakable primary CTAs on mobile and clear hierarchy. Five genuinely distinct design directions targeting different buyer personas: premium editorial (Theme 1), operational Swiss-modernist (Theme 2), playful personality-led (Theme 3), technical dark-terminal (Theme 4), and warm notebook-intimate (Theme 5). Each internally coherent and aimed at a specific segment. Agency-quality craft with optical alignment, considered type pairings, details that reward scrutiny (tape and pencil in Theme 3, scan-line subtlety in Theme 4, margin aesthetic in Theme 5), and responsive layouts designed for mobile/tablet/desktop. Strong headlines throughout; each theme's voice distinct and credible—no placeholder copy. Recommendation of Theme 1 is well-reasoned, citing audience (taste-conscious studios), conversion structure (product demo clarity), and strategic tradeoff (distinctive but restrained enough for future case studies). Project positioning is plausible (B2B SaaS, $24/month, 2–15 person design/brand studios). Theme 1 is strongest pick for stated positioning.",
       "usage": {
-        "input": 20,
-        "output": 5575,
-        "cacheRead": 15035,
-        "cacheWrite": 24398,
-        "turns": 32,
-        "toolCalls": 16,
-        "durationMs": 62092,
+        "input": 76,
+        "output": 8191,
+        "cacheRead": 110985,
+        "cacheWrite": 25436,
+        "turns": 33,
+        "toolCalls": 17,
+        "durationMs": 83716,
         "costUsdEquivalent": null,
-        "reportedCostUsd": 0.0805255
+        "reportedCostUsd": 0.1053275
       }
     }
   ],

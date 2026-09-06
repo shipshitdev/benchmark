@@ -1,202 +1,212 @@
+diff --git a/AGENTS.md b/AGENTS.md
+new file mode 100644
+index 0000000..643577d
+--- /dev/null
++++ b/AGENTS.md
+@@ -0,0 +1,9 @@
++<!-- BEGIN:nextjs-agent-rules -->
++
++# This is NOT the Next.js you know
++
++This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
++
++This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
++
++<!-- END:nextjs-agent-rules -->
+diff --git a/CLAUDE.md b/CLAUDE.md
+new file mode 100644
+index 0000000..43c994c
+--- /dev/null
++++ b/CLAUDE.md
+@@ -0,0 +1 @@
++@AGENTS.md
 diff --git a/THEMES.md b/THEMES.md
 new file mode 100644
-index 0000000..6090a1b
+index 0000000..033137c
 --- /dev/null
 +++ b/THEMES.md
 @@ -0,0 +1,97 @@
-+# GrowKit Landing Pages: Five Design Directions
++# Prompt Craft: Landing Page Themes
 +
-+## Product Details
++## The Product
 +
-+**Name:** GrowKit
++**Name:** Prompt Craft
 +
-+**Positioning:** Desktop hydroponic gardens for urban apartments
++**Kind:** Digital product / SaaS
 +
-+**Description:** A compact hydroponic growing system that lets urban dwellers grow fresh herbs, vegetables, and greens year-round in small spaces. No soil, no mess, just living food.
++**Positioning:** Stop wasting time optimizing prompts. Prompt Craft is a curated library of field-tested prompts for common work tasks—emails, presentations, analysis, code generation, and more. Updated monthly. No fluff, just results.
 +
-+**Target Customer:** Urban dwellers aged 25–45 interested in sustainability, cooking, wellness, or self-sufficiency. Millennials and Gen Z with limited outdoor space.
++**Target Customer:** Knowledge workers and professionals who use AI tools daily (ChatGPT, Claude, Gemini) but spend too much time writing and refining prompts. Includes marketers, engineers, consultants, content creators, and analysts.
 +
-+**Pricing:** $299 for the kit (one-time) + $45/month for nutrient subscriptions
-+
-+**Key Benefits:**
-+- Fresh herbs and vegetables year-round
-+- 40% faster growth than soil
-+- 90% less water than traditional gardening
-+- Fits on any desk or windowsill
-+- No gardening experience required
-+- App-guided care
++**Pricing Model:** Freemium with paid tiers
++- Free: 10 prompts, email support
++- Professional: $12/month (all 50+ prompts, monthly updates, analytics, priority support)
++- Enterprise: Custom pricing (everything + API access, custom prompts, dedicated support)
 +
 +---
 +
-+## Theme 1: Modern Minimalist
++## Theme Designs
 +
-+**Direction:** Clean, Swiss-style grid. Focus on product design and technical elegance. Minimal color palette (black, white, gray). Strong typography hierarchy. Product-centric imagery (SVG illustrations of the unit and components).
++### Theme 1: Professional / Corporate
++**Direction:** Trust-focused, enterprise-grade design using navy/slate blues, serif headlines, traditional typography, and formal layout patterns. Emphasizes team adoption, company credentials, and ROI metrics. Uses language around "standardization," "consistency," and "scale."
 +
-+**Tone:** Precise, efficient, confidence-driven. Speaks to design-conscious professionals and tech-forward urbanites who appreciate minimalism and quality.
++**Audience:** B2B buyers, enterprise buyers, teams making centralized software decisions, mid-market companies. Users who value credibility signals, proven track records, and support commitments.
 +
-+**Visual approach:** Numbered feature cards, structured specifications, monochromatic color scheme with strategic black accents, geometric illustrations. Lots of whitespace. No decoration—pure function.
-+
-+**Audience:** Designers, architects, tech workers, minimalists. People who value elegance and efficiency.
-+
-+---
-+
-+## Theme 2: Organic Botanical
-+
-+**Direction:** Earthy, natural color palette (greens, browns, ambers). Hand-drawn botanical illustrations. Serif fonts (warm, organic). Soft edges and organic shapes.
-+
-+**Tone:** Warm, encouraging, natural. Speaks to people who love plants, sustainability, and organic living. Focuses on the naturalness of the process and the purity of homegrown food.
-+
-+**Visual approach:** Botanical illustrations, gradient backgrounds (amber to green), serif typography, testimonials in warm settings. Emphasizes the beauty of growing things and connection to nature.
-+
-+**Audience:** Gardeners, sustainability-focused buyers, wellness enthusiasts, people with a "back to nature" philosophy.
++**Design Elements:** Serif fonts (Georgia/serif stack), navy blue and gray palette, border-heavy layout, formal photography placeholders, structured grid, details-focused copy.
 +
 +---
 +
-+## Theme 3: Scientific Laboratory
++### Theme 2: Playful / Modern
++**Direction:** Energetic, creator-focused design using vibrant gradients (purple/pink/blue), bold sans-serif, rounded corners, emoji, and conversational tone. Fast-paced, uses casual language ("let's go," "game changer"), emphasizes speed and joy of using the product.
 +
-+**Direction:** Cool tones (slate, cyan, gray). Technical language. Data visualizations, system diagrams, sensor specifications. Monospace fonts. Dark background with accent lighting.
++**Audience:** Individual creators, solopreneurs, younger professionals, designers, early adopters. Users who value ease-of-use, community, and personality over corporate credentials.
 +
-+**Tone:** Authoritative, technical, precision-focused. Speaks to people interested in the "how" and the engineering. Data-driven copy emphasizes control, monitoring, and optimization.
-+
-+**Visual approach:** System architecture diagrams, metric cards with specs, comparison tables, technical specifications. Feels like advanced hardware/scientific equipment. Heavy use of monospace font and structured layouts.
-+
-+**Audience:** Engineers, scientists, tech enthusiasts, data-driven people, people who want to understand every variable.
++**Design Elements:** Vibrant gradient backgrounds, rounded buttons, playful illustrations, conversational copy, social proof from named individuals, feature-focused messaging.
 +
 +---
 +
-+## Theme 4: Cozy Lifestyle
++### Theme 3: Minimal / Brutalist
++**Direction:** Ultra-clean, stripped-back design using only black, white, and gray with mono fonts. Emphasizes functionality over aesthetics. Borders and grids. Sparse copy. No unnecessary decoration. Targets users who see design as distraction and want pure substance.
 +
-+**Direction:** Warm colors (amber, stone, warm whites). Serif typography for elegance. Lifestyle-focused imagery (aspirational home scenes). Intimate, inviting tone. Soft rounded corners and comfortable spacing.
++**Audience:** Designers, engineers, technical users, minimalists. Users skeptical of marketing, who want facts and nothing else. People who trust simplicity as a signal of quality.
 +
-+**Tone:** Warm, inviting, intimate. Focuses on the emotional and lifestyle benefits—creating a beautiful home, daily rituals, connection to food.
-+
-+**Visual approach:** Lifestyle photography (illustrated scenes), real testimonials, warm color palette, serif fonts throughout. Emphasizes the beauty of the product in a home setting and the daily joy it brings.
-+
-+**Audience:** Home design enthusiasts, people seeking wellness and ritual, those who value lifestyle and aesthetics, people building a "life they love."
++**Design Elements:** Mono fonts exclusively, black borders, grid-based layout, minimal color, short/direct copy, technical specifications, data tables, zero illustrations.
 +
 +---
 +
-+## Theme 5: Bold & Playful
++### Theme 4: Warm / Human-Focused
++**Direction:** Community-driven, supportive design using warm earth tones (amber, orange, warm browns), rounded elements, testimonials from real people, and emphasis on belonging. Tone is encouraging and supportive. Highlights shared wins and connection.
 +
-+**Direction:** Vibrant gradient backgrounds (purple, pink, orange, cyan). High-contrast colors. Playful tone. Rotated cards, playful illustrations with personality (emoji, expressive faces). Casual, conversational language. Rounded, friendly shapes.
++**Audience:** Solo professionals, people seeking community, users who value human support and connection. Those who responded positively to early brand experiences and want ongoing relationship with a product.
 +
-+**Tone:** Fun, irreverent, youthful. Breaks conventions. Makes growing food feel cool and accessible. Uses humor and energy to engage. Emphasizes community and culture.
-+
-+**Visual approach:** Colorful gradients, rotated elements, emoji, bold type, playful illustrations, leaderboards, gaming elements. Feels Gen Z and fun, not corporate.
-+
-+**Audience:** Gen Z, younger millennials, people who want to be entertained, those who value community and culture, people who think sustainability is cool and fun.
++**Design Elements:** Warm color palette (amber/orange), rounded cards, large testimonial sections, community language ("join us"), supportive copy, illustrations of people, star ratings.
 +
 +---
 +
-+## Recommendation
++### Theme 5: Data-Driven / Sleek
++**Direction:** Analytics-focused, metrics-heavy design using dark backgrounds, cyan/teal accents, mono fonts, and chart-like visualizations. Emphasizes measurement, benchmarking, and competitive advantage. Copy highlights performance metrics and ROI.
 +
-+**Ship Theme 4: Cozy Lifestyle**
++**Audience:** Data-driven professionals, performance-obsessed users, enterprise teams with analytics infrastructure, users making cost-benefit decisions. People who want to see proof in numbers.
 +
-+This theme balances broad appeal with a distinctive point of view. It reaches the widest audience (ages 25–45, across income levels and interests) by emphasizing the emotional and lifestyle benefits rather than technical specs or trendiness. 
++**Design Elements:** Dark slate background, teal/cyan accents, mono fonts, tables and charts, metric-focused headlines, technical FAQ, comparison tables, analytics visualizations.
 +
-+The warm aesthetic creates immediate trust and aspiration. People imagine themselves using GrowKit in their homes. The focus on daily ritual and connection to food speaks to real motivations (sustainability, wellness, cooking, beauty). The design feels intentional and premium without alienating any demographic.
++---
 +
-+Theme 1 (Minimalist) appeals mainly to design/tech professionals. Theme 3 (Scientific) only resonates with engineers and data nerds. Theme 2 (Organic) skews heavily toward one lifestyle segment. Theme 5 (Playful), while engaging, might feel gimmicky to older customers or those seeking a serious product.
++## Recommendation: Ship Theme 2 (Playful)
 +
-+Theme 4 works because it's beautiful, warm, genuine, and makes the emotional case for the product—which is ultimately why people buy: to create something meaningful in their homes.
++**Why:** For a product launching in 2026, Theme 2 offers the optimal conversion strategy:
 +
-+**Secondary choice:** Theme 5 for a younger, trend-aware audience (Gen Z, TikTok-forward), or Theme 2 if targeting eco-conscious, sustainability-first customers.
++1. **Lowest activation friction**: The conversational tone and emphasis on simplicity ("copy, paste, done") removes perceived complexity. Creators are the early adopters for SaaS products like this.
++
++2. **Best viral potential**: Individual creators naturally share tools they love—the community-driven language and social proof from named creators creates word-of-mouth momentum.
++
++3. **Highest CAC efficiency**: Targeting individual creators and solopreneurs is cheaper to acquire than enterprise teams, and this audience has highest lifetime value (they stick around longer and pay consistently).
++
++4. **Defensible positioning**: Theme 1 positions against big players with enterprise resources. Theme 5 positions on metrics we don't yet have at launch. Theme 2 positions on joy and speed, which are defensible without scale.
++
++5. **Better design-product fit**: The energetic design aligns with the actual product—it's fast, frictionless, and does one thing well. The design reinforces the message.
++
++**Second choice would be Theme 4** (Warm) if primary audience research showed higher retention and LTV with community-seeking professionals over individual creators. The warm design creates stronger repeat engagement and reduces churn.
++
++**Reserve Theme 1 for Series B** when you have: 500+ customers, enterprise logos, proven ROI metrics. Then it becomes your enterprise motion.
++
++---
++
++## Technical Details
++
++All themes:
++- Built with Next.js 16 App Router + Tailwind CSS 4
++- Responsive mobile-first design
++- No external image or font dependencies
++- Inline SVG only
++- System fonts (sans-serif, serif, mono stacks)
++- Zero third-party libraries beyond React/Next
++- Accessible color contrast ratios
++- Clear call-to-action hierarchy
 diff --git a/app/page.tsx b/app/page.tsx
-index cd11eee..6e31f16 100644
+index cd11eee..8bef724 100644
 --- a/app/page.tsx
 +++ b/app/page.tsx
-@@ -1,7 +1,94 @@
+@@ -1,7 +1,82 @@
 +import Link from "next/link";
-+
-+export const metadata = {
-+  title: "GrowKit – Landing Page Themes",
-+  description: "Five design directions for a hydroponic gardening kit.",
-+};
 +
  export default function Home() {
 +  const themes = [
 +    {
-+      id: 1,
-+      name: "Modern Minimalist",
-+      description: "Clean, Swiss-style grid. Focus on product design and technical elegance.",
++      number: 1,
++      name: "Professional",
++      description: "Corporate, trust-focused design for business users",
 +    },
 +    {
-+      id: 2,
-+      name: "Organic Botanical",
-+      description: "Earthy tones and botanical hand-drawn illustrations. Warm and natural.",
++      number: 2,
++      name: "Playful",
++      description: "Modern, energetic design for creative professionals",
 +    },
 +    {
-+      id: 3,
-+      name: "Scientific Laboratory",
-+      description: "Cool tones, structured data presentation. Technical and precision-focused.",
++      number: 3,
++      name: "Minimal",
++      description: "Brutalist, stripped-back design for minimalists",
 +    },
 +    {
-+      id: 4,
-+      name: "Cozy Lifestyle",
-+      description: "Warm colors, aspirational living scenes. Intimate and inviting.",
++      number: 4,
++      name: "Warm",
++      description: "Human-centered, supportive design for community seekers",
 +    },
 +    {
-+      id: 5,
-+      name: "Bold & Playful",
-+      description: "Vibrant colors and experimental layout. Fun, casual, and experimental.",
++      number: 5,
++      name: "Data",
++      description: "Analytics-focused, metrics-driven design for detail-oriented users",
 +    },
 +  ];
 +
    return (
 -    <main>
 -      <p>Coming soon</p>
-+    <main className="min-h-screen bg-white">
-+      <div className="max-w-4xl mx-auto px-6 py-16">
-+        <div className="mb-12">
-+          <h1 className="text-4xl font-bold mb-4">GrowKit Landing Pages</h1>
-+          <p className="text-xl text-gray-600">
-+            Five design directions for a hydroponic gardening kit for urban apartments.
++    <main className="min-h-screen bg-gray-50 py-20 px-4 sm:px-6 lg:px-8">
++      <div className="max-w-4xl mx-auto">
++        <div className="text-center mb-16">
++          <h1 className="text-5xl font-bold text-gray-900 mb-4">
++            Prompt Craft Landing Pages
++          </h1>
++          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
++            Five distinct design directions for the same product—explore how
++            typography, color, layout, and tone shape conversion.
 +          </p>
 +        </div>
 +
-+        <div className="grid gap-6">
++        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 +          {themes.map((theme) => (
 +            <Link
-+              key={theme.id}
-+              href={`/themes/${theme.id}`}
-+              className="block p-6 border border-gray-300 rounded-lg hover:shadow-lg transition-shadow"
++              key={theme.number}
++              href={`/themes/${theme.number}`}
++              className="group block p-8 bg-white border border-gray-200 rounded-lg hover:shadow-lg hover:border-gray-300 transition-all"
 +            >
-+              <h2 className="text-2xl font-bold mb-2">Theme {theme.id}: {theme.name}</h2>
-+              <p className="text-gray-600">{theme.description}</p>
++              <div className="flex items-center gap-3 mb-3">
++                <div className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg group-hover:bg-blue-700 transition">
++                  {theme.number}
++                </div>
++                <h2 className="text-2xl font-bold text-gray-900">
++                  {theme.name}
++                </h2>
++              </div>
++              <p className="text-gray-600 group-hover:text-gray-900 transition">
++                {theme.description}
++              </p>
 +            </Link>
 +          ))}
 +        </div>
 +
-+        <div className="mt-16 pt-12 border-t border-gray-300">
-+          <h2 className="text-2xl font-bold mb-6">Product Details</h2>
-+          <div className="grid md:grid-cols-2 gap-8">
-+            <div>
-+              <h3 className="font-bold text-lg mb-2">GrowKit</h3>
-+              <p className="text-gray-600 mb-4">
-+                A desktop hydroponic garden for urban apartments. Grow fresh herbs and vegetables
-+                year-round with minimal space.
-+              </p>
-+              <div className="space-y-2 text-sm">
-+                <p>
-+                  <span className="font-bold">Price:</span> $299 kit + $45/month nutrients
-+                </p>
-+                <p>
-+                  <span className="font-bold">Target:</span> Urban millennials & Gen Z, 25–45
-+                </p>
-+                <p>
-+                  <span className="font-bold">Key benefit:</span> Fresh food, year-round, indoors
-+                </p>
-+              </div>
-+            </div>
-+            <div>
-+              <h3 className="font-bold text-lg mb-2">Design Approach</h3>
-+              <p className="text-gray-600">
-+                Each theme demonstrates a different design philosophy: minimalism, naturalism,
-+                science-forward, lifestyle-focused, and experimental. All follow landing page best
-+                practices with clear value props, credibility signals, and objection handling.
-+              </p>
-+            </div>
-+          </div>
++        <div className="mt-16 p-8 bg-blue-50 border border-blue-200 rounded-lg">
++          <h3 className="text-lg font-bold text-gray-900 mb-2">
++            About Prompt Craft
++          </h3>
++          <p className="text-gray-700">
++            Stop wasting time optimizing prompts. Prompt Craft is a curated
++            library of field-tested prompts for emails, presentations, analysis,
++            code generation, and more—updated monthly. Each design above
++            represents a different audience and conversion strategy for the same
++            core product.
++          </p>
 +        </div>
 +      </div>
      </main>
@@ -204,131 +214,159 @@ index cd11eee..6e31f16 100644
  }
 diff --git a/app/themes/1/page.tsx b/app/themes/1/page.tsx
 new file mode 100644
-index 0000000..4e517bc
+index 0000000..ddf5839
 --- /dev/null
 +++ b/app/themes/1/page.tsx
-@@ -0,0 +1,186 @@
-+export const metadata = {
-+  title: "GrowKit – Modern Minimalist",
-+  description: "Desktop hydroponic gardens for urban apartments.",
-+};
-+
+@@ -0,0 +1,211 @@
 +export default function Theme1() {
 +  return (
-+    <main className="min-h-screen bg-white text-gray-900">
-+      {/* Hero */}
-+      <section className="h-screen flex flex-col items-center justify-center px-6">
-+        <div className="max-w-3xl text-center">
-+          <h1 className="text-6xl md:text-7xl font-bold mb-6 leading-tight">
-+            Grow fresh food indoors
-+          </h1>
-+          <p className="text-2xl text-gray-600 mb-12">
-+            Hydroponic gardens for urban apartments. No soil. No mess. Year-round harvests.
-+          </p>
-+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-+            <button className="bg-black text-white px-8 py-3 text-lg font-semibold hover:bg-gray-800 transition">
-+              Shop Now – $299
-+            </button>
-+            <button className="border border-gray-300 px-8 py-3 text-lg font-semibold hover:bg-gray-50 transition">
-+              Learn More
-+            </button>
-+          </div>
-+          <p className="text-sm text-gray-500">Ships in 3–5 business days</p>
++    <main className="min-h-screen bg-white">
++      {/* Header */}
++      <header className="border-b border-gray-200 sticky top-0 z-50 bg-white">
++        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
++          <div className="text-2xl font-bold text-blue-900">Prompt Craft</div>
++          <button className="px-6 py-2 bg-blue-900 text-white rounded text-sm font-semibold hover:bg-blue-800">
++            Sign In
++          </button>
 +        </div>
++      </header>
 +
-+        {/* Simple SVG illustration of kit */}
-+        <div className="mt-16 w-full max-w-md">
-+          <svg viewBox="0 0 200 250" className="w-full h-auto">
-+            <rect x="40" y="40" width="120" height="150" fill="none" stroke="currentColor" strokeWidth="2" />
-+            <rect x="50" y="60" width="100" height="20" fill="currentColor" opacity="0.1" />
-+            <circle cx="70" cy="100" r="8" fill="none" stroke="currentColor" strokeWidth="1.5" />
-+            <circle cx="100" cy="100" r="8" fill="none" stroke="currentColor" strokeWidth="1.5" />
-+            <circle cx="130" cy="100" r="8" fill="none" stroke="currentColor" strokeWidth="1.5" />
-+            <rect x="45" y="140" width="110" height="40" fill="currentColor" opacity="0.05" />
-+            <line x1="50" y1="200" x2="150" y2="200" stroke="currentColor" strokeWidth="2" />
-+          </svg>
++      {/* Hero */}
++      <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 text-white">
++        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
++          <div className="grid md:grid-cols-2 gap-12 items-center">
++            <div>
++              <h1 className="text-5xl md:text-6xl font-bold mb-6 font-serif">
++                Enterprise-Grade Prompts
++              </h1>
++              <p className="text-xl text-blue-100 mb-8 leading-relaxed">
++                Trusted by leading organizations to standardize AI interactions across teams. Proven prompts that deliver consistent, high-quality results at scale.
++              </p>
++              <div className="flex gap-4">
++                <button className="px-8 py-3 bg-white text-blue-900 font-semibold rounded hover:bg-blue-50">
++                  Start Free Trial
++                </button>
++                <button className="px-8 py-3 border-2 border-white text-white font-semibold rounded hover:bg-white hover:text-blue-900">
++                  Schedule Demo
++                </button>
++              </div>
++            </div>
++            <div className="bg-blue-700/30 rounded-lg p-8 border border-blue-600/30">
++              <svg
++                className="w-full h-64 text-blue-300"
++                fill="currentColor"
++                viewBox="0 0 200 200"
++              >
++                <rect x="20" y="20" width="160" height="160" fill="none" stroke="currentColor" strokeWidth="2" />
++                <line x1="20" y1="60" x2="180" y2="60" stroke="currentColor" strokeWidth="1" />
++                <line x1="20" y1="100" x2="180" y2="100" stroke="currentColor" strokeWidth="1" />
++                <line x1="60" y1="20" x2="60" y2="180" stroke="currentColor" strokeWidth="1" />
++                <circle cx="90" cy="90" r="30" fill="none" stroke="currentColor" strokeWidth="2" />
++              </svg>
++            </div>
++          </div>
 +        </div>
 +      </section>
 +
-+      {/* Features */}
-+      <section className="bg-gray-50 py-20 px-6">
-+        <div className="max-w-4xl mx-auto">
-+          <h2 className="text-4xl font-bold mb-16 text-center">Why GrowKit</h2>
-+          <div className="grid md:grid-cols-3 gap-12">
++      {/* Value Prop */}
++      <section className="bg-gray-50 py-20">
++        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
++          <h2 className="text-4xl font-bold text-gray-900 font-serif text-center mb-4">
++            Why Enterprise Teams Choose Prompt Craft
++          </h2>
++          <p className="text-center text-gray-600 mb-16 max-w-2xl mx-auto">
++            Reduce time-to-value, standardize quality, and scale AI adoption across your organization.
++          </p>
++          <div className="grid md:grid-cols-3 gap-8">
 +            {[
-+              { title: "No Soil Required", description: "Uses hydroponic technology to grow plants 40% faster with 90% less water." },
-+              { title: "Compact Design", description: "Fits on any desk, windowsill, or kitchen counter. Takes up minimal space." },
-+              { title: "Year-Round Growing", description: "LED grow lights let you harvest fresh herbs and vegetables every season." },
-+              { title: "Low Maintenance", description: "Just fill the tank monthly. No watering, no weeding, no gardening experience needed." },
-+              { title: "Smart Monitoring", description: "Track pH, nutrients, and light cycles via app. Get alerts when action is needed." },
-+              { title: "Fresh & Sustainable", description: "Grow organic food at home. Reduce grocery bills and plastic waste." },
-+            ].map((feature, idx) => (
-+              <div key={idx} className="text-center">
-+                <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center mx-auto mb-4 font-bold">
-+                  {idx + 1}
-+                </div>
-+                <h3 className="text-lg font-bold mb-3">{feature.title}</h3>
-+                <p className="text-gray-600 text-sm leading-relaxed">{feature.description}</p>
++              {
++                title: "Proven Templates",
++                desc: "50+ field-tested prompts across sales, marketing, analysis, and engineering. No guesswork.",
++              },
++              {
++                title: "Monthly Updates",
++                desc: "Stay current with latest AI capabilities. New prompts added, existing ones refined based on LLM releases.",
++              },
++              {
++                title: "Team Collaboration",
++                desc: "Save custom prompts, share across teams, track usage and performance with built-in analytics.",
++              },
++            ].map((item, i) => (
++              <div key={i} className="bg-white p-8 rounded-lg border border-gray-200">
++                <h3 className="text-xl font-bold text-gray-900 mb-3 font-serif">
++                  {item.title}
++                </h3>
++                <p className="text-gray-600">{item.desc}</p>
 +              </div>
 +            ))}
 +          </div>
 +        </div>
 +      </section>
 +
-+      {/* Specs */}
-+      <section className="py-20 px-6">
-+        <div className="max-w-4xl mx-auto">
-+          <h2 className="text-4xl font-bold mb-12">Specifications</h2>
-+          <div className="grid md:grid-cols-2 gap-12">
-+            <div>
-+              <h3 className="text-lg font-bold mb-6">Kit Includes</h3>
-+              <ul className="space-y-3">
-+                {["Hydroponic chamber", "Full-spectrum LED grow lights", "Water pump and reservoir", "pH testing kit", "Mobile app access", "Starter nutrient pack"].map((item) => (
-+                  <li key={item} className="flex items-start gap-3">
-+                    <span className="text-black font-bold mt-0.5">→</span>
-+                    <span>{item}</span>
-+                  </li>
-+                ))}
-+              </ul>
-+            </div>
-+            <div>
-+              <h3 className="text-lg font-bold mb-6">Dimensions & Power</h3>
-+              <div className="space-y-4 text-sm">
-+                <div>
-+                  <p className="text-gray-500 mb-1">Size</p>
-+                  <p className="font-semibold">24" W × 12" D × 18" H</p>
-+                </div>
-+                <div>
-+                  <p className="text-gray-500 mb-1">Weight</p>
-+                  <p className="font-semibold">8 lbs (empty)</p>
-+                </div>
-+                <div>
-+                  <p className="text-gray-500 mb-1">Power</p>
-+                  <p className="font-semibold">110–240V, 25W LED, 5W pump</p>
-+                </div>
-+                <div>
-+                  <p className="text-gray-500 mb-1">Plant Capacity</p>
-+                  <p className="font-semibold">6 plants at once</p>
-+                </div>
++      {/* Credibility */}
++      <section className="py-16 px-4 sm:px-6 lg:px-8">
++        <div className="max-w-6xl mx-auto">
++          <div className="text-center mb-12">
++            <p className="text-gray-600 font-semibold text-sm uppercase">Trusted by 500+ Teams at</p>
++          </div>
++          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-center">
++            {["Acme Inc.", "TechCorp", "Global AI Co.", "DataWorks"].map((name) => (
++              <div key={name} className="text-center text-gray-400 font-semibold">
++                {name}
 +              </div>
-+            </div>
++            ))}
 +          </div>
 +        </div>
 +      </section>
 +
-+      {/* Social Proof */}
-+      <section className="bg-gray-50 py-20 px-6">
-+        <div className="max-w-4xl mx-auto">
-+          <h2 className="text-4xl font-bold mb-12 text-center">Trusted by 2,400+ urban growers</h2>
++      {/* Pricing */}
++      <section className="bg-gray-50 py-20">
++        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
++          <h2 className="text-4xl font-bold text-gray-900 font-serif text-center mb-16">
++            Simple, Transparent Pricing
++          </h2>
 +          <div className="grid md:grid-cols-3 gap-8">
 +            {[
-+              { count: "2,400+", label: "Active users" },
-+              { count: "4.8★", label: "Average rating" },
-+              { count: "87%", label: "Would recommend" },
-+            ].map((stat) => (
-+              <div key={stat.label} className="text-center">
-+                <p className="text-4xl font-bold mb-2">{stat.count}</p>
-+                <p className="text-gray-600">{stat.label}</p>
++              { plan: "Starter", price: "Free", features: ["10 prompts", "Email support"] },
++              { plan: "Professional", price: "$12/mo", features: ["All prompts", "Priority support", "Analytics"], highlight: true },
++              { plan: "Enterprise", price: "Custom", features: ["Everything", "Dedicated support", "Custom prompts"] },
++            ].map((tier) => (
++              <div
++                key={tier.plan}
++                className={`p-8 rounded-lg border ${
++                  tier.highlight
++                    ? "border-blue-900 bg-blue-50 relative -mt-4"
++                    : "border-gray-200 bg-white"
++                }`}
++              >
++                {tier.highlight && (
++                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-900 text-white px-4 py-1 text-sm font-semibold rounded-full">
++                    Most Popular
++                  </div>
++                )}
++                <h3 className="text-2xl font-bold text-gray-900 mb-2">
++                  {tier.plan}
++                </h3>
++                <div className="text-3xl font-bold text-gray-900 mb-6">
++                  {tier.price}
++                </div>
++                <ul className="space-y-3">
++                  {tier.features.map((f) => (
++                    <li key={f} className="text-gray-600 flex items-start">
++                      <span className="mr-3 text-blue-900">✓</span>
++                      {f}
++                    </li>
++                  ))}
++                </ul>
++                <button
++                  className={`w-full mt-8 py-2 rounded font-semibold ${
++                    tier.highlight
++                      ? "bg-blue-900 text-white hover:bg-blue-800"
++                      : "bg-gray-100 text-gray-900 hover:bg-gray-200"
++                  }`}
++                >
++                  Get Started
++                </button>
 +              </div>
 +            ))}
 +          </div>
@@ -336,462 +374,286 @@ index 0000000..4e517bc
 +      </section>
 +
 +      {/* FAQ */}
-+      <section className="py-20 px-6">
++      <section className="py-20 px-4 sm:px-6 lg:px-8">
 +        <div className="max-w-3xl mx-auto">
-+          <h2 className="text-4xl font-bold mb-12">FAQ</h2>
-+          <div className="space-y-8">
++          <h2 className="text-4xl font-bold text-gray-900 font-serif text-center mb-16">
++            Frequently Asked Questions
++          </h2>
++          <div className="space-y-6">
 +            {[
 +              {
-+                q: "Do I need gardening experience?",
-+                a: "No. The app guides you through setup and maintenance. Most customers grow their first harvest in 3 weeks.",
++                q: "How often are prompts updated?",
++                a: "Monthly. We test and refine all prompts with new LLM releases to maintain peak performance.",
 +              },
 +              {
-+                q: "What can I grow?",
-+                a: "Herbs (basil, parsley, mint), leafy greens (lettuce, spinach), and vegetables (tomatoes, peppers). Check the app for the full list.",
++                q: "Can we customize prompts for our workflow?",
++                a: "Absolutely. Professional and Enterprise plans include custom prompt development based on your specific needs.",
 +              },
 +              {
-+                q: "How much does nutrient solution cost?",
-+                a: "$45/month for unlimited growing. One pack feeds up to 6 plants for a full cycle.",
++                q: "What's your uptime guarantee?",
++                a: "99.9% SLA for all paid plans with dedicated support channels.",
 +              },
-+              {
-+                q: "Is it loud?",
-+                a: "The pump is very quiet—under 40dB. You won't notice it in a living room or bedroom.",
-+              },
-+              {
-+                q: "What's the warranty?",
-+                a: "2-year warranty on all components. 30-day money-back guarantee if you're not satisfied.",
-+              },
-+            ].map((item, idx) => (
-+              <div key={idx}>
-+                <h3 className="font-bold text-lg mb-3">{item.q}</h3>
-+                <p className="text-gray-600">{item.a}</p>
-+              </div>
++            ].map((item, i) => (
++              <details
++                key={i}
++                className="group border-b border-gray-200 pb-6"
++              >
++                <summary className="text-lg font-semibold text-gray-900 cursor-pointer flex items-center justify-between">
++                  {item.q}
++                  <span className="text-gray-400 group-open:rotate-180 transition">
++                    ↓
++                  </span>
++                </summary>
++                <p className="text-gray-600 mt-4">{item.a}</p>
++              </details>
 +            ))}
 +          </div>
 +        </div>
 +      </section>
 +
-+      {/* CTA Footer */}
-+      <section className="bg-black text-white py-16 px-6">
-+        <div className="max-w-2xl mx-auto text-center">
-+          <h2 className="text-4xl font-bold mb-6">Start growing today</h2>
-+          <p className="text-xl text-gray-300 mb-8">
-+            Join thousands of urban growers. Fresh food, year-round. No gardening experience needed.
++      {/* Footer CTA */}
++      <section className="bg-blue-900 text-white py-16">
++        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
++          <h2 className="text-4xl font-bold mb-4 font-serif">
++            Ready to Standardize Your Prompt Strategy?
++          </h2>
++          <p className="text-xl text-blue-100 mb-8">
++            Join 500+ companies shipping faster with proven prompts.
 +          </p>
-+          <button className="bg-white text-black px-8 py-4 text-lg font-bold hover:bg-gray-100 transition">
-+            Shop Now – $299
++          <button className="px-8 py-3 bg-white text-blue-900 font-semibold rounded hover:bg-blue-50">
++            Start Your Free Trial Today
 +          </button>
-+          <p className="text-sm text-gray-400 mt-6">30-day money-back guarantee. Ships in 3–5 business days.</p>
++          <p className="text-blue-200 text-sm mt-4">No credit card required</p>
 +        </div>
 +      </section>
-+
-+      {/* Footer link */}
-+      <footer className="py-8 px-6 border-t border-gray-200">
-+        <div className="max-w-4xl mx-auto text-center text-sm text-gray-500">
-+          <a href="/" className="hover:text-gray-900">← Back to all themes</a>
-+        </div>
-+      </footer>
 +    </main>
 +  );
 +}
 diff --git a/app/themes/2/page.tsx b/app/themes/2/page.tsx
 new file mode 100644
-index 0000000..2ac340e
+index 0000000..7b6f186
 --- /dev/null
 +++ b/app/themes/2/page.tsx
-@@ -0,0 +1,220 @@
-+export const metadata = {
-+  title: "GrowKit – Organic Botanical",
-+  description: "Grow fresh herbs and vegetables at home, naturally.",
-+};
-+
+@@ -0,0 +1,284 @@
 +export default function Theme2() {
 +  return (
-+    <main className="min-h-screen bg-gradient-to-b from-amber-50 via-green-50 to-emerald-50 text-amber-900">
-+      {/* Hero */}
-+      <section className="relative overflow-hidden pt-20 pb-32 px-6">
-+        <div className="max-w-4xl mx-auto">
-+          <div className="text-center mb-16">
-+            <p className="text-lg text-emerald-700 font-serif italic mb-4">Grow at home</p>
-+            <h1 className="text-5xl md:text-6xl font-serif mb-6 leading-tight text-amber-900">
-+              Your kitchen garden, indoors
-+            </h1>
-+            <p className="text-xl text-emerald-800 font-serif mb-12 max-w-2xl mx-auto">
-+              Fresh herbs. Fresh vegetables. No soil, no pesticides, just pure growing.
-+              Perfect for apartments, windowsills, and kitchens.
-+            </p>
++    <main className="min-h-screen bg-gradient-to-br from-violet-50 via-pink-50 to-blue-50">
++      {/* Header */}
++      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur">
++        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex justify-between items-center">
++          <div className="flex items-center gap-2">
++            <svg className="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
++              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
++            </svg>
++            <span className="text-2xl font-black text-purple-600">Prompt Craft</span>
 +          </div>
-+
-+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-+            <button className="bg-emerald-700 text-white px-8 py-3 text-lg font-serif hover:bg-emerald-800 transition rounded-full">
-+              Get Started – $299
-+            </button>
-+            <button className="border-2 border-emerald-700 text-emerald-700 px-8 py-3 text-lg font-serif hover:bg-emerald-50 transition rounded-full">
-+              See It In Action
-+            </button>
-+          </div>
-+        </div>
-+
-+        {/* Decorative leaf elements */}
-+        <div className="absolute top-10 right-10 w-24 h-24 opacity-20 pointer-events-none">
-+          <svg viewBox="0 0 100 100" className="w-full h-full text-emerald-600">
-+            <path d="M50 10 Q80 30 70 70 Q50 90 30 70 Q20 30 50 10" fill="currentColor" />
-+            <path d="M50 30 Q65 40 60 70" stroke="currentColor" strokeWidth="2" fill="none" />
-+          </svg>
-+        </div>
-+        <div className="absolute bottom-0 left-10 w-32 h-32 opacity-20 pointer-events-none">
-+          <svg viewBox="0 0 100 100" className="w-full h-full text-amber-600">
-+            <path d="M50 10 Q80 30 70 70 Q50 90 30 70 Q20 30 50 10" fill="currentColor" />
-+            <path d="M50 30 Q65 40 60 70" stroke="currentColor" strokeWidth="2" fill="none" />
-+          </svg>
-+        </div>
-+      </section>
-+
-+      {/* Product showcase */}
-+      <section className="py-24 px-6">
-+        <div className="max-w-4xl mx-auto">
-+          <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
-+            {/* Stylized product illustration */}
-+            <div className="w-full max-w-sm mx-auto mb-12">
-+              <svg viewBox="0 0 200 280" className="w-full h-auto">
-+                {/* Container */}
-+                <rect x="30" y="80" width="140" height="140" rx="8" fill="none" stroke="currentColor" strokeWidth="3" className="text-emerald-700" />
-+                {/* Top rim */}
-+                <ellipse cx="100" cy="80" rx="70" ry="15" fill="currentColor" opacity="0.1" className="text-emerald-700" />
-+                {/* Water line */}
-+                <path d="M40 150 Q100 155 160 150" stroke="currentColor" strokeWidth="2" fill="none" className="text-emerald-500" opacity="0.6" />
-+                {/* Plants */}
-+                <g className="text-emerald-600">
-+                  <path d="M60 80 Q60 40 70 20 Q65 35 65 50" stroke="currentColor" strokeWidth="2.5" fill="none" />
-+                  <circle cx="60" cy="80" r="4" fill="currentColor" />
-+                  <path d="M100 80 Q100 30 110 10 Q105 30 105 50" stroke="currentColor" strokeWidth="2.5" fill="none" />
-+                  <circle cx="100" cy="80" r="4" fill="currentColor" />
-+                  <path d="M140 80 Q140 40 150 20 Q145 35 145 50" stroke="currentColor" strokeWidth="2.5" fill="none" />
-+                  <circle cx="140" cy="80" r="4" fill="currentColor" />
-+                </g>
-+                {/* Roots */}
-+                <g className="text-amber-600" opacity="0.4">
-+                  <path d="M70 150 L65 190" stroke="currentColor" strokeWidth="1.5" />
-+                  <path d="M100 150 L95 195" stroke="currentColor" strokeWidth="1.5" />
-+                  <path d="M130 150 L135 190" stroke="currentColor" strokeWidth="1.5" />
-+                </g>
-+              </svg>
-+            </div>
-+
-+            <h2 className="text-3xl font-serif text-amber-900 mb-4">The Complete Kit</h2>
-+            <p className="text-emerald-700 font-serif text-lg mb-8">
-+              Everything you need to start growing fresh, organic food at home.
-+            </p>
-+          </div>
-+        </div>
-+      </section>
-+
-+      {/* What's included */}
-+      <section className="py-24 px-6">
-+        <div className="max-w-4xl mx-auto">
-+          <h2 className="text-4xl font-serif text-center mb-16 text-amber-900">What Grows With You</h2>
-+          <div className="grid md:grid-cols-2 gap-12">
-+            {[
-+              {
-+                plant: "Basil & Herbs",
-+                desc: "The fastest growers. Fresh basil in 3 weeks. Perfect for cooking.",
-+              },
-+              {
-+                plant: "Leafy Greens",
-+                desc: "Lettuce, spinach, arugula. Endless salads from your kitchen.",
-+              },
-+              {
-+                plant: "Cherry Tomatoes",
-+                desc: "Sweet, juicy, and concentrated flavor. Summer in any season.",
-+              },
-+              {
-+                plant: "Microgreens",
-+                desc: "Nutrient-dense, fast-growing. Harvest in 7–10 days.",
-+              },
-+            ].map((item) => (
-+              <div key={item.plant} className="border-b-2 border-emerald-200 pb-6">
-+                <h3 className="text-2xl font-serif text-emerald-800 mb-3">{item.plant}</h3>
-+                <p className="text-amber-900">{item.desc}</p>
-+              </div>
-+            ))}
-+          </div>
-+        </div>
-+      </section>
-+
-+      {/* Why organic */}
-+      <section className="py-24 px-6 bg-white bg-opacity-50">
-+        <div className="max-w-4xl mx-auto">
-+          <h2 className="text-4xl font-serif text-center mb-16 text-amber-900">
-+            Grow Naturally, Live Better
-+          </h2>
-+          <div className="grid md:grid-cols-3 gap-8">
-+            {[
-+              { icon: "🌱", title: "No Chemicals", text: "No pesticides, no synthetic fertilizers. Pure, organic growth." },
-+              { icon: "💧", title: "90% Less Water", text: "Hydroponic systems use 90% less water than soil gardening." },
-+              { icon: "⏱️", title: "40% Faster", text: "Direct nutrient access means faster growth and bigger harvests." },
-+            ].map((item) => (
-+              <div key={item.title} className="text-center">
-+                <p className="text-5xl mb-4">{item.icon}</p>
-+                <h3 className="text-xl font-serif text-amber-900 mb-3">{item.title}</h3>
-+                <p className="text-emerald-800">{item.text}</p>
-+              </div>
-+            ))}
-+          </div>
-+        </div>
-+      </section>
-+
-+      {/* Social proof */}
-+      <section className="py-24 px-6">
-+        <div className="max-w-3xl mx-auto">
-+          <div className="bg-gradient-to-r from-amber-100 to-emerald-100 rounded-2xl p-12">
-+            <h2 className="text-3xl font-serif text-amber-900 mb-12 text-center">
-+              Loved by home growers everywhere
-+            </h2>
-+            <div className="space-y-8">
-+              {[
-+                { name: "Sarah M.", location: "Brooklyn, NY", quote: "I can't believe how easy this is. My basil is thriving, and I actually have fresh herbs for cooking now." },
-+                { name: "James K.", location: "Portland, OR", quote: "Best investment for my apartment kitchen. Literally growing my own food. It's amazing." },
-+                { name: "Priya P.", location: "San Francisco, CA", quote: "The app makes it foolproof. I've never gardened before, and I'm already planning my second harvest." },
-+              ].map((testimonial) => (
-+                <div key={testimonial.name}>
-+                  <p className="text-emerald-900 italic mb-2">"{testimonial.quote}"</p>
-+                  <p className="text-amber-800 font-serif">
-+                    — {testimonial.name}, {testimonial.location}
-+                  </p>
-+                </div>
-+              ))}
-+            </div>
-+          </div>
-+        </div>
-+      </section>
-+
-+      {/* FAQ */}
-+      <section className="py-24 px-6">
-+        <div className="max-w-3xl mx-auto">
-+          <h2 className="text-4xl font-serif text-center mb-16 text-amber-900">Questions?</h2>
-+          <div className="space-y-8">
-+            {[
-+              {
-+                q: "Is it really that easy?",
-+                a: "Yes. Fill the water tank once a month, and the app tells you everything else. Most people harvest in 3 weeks.",
-+              },
-+              {
-+                q: "What about electricity costs?",
-+                a: "About $3–4 per month. The LED lights are efficient, and the pump only runs a few hours daily.",
-+              },
-+              {
-+                q: "Can I grow year-round?",
-+                a: "Absolutely. The full-spectrum LED lights mean you can grow any season, any climate.",
-+              },
-+              {
-+                q: "What if it breaks?",
-+                a: "2-year warranty and 30-day money-back guarantee. We stand behind every kit.",
-+              },
-+            ].map((item, idx) => (
-+              <div key={idx}>
-+                <h3 className="font-serif text-xl text-emerald-800 mb-3">{item.q}</h3>
-+                <p className="text-amber-900">{item.a}</p>
-+              </div>
-+            ))}
-+          </div>
-+        </div>
-+      </section>
-+
-+      {/* Final CTA */}
-+      <section className="py-24 px-6 bg-gradient-to-r from-emerald-700 to-emerald-800">
-+        <div className="max-w-2xl mx-auto text-center text-white">
-+          <h2 className="text-4xl font-serif mb-6">Ready to grow?</h2>
-+          <p className="text-xl text-emerald-100 mb-8 font-serif">
-+            Join 2,400+ home growers. Fresh herbs, vegetables, and greens whenever you want them.
-+          </p>
-+          <button className="bg-white text-emerald-800 px-8 py-4 text-lg font-serif font-bold hover:bg-emerald-50 transition rounded-full">
-+            Get Started – $299
++          <button className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full text-sm font-bold hover:shadow-lg hover:scale-105 transition">
++            Let's Go →
 +          </button>
-+          <p className="text-sm text-emerald-200 mt-6">30-day guarantee • Ships in 3–5 days • Free shipping</p>
 +        </div>
-+      </section>
++      </header>
 +
-+      {/* Footer link */}
-+      <footer className="py-8 px-6 border-t-2 border-emerald-200 bg-white bg-opacity-30">
-+        <div className="max-w-4xl mx-auto text-center text-sm text-emerald-700">
-+          <a href="/" className="hover:text-emerald-900">← Back to all themes</a>
-+        </div>
-+      </footer>
-+    </main>
-+  );
-+}
-diff --git a/app/themes/3/page.tsx b/app/themes/3/page.tsx
-new file mode 100644
-index 0000000..cc1fc2f
---- /dev/null
-+++ b/app/themes/3/page.tsx
-@@ -0,0 +1,286 @@
-+export const metadata = {
-+  title: "GrowKit – Scientific Laboratory",
-+  description: "Data-driven hydroponic growing system for precision agriculture.",
-+};
-+
-+export default function Theme3() {
-+  return (
-+    <main className="min-h-screen bg-slate-900 text-slate-100">
-+      {/* Header with data visualization */}
-+      <section className="border-b border-slate-700 py-16 px-6">
++      {/* Hero */}
++      <section className="pt-24 pb-20 px-4 sm:px-6 lg:px-8">
 +        <div className="max-w-4xl mx-auto">
-+          <div className="text-sm text-cyan-400 font-mono mb-4">GrowKit Scientific System</div>
-+          <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 font-mono">
-+            Precision agriculture
-+            <br />
-+            for your apartment
-+          </h1>
-+          <p className="text-lg text-slate-300 mb-8 max-w-2xl font-mono">
-+            Data-driven hydroponic growing. Real-time monitoring. Optimized yields.
-+            Control every variable. Measure everything. Maximize results.
-+          </p>
-+          <div className="flex gap-4">
-+            <button className="bg-cyan-500 text-slate-900 px-6 py-2 font-bold hover:bg-cyan-400 transition font-mono">
-+              DEPLOY SYSTEM – $299
-+            </button>
-+            <button className="border border-cyan-500 text-cyan-400 px-6 py-2 hover:bg-slate-800 transition font-mono">
-+              SPECS
-+            </button>
++          <div className="text-center">
++            <div className="inline-block mb-6 px-4 py-2 bg-purple-100 rounded-full">
++              <span className="text-purple-700 text-sm font-bold">✨ Loved by 10,000+ creators</span>
++            </div>
++            <h1 className="text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 mb-6">
++              Stop Wasting Time on Bad Prompts
++            </h1>
++            <p className="text-2xl text-gray-700 mb-4">
++              We've tested hundreds of prompts so you don't have to. Get started in seconds.
++            </p>
++            <p className="text-gray-600 mb-10 text-lg">
++              50+ field-tested templates • Updated monthly • Used by your favorite creators
++            </p>
++            <div className="flex gap-4 justify-center flex-wrap">
++              <button className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-full text-lg hover:shadow-xl hover:scale-105 transition">
++                Try Free for 14 Days
++              </button>
++              <button className="px-8 py-4 bg-white border-2 border-purple-600 text-purple-600 font-bold rounded-full text-lg hover:bg-purple-50 transition">
++                Watch Demo (2 min)
++              </button>
++            </div>
++            <p className="text-gray-500 text-sm mt-6">No credit card. No spam. Cancel anytime.</p>
 +          </div>
-+        </div>
-+      </section>
 +
-+      {/* Data metrics hero */}
-+      <section className="py-20 px-6 bg-slate-800 border-b border-slate-700">
-+        <div className="max-w-4xl mx-auto">
-+          <div className="grid md:grid-cols-4 gap-6">
-+            {[
-+              { label: "YIELD", value: "3.5x", unit: "faster growth" },
-+              { label: "H₂O", value: "-90%", unit: "water usage" },
-+              { label: "USERS", value: "2,400+", unit: "active growers" },
-+              { label: "UPTIME", value: "99.8%", unit: "reliability" },
-+            ].map((metric) => (
-+              <div key={metric.label} className="border border-cyan-500 p-4 text-center">
-+                <p className="text-cyan-400 text-xs font-mono font-bold mb-2">{metric.label}</p>
-+                <p className="text-3xl font-bold font-mono text-white mb-1">{metric.value}</p>
-+                <p className="text-xs text-slate-400 font-mono">{metric.unit}</p>
-+              </div>
-+            ))}
-+          </div>
-+        </div>
-+      </section>
-+
-+      {/* System diagram */}
-+      <section className="py-20 px-6 border-b border-slate-700">
-+        <div className="max-w-4xl mx-auto">
-+          <h2 className="text-3xl font-bold text-white mb-12 font-mono">System Architecture</h2>
-+          <div className="bg-slate-800 border border-slate-600 p-8 rounded">
-+            <svg viewBox="0 0 400 300" className="w-full h-auto text-cyan-400">
-+              {/* Sensors */}
-+              <g>
-+                <circle cx="50" cy="80" r="30" fill="none" stroke="currentColor" strokeWidth="2" />
-+                <text x="50" y="85" textAnchor="middle" fontSize="12" fill="white" fontFamily="monospace">
-+                  pH
-+                </text>
-+              </g>
-+
-+              {/* Main processor */}
-+              <rect x="150" y="40" width="100" height="80" fill="none" stroke="currentColor" strokeWidth="2" />
-+              <text x="200" y="75" textAnchor="middle" fontSize="12" fill="white" fontFamily="monospace">
-+                Controller
++          {/* Hero Illustration */}
++          <div className="mt-20">
++            <svg
++              className="w-full max-w-2xl mx-auto"
++              viewBox="0 0 400 300"
++              fill="none"
++              xmlns="http://www.w3.org/2000/svg"
++            >
++              <rect x="40" y="40" width="320" height="220" rx="16" fill="white" stroke="#e0e7ff" strokeWidth="2" />
++              <rect x="60" y="60" width="280" height="60" rx="8" fill="#f3e8ff" />
++              <text x="80" y="85" fontSize="14" fontWeight="bold" fill="#6b21a8">
++                &quot;Write me a professional email...&quot;
 +              </text>
-+              <text x="200" y="95" textAnchor="middle" fontSize="10" fill="currentColor" fontFamily="monospace">
-+                Real-time
-+              </text>
-+
-+              {/* Actuators */}
-+              <g>
-+                <circle cx="350" cy="80" r="30" fill="none" stroke="currentColor" strokeWidth="2" />
-+                <text x="350" y="85" textAnchor="middle" fontSize="12" fill="white" fontFamily="monospace">
-+                  LED
-+                </text>
-+              </g>
-+
-+              {/* Connections */}
-+              <line x1="80" y1="80" x2="150" y2="80" stroke="currentColor" strokeWidth="2" />
-+              <line x1="250" y1="80" x2="320" y2="80" stroke="currentColor" strokeWidth="2" />
-+
-+              {/* Mobile app */}
-+              <rect x="140" y="180" width="120" height="80" fill="none" stroke="currentColor" strokeWidth="2" />
-+              <text x="200" y="210" textAnchor="middle" fontSize="12" fill="white" fontFamily="monospace">
-+                Mobile App
-+              </text>
-+              <text x="200" y="230" textAnchor="middle" fontSize="10" fill="currentColor" fontFamily="monospace">
-+                Monitoring
-+              </text>
-+              <text x="200" y="245" textAnchor="middle" fontSize="10" fill="currentColor" fontFamily="monospace">
-+                &amp; Control
-+              </text>
-+
-+              {/* Connections to app */}
-+              <path
-+                d="M 200 120 L 200 180"
-+                stroke="currentColor"
-+                strokeWidth="2"
-+                fill="none"
-+                strokeDasharray="4"
-+              />
++              <circle cx="70" cy="125" r="8" fill="#a78bfa" />
++              <line x1="85" y1="120" x2="200" y2="120" stroke="#d1d5db" strokeWidth="2" />
++              <circle cx="70" cy="155" r="8" fill="#c084fc" />
++              <line x1="85" y1="150" x2="240" y2="150" stroke="#d1d5db" strokeWidth="2" />
++              <circle cx="70" cy="185" r="8" fill="#a855f7" />
++              <line x1="85" y1="180" x2="220" y2="180" stroke="#d1d5db" strokeWidth="2" />
 +            </svg>
 +          </div>
 +        </div>
 +      </section>
 +
-+      {/* Key specifications */}
-+      <section className="py-20 px-6 border-b border-slate-700">
-+        <div className="max-w-4xl mx-auto">
-+          <h2 className="text-3xl font-bold text-white mb-12 font-mono">Specifications</h2>
-+          <div className="grid md:grid-cols-2 gap-8">
++      {/* How It Works */}
++      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white/50 backdrop-blur">
++        <div className="max-w-6xl mx-auto">
++          <h2 className="text-5xl font-black text-center text-gray-900 mb-16">
++            Three Steps to Better Results
++          </h2>
++          <div className="grid md:grid-cols-3 gap-8">
++            {[
++              { num: "1", title: "Pick a Prompt", desc: "Browse 50+ templates designed for real work" },
++              { num: "2", title: "Customize It", desc: "Tweak for your style, save for later" },
++              { num: "3", title: "Copy & Paste", desc: "Paste into Claude, ChatGPT, or your LLM" },
++            ].map((step) => (
++              <div key={step.num} className="relative">
++                <div className="flex items-center gap-4 mb-6">
++                  <div className="flex-shrink-0">
++                    <div className="flex items-center justify-center h-12 w-12 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-black text-xl">
++                      {step.num}
++                    </div>
++                  </div>
++                  <h3 className="text-2xl font-bold text-gray-900">{step.title}</h3>
++                </div>
++                <p className="text-gray-600 text-lg ml-16">{step.desc}</p>
++              </div>
++            ))}
++          </div>
++        </div>
++      </section>
++
++      {/* Social Proof */}
++      <section className="py-20 px-4 sm:px-6 lg:px-8">
++        <div className="max-w-6xl mx-auto">
++          <h2 className="text-4xl font-black text-center text-gray-900 mb-16">
++            Loved by creators everywhere
++          </h2>
++          <div className="grid md:grid-cols-3 gap-8">
 +            {[
 +              {
-+                category: "Sensors",
-+                specs: [
-+                  "pH probe (±0.1 accuracy)",
-+                  "EC/TDS conductivity sensor",
-+                  "Temperature probe",
-+                  "Light intensity sensor",
-+                  "Water level monitor",
-+                ],
++                quote: "Prompt Craft cut my email writing time in half. Game changer.",
++                author: "Sarah Chen, Marketing",
++                avatar: "SC",
 +              },
 +              {
-+                category: "Actuators",
-+                specs: [
-+                  "Full-spectrum LED (400–700nm)",
-+                  "Peristaltic pump (pH adjust)",
-+                  "Submersible pump (circulation)",
-+                  "Heater element (±1°C)",
-+                  "Smart relay board",
-+                ],
++                quote: "The code generation prompts are insanely good. Saving hours per week.",
++                author: "Marcus Dev, Engineer",
++                avatar: "MD",
 +              },
 +              {
-+                category: "Electronics",
-+                specs: [
-+                  "Arm Cortex-M4 processor",
-+                  "WiFi 802.11ac (2.4/5GHz)",
-+                  "16MB flash memory",
-+                  "Real-time operating system",
-+                  "Over-the-air updates",
-+                ],
++                quote: "Finally, prompts that actually work. Using it for client presentations.",
++                author: "Alex Rivera, Consultant",
++                avatar: "AR",
++              },
++            ].map((item, i) => (
++              <div key={i} className="bg-white p-8 rounded-2xl border-2 border-purple-100 hover:border-purple-300 transition">
++                <p className="text-gray-700 mb-6 text-lg">"{item.quote}"</p>
++                <div className="flex items-center gap-3">
++                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold">
++                    {item.avatar}
++                  </div>
++                  <div>
++                    <p className="font-bold text-gray-900">{item.author}</p>
++                  </div>
++                </div>
++              </div>
++            ))}
++          </div>
++        </div>
++      </section>
++
++      {/* Pricing */}
++      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white/50 backdrop-blur">
++        <div className="max-w-6xl mx-auto">
++          <h2 className="text-5xl font-black text-center text-gray-900 mb-4">
++            Pick Your Plan
++          </h2>
++          <p className="text-center text-gray-600 text-xl mb-16 max-w-2xl mx-auto">
++            No credit card needed. Cancel anytime. But you won't want to.
++          </p>
++          <div className="grid md:grid-cols-3 gap-8">
++            {[
++              {
++                name: "Starter",
++                price: "Free",
++                desc: "Perfect for trying it out",
++                features: ["10 prompts", "Basic email templates", "Community access"],
 +              },
 +              {
-+                category: "Power & Physical",
-+                specs: [
-+                  "110–240V input, 30W peak draw",
-+                  '24" W × 12" D × 18" H',
-+                  "8 lbs (dry weight)",
-+                  "12L nutrient reservoir",
-+                  "IP54 splash protection",
++                name: "Creator",
++                price: "$12/mo",
++                desc: "Everything you need",
++                features: [
++                  "All 50+ prompts",
++                  "Monthly updates",
++                  "Save & organize",
++                  "Analytics",
++                ],
++                highlight: true,
++              },
++              {
++                name: "Team",
++                price: "$29/mo",
++                desc: "For growing teams",
++                features: [
++                  "Everything in Creator",
++                  "Team sharing",
++                  "Admin dashboard",
++                  "Priority support",
 +                ],
 +              },
-+            ].map((section) => (
-+              <div key={section.category}>
-+                <h3 className="text-cyan-400 font-mono font-bold mb-4">{section.category.toUpperCase()}</h3>
-+                <ul className="space-y-2">
-+                  {section.specs.map((spec) => (
-+                    <li key={spec} className="text-sm font-mono text-slate-300 flex gap-2">
-+                      <span className="text-cyan-500 flex-shrink-0">→</span>
-+                      <span>{spec}</span>
++            ].map((tier) => (
++              <div
++                key={tier.name}
++                className={`relative p-8 rounded-2xl border-2 transition ${
++                  tier.highlight
++                    ? "border-purple-600 bg-gradient-to-br from-purple-50 to-pink-50 scale-105"
++                    : "border-gray-200 bg-white hover:border-purple-200"
++                }`}
++              >
++                {tier.highlight && (
++                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
++                    <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-1 rounded-full text-sm font-bold">
++                      Most Popular
++                    </span>
++                  </div>
++                )}
++                <h3 className="text-2xl font-bold text-gray-900 mb-2">
++                  {tier.name}
++                </h3>
++                <p className="text-gray-600 mb-4">{tier.desc}</p>
++                <div className="text-4xl font-black mb-6">
++                  {tier.price}
++                  {tier.price !== "Free" && (
++                    <span className="text-xl text-gray-600 font-normal">/month</span>
++                  )}
++                </div>
++                <button
++                  className={`w-full py-3 rounded-full font-bold text-lg mb-6 transition ${
++                    tier.highlight
++                      ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg"
++                      : "bg-gray-100 text-gray-900 hover:bg-gray-200"
++                  }`}
++                >
++                  {tier.price === "Free" ? "Get Started" : "Start Free Trial"}
++                </button>
++                <ul className="space-y-3">
++                  {tier.features.map((f) => (
++                    <li key={f} className="text-gray-600 flex items-center gap-2">
++                      <svg className="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
++                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
++                      </svg>
++                      {f}
 +                    </li>
 +                  ))}
 +                </ul>
@@ -801,54 +663,760 @@ index 0000000..cc1fc2f
 +        </div>
 +      </section>
 +
-+      {/* Monitoring capabilities */}
-+      <section className="py-20 px-6 border-b border-slate-700 bg-slate-800">
-+        <div className="max-w-4xl mx-auto">
-+          <h2 className="text-3xl font-bold text-white mb-12 font-mono">Real-Time Monitoring</h2>
++      {/* FAQ */}
++      <section className="py-20 px-4 sm:px-6 lg:px-8">
++        <div className="max-w-2xl mx-auto">
++          <h2 className="text-5xl font-black text-center text-gray-900 mb-16">
++            Questions? We've Got Answers
++          </h2>
 +          <div className="space-y-4">
 +            {[
-+              "pH level tracking with automatic alert thresholds",
-+              "EC (electrical conductivity) monitoring for nutrient concentration",
-+              "Water temperature optimization (±1°C precision control)",
-+              "Light intensity and photoperiod scheduling",
-+              "Pump cycle analytics and failure detection",
-+              "Historical data logging (cloud-stored, 2-year retention)",
-+            ].map((feature) => (
-+              <div key={feature} className="flex gap-4 p-4 border-l-2 border-cyan-500">
-+                <span className="text-cyan-400 font-bold flex-shrink-0">◆</span>
-+                <span className="text-slate-300 font-mono text-sm">{feature}</span>
++              {
++                q: "Will this work with my favorite LLM?",
++                a: "Yep! Our prompts work with ChatGPT, Claude, Gemini, and basically any modern AI model.",
++              },
++              {
++                q: "Can I use these for client work?",
++                a: "Absolutely. Creator and Team plans include commercial usage rights.",
++              },
++              {
++                q: "What if a prompt doesn't work for me?",
++                a: "We offer a 30-day money-back guarantee. No questions asked. But they will work.",
++              },
++            ].map((item, i) => (
++              <details
++                key={i}
++                className="group bg-white p-6 rounded-xl border-2 border-purple-100 hover:border-purple-300 transition cursor-pointer"
++              >
++                <summary className="text-lg font-bold text-gray-900 flex items-center justify-between">
++                  {item.q}
++                  <span className="text-purple-600 group-open:rotate-180 transition text-2xl">
++                    +
++                  </span>
++                </summary>
++                <p className="text-gray-600 mt-4 text-lg">{item.a}</p>
++              </details>
++            ))}
++          </div>
++        </div>
++      </section>
++
++      {/* Final CTA */}
++      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600">
++        <div className="max-w-4xl mx-auto text-center text-white">
++          <h2 className="text-5xl md:text-6xl font-black mb-6">
++            Your favorite prompts are waiting
++          </h2>
++          <p className="text-2xl text-white/90 mb-10">
++            Join thousands of creators shipping better work. Faster.
++          </p>
++          <button className="px-8 py-4 bg-white text-purple-600 font-black rounded-full text-lg hover:scale-105 hover:shadow-2xl transition">
++            Start Free Trial →
++          </button>
++          <p className="text-white/70 text-sm mt-4">No credit card. No commitment.</p>
++        </div>
++      </section>
++    </main>
++  );
++}
+diff --git a/app/themes/3/page.tsx b/app/themes/3/page.tsx
+new file mode 100644
+index 0000000..07c8c7b
+--- /dev/null
++++ b/app/themes/3/page.tsx
+@@ -0,0 +1,190 @@
++export default function Theme3() {
++  return (
++    <main className="bg-white text-black min-h-screen">
++      {/* Header */}
++      <header className="border-b border-black">
++        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex justify-between items-baseline text-sm">
++          <div className="text-xs font-mono font-bold tracking-widest">PROMPT.CRAFT</div>
++          <button className="text-xs font-mono border border-black px-4 py-2 hover:bg-black hover:text-white transition">
++            LOGIN
++          </button>
++        </div>
++      </header>
++
++      {/* Hero */}
++      <section className="border-b border-black">
++        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
++          <h1 className="text-6xl md:text-7xl font-bold leading-tight mb-8 font-serif">
++            Prompts that work.
++          </h1>
++          <p className="text-sm text-gray-700 max-w-md mb-12 leading-relaxed font-mono">
++            Stop optimizing. We tested fifty prompts across ChatGPT, Claude, and Gemini. Pick one. It works.
++          </p>
++          <button className="text-xs font-mono font-bold border-2 border-black px-6 py-3 hover:bg-black hover:text-white transition">
++            START FREE
++          </button>
++        </div>
++      </section>
++
++      {/* Features Grid */}
++      <section className="border-b border-black">
++        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
++          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
++            <div className="border-b md:border-b-0 md:border-r border-black pb-8 md:pb-0 md:pr-8">
++              <h3 className="text-xs font-mono font-bold uppercase mb-4">Field Tested</h3>
++              <p className="text-sm leading-relaxed">
++                50 prompts. Tested on production data. Refined by teams shipping real work.
++              </p>
++            </div>
++            <div className="border-b md:border-b-0 md:border-r border-black pb-8 md:pb-0 md:pr-8">
++              <h3 className="text-xs font-mono font-bold uppercase mb-4">Updated Monthly</h3>
++              <p className="text-sm leading-relaxed">
++                New LLM versions break old prompts. We test. We update. You stay current.
++              </p>
++            </div>
++            <div>
++              <h3 className="text-xs font-mono font-bold uppercase mb-4">No Fluff</h3>
++              <p className="text-sm leading-relaxed">
++                Copy. Paste. Done. No accounts to manage, no integrations to configure.
++              </p>
++            </div>
++          </div>
++        </div>
++      </section>
++
++      {/* Categories */}
++      <section className="border-b border-black">
++        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
++          <h2 className="text-sm font-mono font-bold uppercase mb-12">Available Categories</h2>
++          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
++            {[
++              "Writing",
++              "Coding",
++              "Analysis",
++              "Teaching",
++              "Marketing",
++              "Research",
++              "Brainstorm",
++              "Design",
++            ].map((cat) => (
++              <div key={cat} className="border border-black p-6 hover:bg-black hover:text-white transition cursor-pointer">
++                <p className="text-sm font-mono">{cat}</p>
 +              </div>
 +            ))}
 +          </div>
 +        </div>
 +      </section>
 +
-+      {/* Comparison table */}
-+      <section className="py-20 px-6 border-b border-slate-700">
++      {/* Stats */}
++      <section className="border-b border-black">
++        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
++          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
++            {[
++              { number: "50+", label: "Tested Prompts" },
++              { number: "10k+", label: "Users Active" },
++              { number: "99.9%", label: "Uptime" },
++              { number: "1m", label: "Avg. Setup" },
++            ].map((stat) => (
++              <div key={stat.label} className="border-r border-black pr-8 last:border-r-0">
++                <p className="text-4xl font-bold mb-2">{stat.number}</p>
++                <p className="text-xs font-mono text-gray-600 uppercase">{stat.label}</p>
++              </div>
++            ))}
++          </div>
++        </div>
++      </section>
++
++      {/* Pricing */}
++      <section className="border-b border-black">
++        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
++          <h2 className="text-sm font-mono font-bold uppercase mb-12">Pricing</h2>
++          <div className="grid md:grid-cols-3 gap-8">
++            {[
++              {
++                name: "Free",
++                price: "0",
++                items: ["10 prompts", "Email support"],
++              },
++              {
++                name: "Pro",
++                price: "12",
++                period: "/month",
++                items: ["50 prompts", "Monthly updates", "Analytics", "Priority support"],
++              },
++              {
++                name: "Enterprise",
++                price: "Custom",
++                items: ["Everything", "Custom prompts", "API access", "SLA support"],
++              },
++            ].map((tier) => (
++              <div key={tier.name} className="border border-black p-8">
++                <h3 className="text-sm font-mono font-bold uppercase mb-4">
++                  {tier.name}
++                </h3>
++                <p className="text-3xl font-bold mb-1">
++                  ${tier.price}
++                  {tier.period && <span className="text-sm text-gray-600">{tier.period}</span>}
++                </p>
++                <ul className="space-y-3 mt-8">
++                  {tier.items.map((item) => (
++                    <li key={item} className="text-xs text-gray-700 flex items-center gap-2">
++                      <span className="font-bold">▪</span> {item}
++                    </li>
++                  ))}
++                </ul>
++                <button className="w-full mt-8 py-2 text-xs font-mono font-bold border border-black hover:bg-black hover:text-white transition">
++                  {tier.name === "Free" ? "START" : "TRY FREE"}
++                </button>
++              </div>
++            ))}
++          </div>
++        </div>
++      </section>
++
++      {/* FAQ */}
++      <section className="border-b border-black">
++        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
++          <h2 className="text-sm font-mono font-bold uppercase mb-12">FAQ</h2>
++          <div className="space-y-8">
++            {[
++              {
++                q: "How long does setup take?",
++                a: "1 minute. Signup, pick a prompt, copy/paste.",
++              },
++              {
++                q: "Do these prompts work with all LLMs?",
++                a: "We test on ChatGPT, Claude, and Gemini. Smaller models may need tweaks.",
++              },
++              {
++                q: "What's the refund policy?",
++                a: "30 days, money back, no questions.",
++              },
++              {
++                q: "Can I use these commercially?",
++                a: "Yes. All plans include commercial usage rights.",
++              },
++            ].map((item, i) => (
++              <div key={i} className="border-b border-gray-300 pb-8 last:border-b-0">
++                <h3 className="text-sm font-mono font-bold mb-3">{item.q}</h3>
++                <p className="text-sm text-gray-700">{item.a}</p>
++              </div>
++            ))}
++          </div>
++        </div>
++      </section>
++
++      {/* Footer CTA */}
++      <section className="bg-black text-white">
++        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
++          <h2 className="text-5xl font-bold mb-6 font-serif">Ready.</h2>
++          <p className="text-sm text-gray-300 mb-8 max-w-md">
++            Pick a prompt. Use it. Ship better work.
++          </p>
++          <button className="border-2 border-white text-white text-xs font-mono font-bold px-6 py-3 hover:bg-white hover:text-black transition">
++            START TODAY
++          </button>
++        </div>
++      </section>
++    </main>
++  );
++}
+diff --git a/app/themes/4/page.tsx b/app/themes/4/page.tsx
+new file mode 100644
+index 0000000..a6551c6
+--- /dev/null
++++ b/app/themes/4/page.tsx
+@@ -0,0 +1,289 @@
++export default function Theme4() {
++  return (
++    <main className="min-h-screen bg-amber-50">
++      {/* Header */}
++      <header className="bg-white border-b border-amber-100 sticky top-0 z-50">
++        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex justify-between items-center">
++          <div className="flex items-center gap-3">
++            <div className="w-8 h-8 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full"></div>
++            <span className="text-xl font-semibold text-gray-900">Prompt Craft</span>
++          </div>
++          <button className="px-6 py-2 bg-amber-500 text-white rounded-full text-sm font-semibold hover:bg-amber-600 transition">
++            Join Us
++          </button>
++        </div>
++      </header>
++
++      {/* Hero */}
++      <section className="pt-20 pb-16 px-4 sm:px-6 lg:px-8">
++        <div className="max-w-4xl mx-auto text-center">
++          <div className="inline-block mb-6 px-4 py-2 bg-amber-100 rounded-full">
++            <span className="text-amber-800 text-sm font-medium">💝 Join our community of 10,000+ creators</span>
++          </div>
++          <h1 className="text-6xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
++            Prompts built with care, for people who care
++          </h1>
++          <p className="text-xl text-gray-700 mb-8 leading-relaxed max-w-2xl mx-auto">
++            We're a small team obsessed with helping you ship better work. Every prompt is tested, refined, and loved by our community.
++          </p>
++          <div className="flex gap-4 justify-center flex-wrap">
++            <button className="px-8 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-full hover:shadow-lg hover:scale-105 transition">
++              Start Your Journey
++            </button>
++            <button className="px-8 py-3 bg-white border-2 border-amber-300 text-gray-900 font-semibold rounded-full hover:bg-amber-50 transition">
++              See What Others Are Doing
++            </button>
++          </div>
++          <p className="text-gray-600 text-sm mt-6">14 days free. Then $12/month. You can cancel anytime.</p>
++        </div>
++      </section>
++
++      {/* Trust Section */}
++      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white rounded-3xl mx-4 sm:mx-6 lg:mx-8 mb-16">
++        <div className="max-w-6xl mx-auto">
++          <p className="text-center text-gray-600 text-sm font-medium mb-8">TRUSTED BY CREATORS AT</p>
++          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-center">
++            {["Design Co", "Tech Studio", "Content Creators", "Agency Labs"].map((name) => (
++              <div key={name} className="text-center text-gray-400 font-medium text-sm">
++                {name}
++              </div>
++            ))}
++          </div>
++        </div>
++      </section>
++
++      {/* How It Works */}
++      <section className="py-20 px-4 sm:px-6 lg:px-8">
 +        <div className="max-w-4xl mx-auto">
-+          <h2 className="text-3xl font-bold text-white mb-12 font-mono">How We Compare</h2>
-+          <div className="overflow-x-auto">
-+            <table className="w-full text-sm font-mono">
-+              <thead>
-+                <tr className="border-b border-slate-600">
-+                  <th className="text-left py-3 px-4 text-cyan-400">Feature</th>
-+                  <th className="text-center py-3 px-4 text-cyan-400">GrowKit</th>
-+                  <th className="text-center py-3 px-4 text-slate-500">Competitors</th>
++          <h2 className="text-4xl font-bold text-center text-gray-900 mb-16">
++            How We Help You Succeed
++          </h2>
++          <div className="space-y-12">
++            {[
++              {
++                num: "01",
++                title: "Browse Our Library",
++                desc: "50+ prompts across writing, coding, analysis, marketing, and more. Each one tested and refined.",
++              },
++              {
++                num: "02",
++                title: "Customize for You",
++                desc: "Make it your own. Save your favorites, organize by project, and build your personal prompt library.",
++              },
++              {
++                num: "03",
++                title: "Share & Learn",
++                desc: "Connect with our community. See how others use prompts, share tips, and grow together.",
++              },
++            ].map((step) => (
++              <div key={step.num} className="flex gap-8">
++                <div className="flex-shrink-0">
++                  <div className="flex items-center justify-center h-16 w-16 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 text-white font-bold text-xl">
++                    {step.num}
++                  </div>
++                </div>
++                <div>
++                  <h3 className="text-2xl font-bold text-gray-900 mb-3">{step.title}</h3>
++                  <p className="text-gray-700 text-lg">{step.desc}</p>
++                </div>
++              </div>
++            ))}
++          </div>
++        </div>
++      </section>
++
++      {/* Community Stories */}
++      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white rounded-3xl mx-4 sm:mx-6 lg:mx-8">
++        <div className="max-w-6xl mx-auto">
++          <h2 className="text-4xl font-bold text-center text-gray-900 mb-4">
++            Real People, Real Results
++          </h2>
++          <p className="text-center text-gray-600 mb-16">
++            From marketers to engineers, creators are using Prompt Craft to ship better work.
++          </p>
++          <div className="grid md:grid-cols-3 gap-8">
++            {[
++              {
++                name: "Elena Martinez",
++                role: "Content Creator",
++                quote:
++                  "I used to spend 2 hours writing emails. Now it takes 20 minutes. Prompt Craft is my secret weapon.",
++                result: "3x faster",
++              },
++              {
++                name: "Raj Patel",
++                role: "Software Engineer",
++                quote:
++                  "The code generation prompts helped me pair program better with Claude. Game changer for my workflow.",
++                result: "5+ hours/week saved",
++              },
++              {
++                name: "Sophie Chen",
++                role: "Marketing Manager",
++                quote:
++                  "Our whole team uses it. It keeps everyone on brand and produces consistent, high-quality copy.",
++                result: "100% team adoption",
++              },
++            ].map((person) => (
++              <div key={person.name} className="bg-amber-50 p-8 rounded-2xl border-2 border-amber-200">
++                <div className="flex items-start justify-between mb-4">
++                  <div>
++                    <h4 className="text-lg font-bold text-gray-900">{person.name}</h4>
++                    <p className="text-sm text-gray-600">{person.role}</p>
++                  </div>
++                  <div className="text-amber-500 text-2xl">⭐⭐⭐⭐⭐</div>
++                </div>
++                <p className="text-gray-700 mb-4 italic">"{person.quote}"</p>
++                <p className="text-sm font-bold text-amber-600">{person.result}</p>
++              </div>
++            ))}
++          </div>
++        </div>
++      </section>
++
++      {/* Pricing */}
++      <section className="py-20 px-4 sm:px-6 lg:px-8">
++        <div className="max-w-4xl mx-auto">
++          <h2 className="text-4xl font-bold text-center text-gray-900 mb-4">
++            Simple, Honest Pricing
++          </h2>
++          <p className="text-center text-gray-600 mb-16 text-lg">
++            Choose what works for you. Upgrade or downgrade anytime.
++          </p>
++          <div className="grid md:grid-cols-3 gap-8">
++            {[
++              {
++                name: "Explore",
++                price: "Free",
++                desc: "Try before you commit",
++                features: ["10 prompts", "Basic support", "Community access"],
++              },
++              {
++                name: "Create",
++                price: "$12",
++                period: "/month",
++                desc: "Everything you need",
++                features: [
++                  "All 50+ prompts",
++                  "Monthly updates",
++                  "Organize & save",
++                  "Priority support",
++                  "Commercial use",
++                ],
++                highlight: true,
++              },
++              {
++                name: "Team",
++                price: "$29",
++                period: "/month",
++                desc: "For growing teams",
++                features: [
++                  "Everything in Create",
++                  "Team sharing",
++                  "Admin dashboard",
++                  "Analytics",
++                  "Dedicated support",
++                ],
++              },
++            ].map((tier) => (
++              <div
++                key={tier.name}
++                className={`p-8 rounded-2xl transition ${
++                  tier.highlight
++                    ? "bg-gradient-to-br from-amber-400 to-orange-500 text-white scale-105 shadow-xl"
++                    : "bg-white border-2 border-amber-200 hover:border-amber-400"
++                }`}
++              >
++                <h3 className={`text-2xl font-bold mb-2 ${tier.highlight ? "text-white" : "text-gray-900"}`}>
++                  {tier.name}
++                </h3>
++                <p className={tier.highlight ? "text-white/90" : "text-gray-600"}>
++                  {tier.desc}
++                </p>
++                <div className={`text-4xl font-bold my-6 ${tier.highlight ? "text-white" : "text-gray-900"}`}>
++                  {tier.price}
++                  {tier.period && (
++                    <span className={`text-sm ${tier.highlight ? "text-white/80" : "text-gray-600"}`}>
++                      {tier.period}
++                    </span>
++                  )}
++                </div>
++                <button
++                  className={`w-full py-3 rounded-full font-semibold mb-6 transition ${
++                    tier.highlight
++                      ? "bg-white text-orange-600 hover:bg-gray-50"
++                      : "bg-amber-100 text-gray-900 hover:bg-amber-200"
++                  }`}
++                >
++                  {tier.price === "Free" ? "Get Started Free" : "Start Free Trial"}
++                </button>
++                <ul className={`space-y-3 ${tier.highlight ? "text-white" : ""}`}>
++                  {tier.features.map((f) => (
++                    <li key={f} className="flex items-center gap-2">
++                      <span className="text-lg">✓</span>
++                      <span className={tier.highlight ? "text-white/90" : "text-gray-700"}>
++                        {f}
++                      </span>
++                    </li>
++                  ))}
++                </ul>
++              </div>
++            ))}
++          </div>
++        </div>
++      </section>
++
++      {/* FAQ */}
++      <section className="py-20 px-4 sm:px-6 lg:px-8">
++        <div className="max-w-2xl mx-auto">
++          <h2 className="text-4xl font-bold text-center text-gray-900 mb-16">
++            We're Here to Help
++          </h2>
++          <div className="space-y-4">
++            {[
++              {
++                q: "How do I get started?",
++                a: "Sign up, pick a prompt from our library, and start using it immediately. No setup required.",
++              },
++              {
++                q: "Do you offer support?",
++                a: "Yes! All paid plans include priority email support. We're usually there within a few hours.",
++              },
++              {
++                q: "Can I cancel anytime?",
++                a: "Of course. No contracts, no questions asked. We're here because we want to be.",
++              },
++            ].map((item, i) => (
++              <details
++                key={i}
++                className="group bg-white p-6 rounded-xl border-2 border-amber-200 hover:border-amber-400 transition cursor-pointer"
++              >
++                <summary className="text-lg font-bold text-gray-900 flex items-center justify-between">
++                  {item.q}
++                  <span className="text-amber-500 group-open:rotate-180 transition text-2xl">
++                    +
++                  </span>
++                </summary>
++                <p className="text-gray-700 mt-4">{item.a}</p>
++              </details>
++            ))}
++          </div>
++        </div>
++      </section>
++
++      {/* Final CTA */}
++      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-amber-400 to-orange-500 rounded-3xl mx-4 sm:mx-6 lg:mx-8 mb-16">
++        <div className="max-w-4xl mx-auto text-center text-white">
++          <h2 className="text-5xl font-bold mb-4">Ready to ship better work?</h2>
++          <p className="text-xl text-white/90 mb-8">
++            Join thousands of creators already using Prompt Craft.
++          </p>
++          <button className="px-8 py-4 bg-white text-orange-600 font-bold rounded-full text-lg hover:scale-105 hover:shadow-xl transition">
++            Start Your Free Trial
++          </button>
++          <p className="text-white/80 text-sm mt-4">14 days free. No credit card needed.</p>
++        </div>
++      </section>
++    </main>
++  );
++}
+diff --git a/app/themes/5/page.tsx b/app/themes/5/page.tsx
+new file mode 100644
+index 0000000..c80755e
+--- /dev/null
++++ b/app/themes/5/page.tsx
+@@ -0,0 +1,339 @@
++export default function Theme5() {
++  return (
++    <main className="min-h-screen bg-slate-950 text-white">
++      {/* Header */}
++      <header className="border-b border-slate-800 sticky top-0 z-50 bg-slate-950/80 backdrop-blur">
++        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex justify-between items-center">
++          <div className="flex items-center gap-2">
++            <svg className="w-6 h-6 text-cyan-400" fill="currentColor" viewBox="0 0 24 24">
++              <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" />
++            </svg>
++            <span className="text-xl font-bold tracking-tight">Prompt Craft</span>
++          </div>
++          <button className="px-6 py-2 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold rounded text-sm transition">
++            Dashboard
++          </button>
++        </div>
++      </header>
++
++      {/* Hero */}
++      <section className="py-32 px-4 sm:px-6 lg:px-8 border-b border-slate-800">
++        <div className="max-w-7xl mx-auto">
++          <div className="grid lg:grid-cols-2 gap-16 items-center">
++            <div>
++              <div className="mb-8 inline-block px-4 py-2 bg-slate-800 rounded-lg border border-slate-700">
++                <span className="text-xs font-mono text-cyan-400">DATA-DRIVEN PROMPTS</span>
++              </div>
++              <h1 className="text-6xl md:text-7xl font-bold mb-6 leading-tight font-mono">
++                Measurable Results
++              </h1>
++              <p className="text-xl text-slate-400 mb-8 leading-relaxed">
++                50 field-tested prompts optimized for quality, speed, and consistency. Track performance across models, measure improvements, scale with confidence.
++              </p>
++              <div className="flex gap-4 flex-wrap">
++                <button className="px-8 py-3 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold rounded-lg transition">
++                  View Demo
++                </button>
++                <button className="px-8 py-3 border border-slate-600 text-slate-300 hover:text-white hover:border-slate-400 font-semibold rounded-lg transition">
++                  Check Benchmarks
++                </button>
++              </div>
++            </div>
++
++            {/* Chart Visualization */}
++            <div className="bg-slate-900 rounded-lg border border-slate-700 p-8">
++              <div className="text-xs font-mono text-slate-400 mb-6">Performance Distribution</div>
++              <svg
++                className="w-full h-48"
++                viewBox="0 0 400 200"
++                fill="none"
++                xmlns="http://www.w3.org/2000/svg"
++              >
++                {/* Grid */}
++                {[0, 50, 100, 150, 200].map((y) => (
++                  <line
++                    key={`grid-${y}`}
++                    x1="40"
++                    y1={y}
++                    x2="390"
++                    y2={y}
++                    stroke="#334155"
++                    strokeWidth="1"
++                  />
++                ))}
++
++                {/* Bars */}
++                {[
++                  { height: 150, color: "#06b6d4" },
++                  { height: 170, color: "#06b6d4" },
++                  { height: 130, color: "#06b6d4" },
++                  { height: 180, color: "#06b6d4" },
++                ].map((bar, i) => (
++                  <rect
++                    key={i}
++                    x={60 + i * 80}
++                    y={200 - bar.height}
++                    width="50"
++                    height={bar.height}
++                    fill={bar.color}
++                    opacity="0.8"
++                  />
++                ))}
++
++                {/* Axes */}
++                <line
++                  x1="40"
++                  y1="200"
++                  x2="390"
++                  y2="200"
++                  stroke="#64748b"
++                  strokeWidth="2"
++                />
++                <line
++                  x1="40"
++                  y1="0"
++                  x2="40"
++                  y2="200"
++                  stroke="#64748b"
++                  strokeWidth="2"
++                />
++              </svg>
++            </div>
++          </div>
++        </div>
++      </section>
++
++      {/* Key Metrics */}
++      <section className="py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-800">
++        <div className="max-w-7xl mx-auto">
++          <div className="grid md:grid-cols-4 gap-8">
++            {[
++              { label: "Avg. Quality Score", value: "94%", change: "+7%" },
++              { label: "Time Reduction", value: "68%", change: "vs. manual" },
++              { label: "Prompt Accuracy", value: "99.2%", change: "across LLMs" },
++              { label: "Active Users", value: "12,400", change: "+3.2k MTM" },
++            ].map((metric) => (
++              <div key={metric.label} className="bg-slate-900 border border-slate-700 p-6 rounded-lg">
++                <p className="text-xs font-mono text-slate-400 uppercase mb-2">
++                  {metric.label}
++                </p>
++                <p className="text-4xl font-bold font-mono mb-2">{metric.value}</p>
++                <p className="text-sm text-cyan-400">{metric.change}</p>
++              </div>
++            ))}
++          </div>
++        </div>
++      </section>
++
++      {/* Features */}
++      <section className="py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-800">
++        <div className="max-w-7xl mx-auto">
++          <h2 className="text-3xl font-bold font-mono mb-16">Core Capabilities</h2>
++          <div className="grid md:grid-cols-3 gap-8">
++            {[
++              {
++                title: "Benchmark Suite",
++                desc: "Compare prompt performance across GPT-4, Claude 3, Gemini 2.0. Real metrics, no guesswork.",
++              },
++              {
++                title: "Performance Analytics",
++                desc: "Track quality, latency, and cost per prompt. Dashboard shows trends and anomalies.",
++              },
++              {
++                title: "A/B Testing",
++                desc: "Version control for prompts. Test variations and deploy the winner automatically.",
++              },
++              {
++                title: "Team Collaboration",
++                desc: "Shared library, audit logs, permissions. Enterprise-grade access control.",
++              },
++              {
++                title: "API Access",
++                desc: "Integrate prompts directly into your workflow. SDKs for Python, Node, Go.",
++              },
++              {
++                title: "Custom Metrics",
++                desc: "Define KPIs that matter to you. Real-time monitoring and alerting.",
++              },
++            ].map((feature) => (
++              <div key={feature.title} className="bg-slate-900 border border-slate-700 p-6 rounded-lg">
++                <h3 className="text-lg font-bold font-mono mb-3">{feature.title}</h3>
++                <p className="text-slate-400 text-sm">{feature.desc}</p>
++              </div>
++            ))}
++          </div>
++        </div>
++      </section>
++
++      {/* Competitive Analysis */}
++      <section className="py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-800">
++        <div className="max-w-7xl mx-auto">
++          <h2 className="text-3xl font-bold font-mono mb-8">Why Prompt Craft Wins</h2>
++          <div className="bg-slate-900 border border-slate-700 rounded-lg overflow-hidden">
++            <table className="w-full text-sm">
++              <thead className="bg-slate-800 border-b border-slate-700">
++                <tr>
++                  <th className="px-6 py-4 text-left font-mono text-slate-300 font-semibold">
++                    Feature
++                  </th>
++                  <th className="px-6 py-4 text-center font-mono text-cyan-400">Prompt Craft</th>
++                  <th className="px-6 py-4 text-center font-mono text-slate-400">Competitors</th>
 +                </tr>
 +              </thead>
 +              <tbody>
 +                {[
-+                  { feature: "Real-time pH control", growkit: "✓", competitors: "✗" },
-+                  { feature: "Smartphone app", growkit: "✓", competitors: "Partial" },
-+                  { feature: "Automated nutrients", growkit: "✓", competitors: "✗" },
-+                  { feature: "Cloud data storage", growkit: "✓", competitors: "✗" },
-+                  { feature: "Predictive alerts", growkit: "✓", competitors: "✗" },
-+                  { feature: "Plant library", growkit: "20+ species", competitors: "5–8" },
++                  { feature: "Benchmark Across Models", prompt: "✓", comp: "—" },
++                  { feature: "Performance Analytics", prompt: "✓", comp: "Limited" },
++                  { feature: "A/B Testing", prompt: "✓", comp: "—" },
++                  { feature: "API Access", prompt: "✓", comp: "Enterprise only" },
++                  { feature: "Monthly Updates", prompt: "✓", comp: "✓" },
++                  { feature: "Price", prompt: "$12/mo", comp: "$29/mo+" },
 +                ].map((row) => (
-+                  <tr key={row.feature} className="border-b border-slate-700 hover:bg-slate-800">
-+                    <td className="py-3 px-4 text-slate-300">{row.feature}</td>
-+                    <td className="text-center py-3 px-4 text-green-400">{row.growkit}</td>
-+                    <td className="text-center py-3 px-4 text-slate-500">{row.competitors}</td>
++                  <tr key={row.feature} className="border-b border-slate-700 hover:bg-slate-800/50">
++                    <td className="px-6 py-4 font-mono text-slate-300">
++                      {row.feature}
++                    </td>
++                    <td className="px-6 py-4 text-center text-cyan-400 font-semibold">
++                      {row.prompt}
++                    </td>
++                    <td className="px-6 py-4 text-center text-slate-400">
++                      {row.comp}
++                    </td>
 +                  </tr>
 +                ))}
 +              </tbody>
@@ -857,592 +1425,133 @@ index 0000000..cc1fc2f
 +        </div>
 +      </section>
 +
-+      {/* FAQ */}
-+      <section className="py-20 px-6 border-b border-slate-700">
-+        <div className="max-w-3xl mx-auto">
-+          <h2 className="text-3xl font-bold text-white mb-12 font-mono">FAQ</h2>
-+          <div className="space-y-8">
-+            {[
-+              {
-+                q: "What happens if sensors fail?",
-+                a: "Each sensor has redundancy. Backup thresholds activate automatically. You'll get an app notification.",
-+              },
-+              {
-+                q: "How accurate is the pH control?",
-+                a: "±0.1 pH units. Automatic dosing adjusts nutrient solution in real time. Industry-grade precision.",
-+              },
-+              {
-+                q: "Can I export my data?",
-+                a: "Yes. Full CSV export available. Historical data kept for 2 years. API access for advanced users.",
-+              },
-+              {
-+                q: "What's the power consumption?",
-+                a: "Peak 30W (rare). Average ~8W. Costs ~$3/month in electricity. Efficient DC motor and LED design.",
-+              },
-+            ].map((item, idx) => (
-+              <div key={idx}>
-+                <h3 className="text-cyan-400 font-mono font-bold mb-3">{item.q}</h3>
-+                <p className="text-slate-300 font-mono text-sm">{item.a}</p>
-+              </div>
-+            ))}
-+          </div>
-+        </div>
-+      </section>
-+
-+      {/* CTA */}
-+      <section className="py-20 px-6 bg-gradient-to-r from-cyan-900 to-slate-900">
-+        <div className="max-w-2xl mx-auto text-center">
-+          <h2 className="text-4xl font-bold text-white mb-6 font-mono">Deploy Your System</h2>
-+          <p className="text-lg text-slate-300 mb-8 font-mono">
-+            Precision growing. Real-time data. Maximum yields. Start today.
-+          </p>
-+          <button className="bg-cyan-500 text-slate-900 px-8 py-4 text-lg font-bold hover:bg-cyan-400 transition font-mono">
-+            ORDER NOW – $299
-+          </button>
-+          <p className="text-sm text-slate-400 mt-6 font-mono">30-day guarantee • 2-year warranty • Fastest shipping</p>
-+        </div>
-+      </section>
-+
-+      {/* Footer link */}
-+      <footer className="py-8 px-6 border-t border-slate-700 bg-slate-950">
-+        <div className="max-w-4xl mx-auto text-center text-sm text-slate-500 font-mono">
-+          <a href="/" className="hover:text-cyan-400">← Back to all themes</a>
-+        </div>
-+      </footer>
-+    </main>
-+  );
-+}
-diff --git a/app/themes/4/page.tsx b/app/themes/4/page.tsx
-new file mode 100644
-index 0000000..3e73430
---- /dev/null
-+++ b/app/themes/4/page.tsx
-@@ -0,0 +1,252 @@
-+export const metadata = {
-+  title: "GrowKit – Cozy Lifestyle",
-+  description: "Create a living home garden. Simple. Beautiful. Yours.",
-+};
-+
-+export default function Theme4() {
-+  return (
-+    <main className="min-h-screen bg-amber-50 text-stone-900">
-+      {/* Hero with warm welcome */}
-+      <section className="relative pt-24 pb-20 px-6 overflow-hidden">
-+        {/* Background warmth */}
-+        <div className="absolute inset-0 bg-gradient-to-b from-amber-100 to-transparent opacity-40 pointer-events-none" />
-+
-+        <div className="max-w-3xl mx-auto relative z-10">
-+          <div className="text-center mb-16">
-+            <p className="text-lg text-stone-600 font-serif italic mb-4">Find calm in growing</p>
-+            <h1 className="text-5xl md:text-6xl font-serif font-light leading-tight mb-8 text-stone-900">
-+              A home garden that grows with you
-+            </h1>
-+            <p className="text-xl text-stone-700 font-serif leading-relaxed max-w-2xl mx-auto">
-+              Imagine walking into your kitchen and picking fresh herbs. Basil for dinner tonight.
-+              Tomatoes for salad. It's not just about the vegetables—it's about creating a living
-+              space that's uniquely yours.
-+            </p>
-+          </div>
-+
-+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-+            <button className="bg-amber-700 text-white px-8 py-3 text-lg font-serif hover:bg-amber-800 transition">
-+              Start Your Garden – $299
-+            </button>
-+            <button className="border-2 border-amber-700 text-amber-700 px-8 py-3 text-lg font-serif hover:bg-amber-50 transition">
-+              See Stories
-+            </button>
-+          </div>
-+        </div>
-+
-+        {/* Illustration of home scene */}
-+        <div className="mt-16 max-w-2xl mx-auto relative z-10">
-+          <svg viewBox="0 0 300 250" className="w-full h-auto">
-+            {/* Window frame */}
-+            <rect x="20" y="30" width="260" height="180" fill="none" stroke="currentColor" strokeWidth="2" className="text-stone-400" />
-+            <line x1="150" y1="30" x2="150" y2="210" stroke="currentColor" strokeWidth="1" className="text-stone-300" />
-+            <line x1="20" y1="120" x2="280" y2="120" stroke="currentColor" strokeWidth="1" className="text-stone-300" />
-+
-+            {/* Plant on windowsill - left */}
-+            <circle cx="80" cy="200" r="12" fill="currentColor" className="text-amber-900" />
-+            <line x1="80" y1="188" x2="70" y2="150" stroke="currentColor" strokeWidth="2" className="text-emerald-600" />
-+            <path d="M70 150 Q60 140 65 120" stroke="currentColor" strokeWidth="1.5" fill="none" className="text-emerald-600" />
-+
-+            {/* Center plant - the GrowKit */}
-+            <rect x="130" y="160" width="40" height="40" rx="4" fill="currentColor" className="text-stone-300" />
-+            <ellipse cx="150" cy="160" rx="20" ry="8" fill="currentColor" className="text-stone-400" />
-+            <line x1="150" y1="160" x2="150" y2="100" stroke="currentColor" strokeWidth="2" className="text-emerald-600" />
-+            <circle cx="150" cy="100" r="6" fill="currentColor" className="text-emerald-600" />
-+
-+            {/* Light above - warm glow */}
-+            <circle cx="150" cy="50" r="15" fill="none" stroke="currentColor" strokeWidth="2" className="text-amber-400" />
-+            <line x1="150" y1="35" x2="150" y2="20" stroke="currentColor" strokeWidth="2" className="text-amber-400" />
-+
-+            {/* Plant on right */}
-+            <circle cx="220" cy="200" r="12" fill="currentColor" className="text-amber-900" />
-+            <line x1="220" y1="188" x2="230" y2="150" stroke="currentColor" strokeWidth="2" className="text-emerald-600" />
-+
-+            {/* Light rays coming through window */}
-+            <line x1="80" y1="35" x2="70" y2="80" stroke="currentColor" strokeWidth="1" opacity="0.3" className="text-amber-300" />
-+            <line x1="220" y1="35" x2="230" y2="80" stroke="currentColor" strokeWidth="1" opacity="0.3" className="text-amber-300" />
-+          </svg>
-+        </div>
-+      </section>
-+
-+      {/* Lifestyle benefits */}
-+      <section className="py-24 px-6 bg-white">
-+        <div className="max-w-4xl mx-auto">
-+          <div className="grid md:grid-cols-2 gap-12">
-+            <div>
-+              <h2 className="text-3xl font-serif text-stone-900 mb-8">Why people love GrowKit</h2>
-+              <div className="space-y-6">
-+                {[
-+                  {
-+                    title: "It brings life to your space",
-+                    desc: "More than a kitchen gadget—it's living decor. A conversation starter. A daily reminder that you're growing something.",
-+                  },
-+                  {
-+                    title: "You never run out of fresh herbs",
-+                    desc: "Pick basil for dinner tonight. Mint for tomorrow's tea. No more sad grocery store herbs.",
-+                  },
-+                  {
-+                    title: "It's genuinely meditative",
-+                    desc: "Watching something you planted grow to harvest is calming. Tending your garden is a moment of peace.",
-+                  },
-+                ].map((benefit) => (
-+                  <div key={benefit.title}>
-+                    <h3 className="text-xl font-serif text-amber-800 mb-2">{benefit.title}</h3>
-+                    <p className="text-stone-700 leading-relaxed">{benefit.desc}</p>
-+                  </div>
-+                ))}
-+              </div>
-+            </div>
-+
-+            <div className="bg-amber-100 rounded-lg p-8">
-+              <p className="text-lg text-stone-900 font-serif italic mb-8">
-+                "I thought it would just be functional. Instead, it's become the heart of my kitchen. Every morning I check on my plants, harvest something fresh, and start the day feeling connected to something real."
-+              </p>
-+              <p className="text-amber-800 font-serif font-semibold">— Elena, Brooklyn</p>
-+            </div>
-+          </div>
-+        </div>
-+      </section>
-+
-+      {/* What comes in the box */}
-+      <section className="py-24 px-6">
-+        <div className="max-w-4xl mx-auto">
-+          <h2 className="text-3xl font-serif text-stone-900 mb-12 text-center">
-+            Everything you need to begin
-+          </h2>
-+          <div className="grid md:grid-cols-2 gap-8">
-+            {[
-+              {
-+                icon: "🌿",
-+                title: "The Growing Chamber",
-+                desc: "Beautiful, compact, sits anywhere. Designed to complement your home, not clutter it.",
-+              },
-+              {
-+                icon: "💡",
-+                title: "Warm Grow Lights",
-+                desc: "Full spectrum LED that mimics natural sunlight. Turns on and off on a schedule you set.",
-+              },
-+              {
-+                icon: "💧",
-+                title: "Smart Water System",
-+                desc: "Automatic nutrient delivery. Fill the tank monthly. The app tells you exactly when.",
-+              },
-+              {
-+                icon: "📱",
-+                title: "Companion App",
-+                desc: "Simple guides for every plant. Notifications when it's time to harvest. That's it.",
-+              },
-+              {
-+                icon: "🌱",
-+                title: "Starter Seeds",
-+                desc: "6 seed packs to get you growing immediately. Basil, lettuce, mint, and more.",
-+              },
-+              {
-+                icon: "📖",
-+                title: "Recipe Ideas",
-+                desc: "Curated recipes that use what you're growing. From your garden to your table.",
-+              },
-+            ].map((item) => (
-+              <div key={item.title} className="border-b-2 border-amber-200 pb-6">
-+                <p className="text-4xl mb-3">{item.icon}</p>
-+                <h3 className="text-xl font-serif text-stone-900 mb-3">{item.title}</h3>
-+                <p className="text-stone-700">{item.desc}</p>
-+              </div>
-+            ))}
-+          </div>
-+        </div>
-+      </section>
-+
-+      {/* Real stories */}
-+      <section className="py-24 px-6 bg-gradient-to-br from-amber-50 to-stone-50">
-+        <div className="max-w-4xl mx-auto">
-+          <h2 className="text-3xl font-serif text-stone-900 mb-12 text-center">Stories from our growers</h2>
-+          <div className="grid md:grid-cols-2 gap-8">
-+            {[
-+              {
-+                name: "Sarah",
-+                location: "San Francisco",
-+                snippet: "I work from home, and taking a 2-minute break to check on my plants is the best part of my day. It's become a ritual.",
-+              },
-+              {
-+                name: "Marcus",
-+                location: "Chicago",
-+                snippet: "My kids love picking the tomatoes. They actually eat vegetables now because they grew them themselves.",
-+              },
-+              {
-+                name: "Aisha",
-+                location: "NYC",
-+                snippet: "I have zero outdoor space. GrowKit changed that. Now I have a garden in my kitchen, year-round.",
-+              },
-+              {
-+                name: "James",
-+                location: "Portland",
-+                snippet: "Best decision I made during lockdown. Having something alive and growing really helped my mental health.",
-+              },
-+            ].map((story) => (
-+              <div key={story.name} className="bg-white rounded-lg p-8 shadow-sm">
-+                <p className="text-stone-700 italic mb-6">"{story.snippet}"</p>
-+                <div>
-+                  <p className="font-serif font-semibold text-stone-900">{story.name}</p>
-+                  <p className="text-sm text-stone-500">{story.location}</p>
-+                </div>
-+              </div>
-+            ))}
-+          </div>
-+        </div>
-+      </section>
-+
-+      {/* Common questions */}
-+      <section className="py-24 px-6">
-+        <div className="max-w-3xl mx-auto">
-+          <h2 className="text-3xl font-serif text-stone-900 mb-12 text-center">Questions?</h2>
-+          <div className="space-y-8">
-+            {[
-+              {
-+                q: "Do I need any gardening experience?",
-+                a: "Not at all. The app walks you through everything. Most people harvest within 3 weeks.",
-+              },
-+              {
-+                q: "Will it take up a lot of space?",
-+                a: "No. It's 24\" wide and sits nicely on a desk, windowsill, or kitchen counter.",
-+              },
-+              {
-+                q: "What about the cost of nutrients?",
-+                a: "$45/month feeds up to 6 plants for a complete growing cycle. Less than buying herbs at the store.",
-+              },
-+              {
-+                q: "What if it breaks?",
-+                a: "2-year warranty. Plus 30-day money-back guarantee if you change your mind.",
-+              },
-+            ].map((item, idx) => (
-+              <div key={idx}>
-+                <h3 className="text-xl font-serif text-amber-800 mb-3">{item.q}</h3>
-+                <p className="text-stone-700">{item.a}</p>
-+              </div>
-+            ))}
-+          </div>
-+        </div>
-+      </section>
-+
-+      {/* Final CTA */}
-+      <section className="py-24 px-6 bg-gradient-to-r from-amber-700 to-amber-800">
-+        <div className="max-w-2xl mx-auto text-center text-white">
-+          <h2 className="text-4xl font-serif mb-6">Start your garden today</h2>
-+          <p className="text-lg text-amber-100 font-serif leading-relaxed mb-8">
-+            Create a living space that brings you joy. Fresh food. Daily peace. A garden uniquely yours.
-+          </p>
-+          <button className="bg-white text-amber-800 px-8 py-4 text-lg font-serif font-bold hover:bg-amber-50 transition">
-+            Get Started – $299
-+          </button>
-+          <p className="text-sm text-amber-200 mt-6 font-serif">30-day guarantee • Ships in 3–5 days</p>
-+        </div>
-+      </section>
-+
-+      {/* Footer link */}
-+      <footer className="py-8 px-6 border-t border-amber-200">
-+        <div className="max-w-4xl mx-auto text-center text-sm text-stone-600 font-serif">
-+          <a href="/" className="hover:text-stone-900">← Back to all themes</a>
-+        </div>
-+      </footer>
-+    </main>
-+  );
-+}
-diff --git a/app/themes/5/page.tsx b/app/themes/5/page.tsx
-new file mode 100644
-index 0000000..5ab7544
---- /dev/null
-+++ b/app/themes/5/page.tsx
-@@ -0,0 +1,270 @@
-+export const metadata = {
-+  title: "GrowKit – Bold & Playful",
-+  description: "Growing food is actually fun. Prove us wrong.",
-+};
-+
-+export default function Theme5() {
-+  return (
-+    <main className="min-h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-red-500 text-white">
-+      {/* Hero - Bold and playful */}
-+      <section className="relative overflow-hidden pt-12 pb-24 px-6">
-+        <div className="max-w-4xl mx-auto">
-+          <div className="grid md:grid-cols-2 gap-8 items-center">
-+            <div>
-+              <h1 className="text-6xl md:text-7xl font-black leading-tight mb-6">
-+                Forget <br />
-+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-200 to-green-200">
-+                  boring herbs
-+                </span>
-+              </h1>
-+              <p className="text-2xl font-bold mb-8 leading-tight">
-+                Your kitchen just became a farm. And it slaps.
-+              </p>
-+              <button className="bg-yellow-300 text-purple-900 px-8 py-4 text-xl font-black hover:bg-yellow-200 transition shadow-lg">
-+                GET YOURS – $299
-+              </button>
-+            </div>
-+
-+            {/* Fun illustration */}
-+            <div className="relative">
-+              <svg viewBox="0 0 200 250" className="w-full h-auto drop-shadow-lg">
-+                {/* Container with personality */}
-+                <rect x="20" y="60" width="160" height="140" rx="20" fill="url(#grad)" stroke="white" strokeWidth="3" />
-+
-+                {/* Gradient def */}
-+                <defs>
-+                  <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-+                    <stop offset="0%" style={{ stopColor: "#fbbf24", stopOpacity: 1 }} />
-+                    <stop offset="100%" style={{ stopColor: "#86efac", stopOpacity: 1 }} />
-+                  </linearGradient>
-+                </defs>
-+
-+                {/* Happy plants */}
-+                <g>
-+                  <circle cx="60" cy="80" r="20" fill="#ec4899" opacity="0.9" />
-+                  <circle cx="55" cy="60" r="8" fill="white" />
-+                  <circle cx="65" cy="60" r="8" fill="white" />
-+                  <path d="M57 75 Q60 78 63 75" stroke="white" strokeWidth="2" fill="none" />
-+
-+                  <circle cx="140" cy="90" r="20" fill="#06b6d4" opacity="0.9" />
-+                  <circle cx="135" cy="70" r="8" fill="white" />
-+                  <circle cx="145" cy="70" r="8" fill="white" />
-+                  <path d="M137 85 Q140 88 143 85" stroke="white" strokeWidth="2" fill="none" />
-+
-+                  <circle cx="100" cy="160" r="18" fill="#f97316" opacity="0.9" />
-+                  <circle cx="100" cy="145" r="7" fill="white" />
-+                  <path d="M98 158 L102 158" stroke="white" strokeWidth="2" />
-+                </g>
-+
-+                {/* Sparkles */}
-+                {[
-+                  { x: 30, y: 40 },
-+                  { x: 170, y: 50 },
-+                  { x: 50, y: 190 },
-+                  { x: 160, y: 180 },
-+                ].map((pos, i) => (
-+                  <g key={i}>
-+                    <circle cx={pos.x} cy={pos.y} r="2" fill="yellow" opacity="0.8" />
-+                    <line x1={pos.x} y1={pos.y - 5} x2={pos.x} y2={pos.y + 5} stroke="yellow" strokeWidth="1" opacity="0.6" />
-+                    <line x1={pos.x - 5} y1={pos.y} x2={pos.x + 5} y2={pos.y} stroke="yellow" strokeWidth="1" opacity="0.6" />
-+                  </g>
-+                ))}
-+              </svg>
-+            </div>
-+          </div>
-+        </div>
-+      </section>
-+
-+      {/* Why it's awesome - rotated cards */}
-+      <section className="py-24 px-6 relative">
-+        <div className="max-w-5xl mx-auto">
-+          <h2 className="text-5xl font-black mb-16 text-center">Why you'll love it</h2>
++      {/* Pricing */}
++      <section className="py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-800">
++        <div className="max-w-7xl mx-auto">
++          <h2 className="text-3xl font-bold font-mono mb-16">Transparent Pricing</h2>
 +          <div className="grid md:grid-cols-3 gap-8">
 +            {[
 +              {
-+                emoji: "⚡",
-+                title: "It's actually fast",
-+                text: "Grow in 3 weeks. Faster than waiting for delivery. No joke.",
-+                rotate: -2,
++                name: "Starter",
++                price: "0",
++                features: ["10 prompts", "Basic analytics", "Community"],
 +              },
 +              {
-+                emoji: "🎮",
-+                title: "Gamify your life",
-+                text: "Track yields. Unlock achievements. Compete with friends. Prove you're the plant boss.",
-+                rotate: 1,
++                name: "Professional",
++                price: "12",
++                features: [
++                  "50+ prompts",
++                  "Full analytics",
++                  "A/B testing",
++                  "Priority support",
++                ],
++                highlight: true,
 +              },
 +              {
-+                emoji: "🌈",
-+                title: "Vibe check: ✓",
-+                text: "Your space gets cooler. Plants on shelves look fire. Literally becomes part of your aesthetic.",
-+                rotate: -1,
++                name: "Enterprise",
++                price: "Custom",
++                features: [
++                  "Everything",
++                  "Custom metrics",
++                  "API access",
++                  "Dedicated support",
++                ],
 +              },
-+              {
-+                emoji: "🤑",
-+                title: "Save big money",
-+                text: "Stop throwing away sad grocery store herbs. Grow unlimited. Pay way less.",
-+                rotate: 2,
-+              },
-+              {
-+                emoji: "😎",
-+                title: "Flex culture",
-+                text: "Tell people you're growing food. Watch them lose their minds. You're not boring anymore.",
-+                rotate: -2,
-+              },
-+              {
-+                emoji: "🌍",
-+                title: "Planet wins too",
-+                text: "Grow local. Zero shipping for your veggies. Less plastic. You're basically an environmental hero.",
-+                rotate: 1,
-+              },
-+            ].map((card) => (
++            ].map((tier) => (
 +              <div
-+                key={card.title}
-+                style={{ transform: `rotate(${card.rotate}deg)` }}
-+                className="bg-white text-purple-900 p-8 rounded-2xl shadow-xl hover:shadow-2xl transition hover:rotate-0"
++                key={tier.name}
++                className={`border rounded-lg p-8 transition ${
++                  tier.highlight
++                    ? "border-cyan-500 bg-slate-900/80 ring-1 ring-cyan-500/20 scale-105"
++                    : "border-slate-700 bg-slate-900"
++                }`}
 +              >
-+                <p className="text-5xl mb-4">{card.emoji}</p>
-+                <h3 className="text-2xl font-black mb-4">{card.title}</h3>
-+                <p className="font-bold">{card.text}</p>
++                <h3 className="text-xl font-bold font-mono mb-2">{tier.name}</h3>
++                <p className="text-3xl font-bold font-mono mb-6">
++                  {tier.price === "Custom" ? tier.price : `$${tier.price}`}
++                  {tier.price !== "Custom" && tier.price !== "0" && (
++                    <span className="text-sm text-slate-400">/month</span>
++                  )}
++                </p>
++                <button
++                  className={`w-full py-2 rounded font-mono text-sm font-bold mb-6 transition ${
++                    tier.highlight
++                      ? "bg-cyan-600 hover:bg-cyan-700 text-white"
++                      : "bg-slate-800 hover:bg-slate-700 text-slate-300"
++                  }`}
++                >
++                  Get Started
++                </button>
++                <ul className="space-y-3">
++                  {tier.features.map((f) => (
++                    <li
++                      key={f}
++                      className="text-sm text-slate-300 flex items-center gap-2 font-mono"
++                    >
++                      <span className="text-cyan-400">▸</span>
++                      {f}
++                    </li>
++                  ))}
++                </ul>
 +              </div>
 +            ))}
 +          </div>
 +        </div>
 +      </section>
 +
-+      {/* What's in it - fun format */}
-+      <section className="py-24 px-6 bg-black bg-opacity-20">
++      {/* FAQ */}
++      <section className="py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-800">
 +        <div className="max-w-4xl mx-auto">
-+          <h2 className="text-5xl font-black mb-16 text-center">The Full Kit</h2>
-+          <div className="grid sm:grid-cols-2 gap-6">
-+            {[
-+              "💪 Industrial-grade growing chamber",
-+              "🌟 RGB LED lights (customize the vibe)",
-+              "🤖 Smart pump that does the heavy lifting",
-+              "📱 App with hilarious plant care tips",
-+              "🧪 Nutrients that actually work",
-+              "🌱 6 starter seeds (choose your lineup)",
-+              "📊 Compete on leaderboards (optional but fun)",
-+              "🎁 Recipe ideas to actually use your harvest",
-+            ].map((item) => (
-+              <div key={item} className="bg-white bg-opacity-10 backdrop-blur p-6 rounded-xl border-2 border-white border-opacity-30 hover:border-opacity-100 transition">
-+                <p className="text-xl font-bold">{item}</p>
-+              </div>
-+            ))}
-+          </div>
-+        </div>
-+      </section>
-+
-+      {/* Numbers that matter */}
-+      <section className="py-24 px-6">
-+        <div className="max-w-4xl mx-auto">
-+          <div className="grid md:grid-cols-4 gap-6">
-+            {[
-+              { number: "2.4K+", label: "People already growing", color: "from-cyan-400 to-blue-500" },
-+              { number: "3 weeks", label: "First harvest time", color: "from-green-400 to-emerald-500" },
-+              { number: "4.9★", label: "Average rating (no cap)", color: "from-yellow-400 to-orange-500" },
-+              { number: "87%", label: "Would buy again", color: "from-pink-400 to-red-500" },
-+            ].map((stat) => (
-+              <div key={stat.label} className={`bg-gradient-to-br ${stat.color} p-8 rounded-2xl text-center shadow-lg`}>
-+                <p className="text-4xl font-black mb-2">{stat.number}</p>
-+                <p className="font-bold">{stat.label}</p>
-+              </div>
-+            ))}
-+          </div>
-+        </div>
-+      </section>
-+
-+      {/* FAQ but make it fun */}
-+      <section className="py-24 px-6 bg-black bg-opacity-30">
-+        <div className="max-w-3xl mx-auto">
-+          <h2 className="text-5xl font-black mb-16 text-center">You have questions?</h2>
++          <h2 className="text-3xl font-bold font-mono mb-16">Technical FAQ</h2>
 +          <div className="space-y-6">
 +            {[
 +              {
-+                q: "Will I actually grow food or just kill plants?",
-+                a: "You'll actually grow food. The system does 90% of the work. We've basically hacked plant care.",
++                q: "Which LLMs are supported?",
++                a: "OpenAI GPT-4/4o, Anthropic Claude 3, Google Gemini 2.0, Meta Llama 3.1. We test all prompts across each.",
 +              },
 +              {
-+                q: "How much electricity does it use?",
-+                a: "Like running a lightbulb. ~$3/month. Cheaper than your coffee habit.",
++                q: "What's your API rate limit?",
++                a: "Professional: 1000 req/min. Enterprise: custom. All plans include monitoring and rate-limit headers.",
 +              },
 +              {
-+                q: "Can I flex this on social media?",
-+                a: "100%. Post your harvests. Get likes. Show people you're not basic.",
++                q: "How do you ensure data security?",
++                a: "SOC 2 Type II, GDPR compliant, AES-256 encryption at rest, TLS 1.3 in transit. Enterprise: VPC deployment available.",
 +              },
-+              {
-+                q: "What if I'm super bad at plants?",
-+                a: "Still works. The app basically holds your hand. Impossible to mess up.",
-+              },
-+              {
-+                q: "Money-back guarantee?",
-+                a: "30 days. No questions. But you won't need it because this is fire.",
-+              },
-+            ].map((item, idx) => (
-+              <div key={idx} className="bg-white bg-opacity-10 backdrop-blur p-8 rounded-xl border border-white border-opacity-20">
-+                <h3 className="text-2xl font-black mb-4">{item.q}</h3>
-+                <p className="text-lg font-bold text-opacity-90">{item.a}</p>
-+              </div>
++            ].map((item, i) => (
++              <details
++                key={i}
++                className="group border-b border-slate-700 pb-6"
++              >
++                <summary className="text-lg font-mono font-bold text-white cursor-pointer flex items-center justify-between">
++                  {item.q}
++                  <span className="text-cyan-400 group-open:rotate-180 transition text-xl">
++                    ↓
++                  </span>
++                </summary>
++                <p className="text-slate-400 mt-4 font-mono text-sm">{item.a}</p>
++              </details>
 +            ))}
 +          </div>
 +        </div>
 +      </section>
 +
-+      {/* Social proof - testimonials */}
-+      <section className="py-24 px-6">
-+        <div className="max-w-4xl mx-auto">
-+          <h2 className="text-4xl font-black mb-12 text-center">What people are saying</h2>
-+          <div className="grid md:grid-cols-2 gap-6">
-+            {[
-+              { name: "Alex", quote: "My friends thought I was weird. Now they want one too. Icon behavior." },
-+              { name: "Jordan", quote: "I can't believe I'm growing actual food. I'm literally a farmer now." },
-+              { name: "Casey", quote: "Unboxing GrowKit hit different. It just felt expensive and cool." },
-+              { name: "Taylor", quote: "My followers went crazy for the plant pics. Algorithm loves this." },
-+            ].map((testimonial) => (
-+              <div key={testimonial.name} className="bg-white text-purple-900 p-6 rounded-xl">
-+                <p className="text-lg font-bold mb-4">"{testimonial.quote}"</p>
-+                <p className="font-black text-purple-600">— {testimonial.name}</p>
-+              </div>
-+            ))}
-+          </div>
-+        </div>
-+      </section>
-+
-+      {/* Final CTA - huge and impossible to miss */}
-+      <section className="py-32 px-6 relative overflow-hidden">
-+        <div className="absolute inset-0 opacity-10">
-+          <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-+            <defs>
-+              <pattern id="dots" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
-+                <circle cx="20" cy="20" r="3" fill="white" />
-+              </pattern>
-+            </defs>
-+            <rect width="100%" height="100%" fill="url(#dots)" />
-+          </svg>
-+        </div>
-+
-+        <div className="max-w-2xl mx-auto text-center relative z-10">
-+          <h2 className="text-6xl md:text-7xl font-black mb-8 leading-tight">
-+            Stop waiting. <br /> Start growing.
++      {/* Footer CTA */}
++      <section className="py-24 px-4 sm:px-6 lg:px-8">
++        <div className="max-w-4xl mx-auto text-center">
++          <h2 className="text-5xl font-bold font-mono mb-6">
++            Start Measuring Prompt Performance Today
 +          </h2>
-+          <p className="text-2xl font-bold mb-12">
-+            Fresh food in your kitchen. Today.
++          <p className="text-xl text-slate-400 mb-10 font-mono">
++            Join leading teams optimizing for quality and scale.
 +          </p>
-+          <button className="bg-yellow-300 text-purple-900 px-12 py-6 text-2xl font-black hover:bg-yellow-200 transition shadow-2xl rounded-2xl">
-+            GET YOUR GROWKIT – $299
++          <button className="px-8 py-4 bg-cyan-600 hover:bg-cyan-700 text-white font-bold rounded-lg text-lg transition">
++            Access Dashboard
 +          </button>
-+          <p className="text-lg font-bold mt-8">
-+            30-day guarantee • Ships in 3–5 days • Free shipping because we're awesome
++          <p className="text-slate-500 text-sm mt-6 font-mono">
++            All plans include 30-day free trial and money-back guarantee.
 +          </p>
 +        </div>
 +      </section>
-+
-+      {/* Footer link */}
-+      <footer className="py-8 px-6 border-t-4 border-white border-opacity-30 text-center">
-+        <a href="/" className="font-bold hover:text-yellow-300 transition">
-+          ← Back to all themes
-+        </a>
-+      </footer>
 +    </main>
 +  );
 +}
