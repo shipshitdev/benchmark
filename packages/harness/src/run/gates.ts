@@ -154,7 +154,9 @@ async function runAxeGate(
     const violations: Array<{ path: string; id: string; impact: string | null | undefined }> = [];
     try {
       for (const path of gate.paths) {
-        const page = await browser.newPage();
+        // AxeBuilder rejects pages from the implicit context that browser.newPage() creates.
+        const context = await browser.newContext();
+        const page = await context.newPage();
         await page.goto(new URL(path, serveHandle.baseUrl).toString());
         const results = await new AxeBuilder({ page }).analyze();
         for (const violation of results.violations) {
@@ -164,7 +166,7 @@ async function runAxeGate(
           if (rank >= threshold)
             violations.push({ path, id: violation.id, impact: violation.impact });
         }
-        await page.close();
+        await context.close();
       }
     } finally {
       await browser.close();
@@ -195,19 +197,32 @@ export async function runGates(
   for (const gate of gates) {
     const logPath = join(gatesLogDir, `${gate.id}.log`);
     let result: GateResult;
-    switch (gate.type) {
-      case 'command':
-        result = await runCommandGate(gate, workspaceDir, logPath);
-        break;
-      case 'playwright':
-        result = await runPlaywrightGate(gate, taskDir, workspaceDir, logPath);
-        break;
-      case 'axe':
-        result = await runAxeGate(gate, workspaceDir, logPath);
-        break;
-      case 'http-contract':
-        result = await runHttpContractGate(gate, taskDir, workspaceDir, logPath);
-        break;
+    const startedAt = Date.now();
+    try {
+      switch (gate.type) {
+        case 'command':
+          result = await runCommandGate(gate, workspaceDir, logPath);
+          break;
+        case 'playwright':
+          result = await runPlaywrightGate(gate, taskDir, workspaceDir, logPath);
+          break;
+        case 'axe':
+          result = await runAxeGate(gate, workspaceDir, logPath);
+          break;
+        case 'http-contract':
+          result = await runHttpContractGate(gate, taskDir, workspaceDir, logPath);
+          break;
+      }
+    } catch (error) {
+      // A gate that cannot run is a failed gate for this run, never a crashed release.
+      const message = error instanceof Error ? error.message : String(error);
+      await writeLog(logPath, `gate error: ${message}`);
+      result = {
+        id: gate.id,
+        pass: false,
+        durationMs: Date.now() - startedAt,
+        detail: `gate error: ${message.split('\n')[0]}`,
+      };
     }
     results.push(result);
     if (!result.pass) break;
