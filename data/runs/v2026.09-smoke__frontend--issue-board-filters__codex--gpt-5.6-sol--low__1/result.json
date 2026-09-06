@@ -77,7 +77,33 @@
     }
   ],
   "objective": 55.55555555555556,
-  "judgments": [],
+  "judgments": [
+    {
+      "judge": {
+        "cli": "claude",
+        "model": "haiku",
+        "version": "2.1.263 (Claude Code)"
+      },
+      "blindLabel": "A",
+      "scores": {
+        "code-quality": 4,
+        "ux-polish": 3
+      },
+      "subjective": 87.5,
+      "rationale": "Code quality is excellent: the three new filter components (AssigneeFilter, LabelFilter, SearchFilter) mirror StatusFilter's structure precisely, with consistent naming, prop shapes, and URL-sync patterns. The lib/ layer adds three pure filter functions (filterByLabels, filterByAssignee, filterBySearch) that follow filterByStatus exactly, and the page component composes them cleanly via similar parse functions. No duplication or inconsistency. UX is solid and functional across all breakpoints: all filters are present, combine correctly, and are keyboard-accessible. Label multi-select via checkboxes is well-executed. Responsive layout works smoothly on mobile, tablet, and desktop. Minor gaps prevent a perfect 4: active filter indication is implicit (checked boxes, not highlighted badges), there's no explicit \"clear all\" affordance, and the empty state is not visible in screenshots. Overall, this is thoughtfully implemented code that feels like the original author wrote it.",
+      "usage": {
+        "input": 19,
+        "output": 2320,
+        "cacheRead": 14404,
+        "cacheWrite": 13021,
+        "turns": 8,
+        "toolCalls": 4,
+        "durationMs": 27004,
+        "costUsdEquivalent": null,
+        "reportedCostUsd": 0.0407854
+      }
+    }
+  ],
   "artifacts": {
     "transcript": "transcript.jsonl.gz",
     "diff": "diff.patch",

@@ -51,8 +51,35 @@
     "priceKey": "gpt-5-6-sol"
   },
   "gates": [],
-  "objective": null,
-  "judgments": [],
+  "objective": 65,
+  "judgments": [
+    {
+      "judge": {
+        "cli": "claude",
+        "model": "haiku",
+        "version": "2.1.263 (Claude Code)"
+      },
+      "blindLabel": "A",
+      "scores": {
+        "actionability": 4,
+        "sequencing-and-risk": 4,
+        "precision": 4
+      },
+      "subjective": 100,
+      "rationale": "Actionability (4/4): All 17 findings cite specific file paths and line ranges. Each problem is stated clearly with concrete causes (e.g., type interpolated into SQL, markFailed missing increment, dispatchPendingDeliveries unhandled). Fixes are implementation-ready, naming actual functions (safeCompare, HttpError), variables (type, attemptCount, next_attempt_at), and required changes to callers and schemas. Sequencing and risk (4/4): The remediation plan orders findings into 7 logical phases with explicit reasoning (e.g., \"Immediately block data and network boundary attacks\"), correctly identifies dependencies (concurrency depends on atomic claims, both transaction/idempotency fixes need migrations), and flags deployment risk (schema first, backward-compatible migration, avoid mixed versions, rehearse against prod data). Fixes are grouped into independently shippable batches. Precision (4/4): Findings correspond to real code patterns verifiable in the stated scope (SQL in events.ts line 24, pagination offset math, token comparison, etc.). Severity ratings are internally consistent and each is justified by concrete consequences: SQL injection labeled critical with \"confidentiality boundary violation,\" concurrent sends as high with \"duplicate downstream side effects,\" pagination as medium with \"produce a 500,\" N+1 as low with \"adds avoidable SQLite work.\" No hallucinated or materially inaccurate issues; no padding beyond what the code supports.",
+      "usage": {
+        "input": 17,
+        "output": 3864,
+        "cacheRead": 14459,
+        "cacheWrite": 10403,
+        "turns": 3,
+        "toolCalls": 2,
+        "durationMs": 47427,
+        "costUsdEquivalent": null,
+        "reportedCostUsd": 0.0433479
+      }
+    }
+  ],
   "artifacts": {
     "transcript": "transcript.jsonl.gz",
     "diff": "diff.patch",

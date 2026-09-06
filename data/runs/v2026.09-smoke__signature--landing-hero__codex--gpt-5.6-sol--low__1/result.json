@@ -65,7 +65,34 @@
     }
   ],
   "objective": null,
-  "judgments": [],
+  "judgments": [
+    {
+      "judge": {
+        "cli": "claude",
+        "model": "haiku",
+        "version": "2.1.263 (Claude Code)"
+      },
+      "blindLabel": "A",
+      "scores": {
+        "aesthetics": 4,
+        "typography": 4,
+        "motion-and-detail": 3
+      },
+      "subjective": 92.5,
+      "rationale": "Aesthetics (4): Striking, cohesive design with a clear visual point of view. Strong color palette (black, red, lime green on cream background) and every element—headline, CTAs, lime-green status pill, and red striped marquee with tool names—feels like part of one unified system rather than separately styled pieces. The design fits the livestreaming dev-tools studio aesthetic perfectly and would stop a scroll. Typography (4): Deliberate font pairing showing real craft. Bold black sans-serif headline contrasted with red flowing italic 'useful,' serif body text, and small-cap headers create clear hierarchy. The asterisk replacing T in 'SHIT' is a typographic flourish, and line heights and scale feel considered and intentional. The headline reads as a genuine hero statement. Motion and detail (3): The red marquee scrolls with actual tool names (PATCHBAY, DEADLETTER, LOCALHOST, STACKTRACE, SHIPWRIGHT, HOTWIRE), the status pill has distinctive lime-green styling, and CTA buttons show clear visual distinction. Micro-details abound (asterisk flourish, metadata positioning, small caps treatment, circular OPEN SOURCE badge). However, entrance animations and seamless looping cannot be verified from static screenshots, preventing a 4 rating.",
+      "usage": {
+        "input": 20,
+        "output": 3090,
+        "cacheRead": 14463,
+        "cacheWrite": 9399,
+        "turns": 4,
+        "toolCalls": 3,
+        "durationMs": 36396,
+        "costUsdEquivalent": null,
+        "reportedCostUsd": 0.0374803
+      }
+    }
+  ],
   "artifacts": {
     "transcript": "transcript.jsonl.gz",
     "diff": "diff.patch",

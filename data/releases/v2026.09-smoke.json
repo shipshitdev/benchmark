@@ -2,7 +2,7 @@
   "release": "v2026.09-smoke",
   "title": "v2026.09-smoke",
   "suiteVersion": "v2026.09",
-  "generatedAt": "2026-09-06T09:53:00.349Z",
+  "generatedAt": "2026-09-06T13:58:54.963Z",
   "pricesAsOf": "2026-09-06",
   "categoryWeights": {
     "ux-ui": 1,
@@ -148,11 +148,16 @@
         "max": 55.55555555555556,
         "n": 1
       },
-      "subjective": null,
+      "subjective": {
+        "mean": 87.5,
+        "min": 87.5,
+        "max": 87.5,
+        "n": 1
+      },
       "score": {
-        "mean": 55.555555555555564,
-        "min": 55.555555555555564,
-        "max": 55.555555555555564,
+        "mean": 68.33333333333334,
+        "min": 68.33333333333334,
+        "max": 68.33333333333334,
         "n": 1
       },
       "usage": {
@@ -237,8 +242,18 @@
       ],
       "gatePassRate": 1,
       "objective": null,
-      "subjective": null,
-      "score": null,
+      "subjective": {
+        "mean": 92.5,
+        "min": 92.5,
+        "max": 92.5,
+        "n": 1
+      },
+      "score": {
+        "mean": 92.5,
+        "min": 92.5,
+        "max": 92.5,
+        "n": 1
+      },
       "usage": {
         "input": 553396,
         "output": 11777,
@@ -325,9 +340,24 @@
         "v2026.09-smoke__planning-audit--planted-defects__codex--gpt-5.6-sol--low__1"
       ],
       "gatePassRate": 1,
-      "objective": null,
-      "subjective": null,
-      "score": null,
+      "objective": {
+        "mean": 65,
+        "min": 65,
+        "max": 65,
+        "n": 1
+      },
+      "subjective": {
+        "mean": 100,
+        "min": 100,
+        "max": 100,
+        "n": 1
+      },
+      "score": {
+        "mean": 79,
+        "min": 79,
+        "max": 79,
+        "n": 1
+      },
       "usage": {
         "input": 192376,
         "output": 5723,
@@ -489,8 +519,18 @@
       ],
       "gatePassRate": 1,
       "objective": null,
-      "subjective": null,
-      "score": null,
+      "subjective": {
+        "mean": 100,
+        "min": 100,
+        "max": 100,
+        "n": 1
+      },
+      "score": {
+        "mean": 100,
+        "min": 100,
+        "max": 100,
+        "n": 1
+      },
       "usage": {
         "input": 833408,
         "output": 15501,
@@ -761,7 +801,7 @@
         "model": "gpt-5.6-sol",
         "effort": "low"
       },
-      "overall": 77.77777777777779,
+      "overall": 86.83333333333334,
       "categories": [
         {
           "category": "frontend",
@@ -770,7 +810,7 @@
             "model": "gpt-5.6-sol",
             "effort": "low"
           },
-          "score": 55.555555555555564,
+          "score": 68.33333333333334,
           "tasks": 1
         },
         {
@@ -780,7 +820,7 @@
             "model": "gpt-5.6-sol",
             "effort": "low"
           },
-          "score": null,
+          "score": 92.5,
           "tasks": 1
         },
         {
@@ -790,7 +830,7 @@
             "model": "gpt-5.6-sol",
             "effort": "low"
           },
-          "score": null,
+          "score": 79,
           "tasks": 1
         },
         {
@@ -810,7 +850,7 @@
             "model": "gpt-5.6-sol",
             "effort": "low"
           },
-          "score": null,
+          "score": 100,
           "tasks": 1
         },
         {
@@ -834,7 +874,7 @@
         "durationMs": 1278374,
         "costUsdEquivalent": 15.207699999999999
       },
-      "scorePerDollar": 5.1143682330515325,
+      "scorePerDollar": 5.7098268201853895,
       "telemetry": "partial"
     }
   ],

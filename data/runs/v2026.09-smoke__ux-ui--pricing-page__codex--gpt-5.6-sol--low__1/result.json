@@ -71,7 +71,35 @@
     }
   ],
   "objective": null,
-  "judgments": [],
+  "judgments": [
+    {
+      "judge": {
+        "cli": "claude",
+        "model": "haiku",
+        "version": "2.1.263 (Claude Code)"
+      },
+      "blindLabel": "A",
+      "scores": {
+        "aesthetics": 4,
+        "hierarchy": 4,
+        "interaction-states": 4,
+        "responsiveness": 4
+      },
+      "subjective": 100,
+      "rationale": "Aesthetics: Production-grade polish with consistent visual rhythm, deliberate color palette (beige, dark, acid green), intentional typography choices (Georgia serif + monospace), and thoughtful details (icon choices like ↳/→/+, subtle grid background pattern, proper border weight hierarchy). Feels genuinely designed, not templated. Visual hierarchy: Clear primary path from headline through tier cards to CTA. Prices are large and unmissable. The recommended tier is visually distinguished through dark background inversion, elevation (translateY), and accent green CTA. Comparison table is appropriately secondary in weight and positioning. FAQ sits clearly at the bottom. Interaction states: All interactive elements (billing toggle, CTAs, FAQ disclosure) have consistent hover states (underline with 3px thickness) and clearly visible keyboard focus (3px blue outline, adjusted to #73a8ff in dark mode for contrast). Smooth toggle state transitions and FAQ rotation animation on details[open]. Proper reduced-motion handling. Responsiveness: Desktop shows three-column tier layout with full comparison table and hero prominently spaced. Tablet adapts to single-column tiers with table still readable and appropriate spacing adjustments (e.g., .faq-list margin removed). Mobile excels with tier cards stacked, comparison table completely restructured from display:block with plan names injected via data-plan attributes rather than relying on horizontal scroll—each row becomes a card-like interface. Type scale uses clamp() for smooth adaptation. Each viewport feels purposefully designed for its size rather than just shrunk.",
+      "usage": {
+        "input": 28,
+        "output": 4819,
+        "cacheRead": 25257,
+        "cacheWrite": 16045,
+        "turns": 9,
+        "toolCalls": 5,
+        "durationMs": 60701,
+        "costUsdEquivalent": null,
+        "reportedCostUsd": 0.0607117
+      }
+    }
+  ],
   "artifacts": {
     "transcript": "transcript.jsonl.gz",
     "diff": "diff.patch",
