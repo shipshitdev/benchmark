@@ -1,8 +1,15 @@
-import { agentSlug, CATEGORIES, taskSlug } from '@benchmark/schema';
+import { agentSlug, CATEGORIES, priceKeyFor, taskSlug } from '@benchmark/schema';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { allAgentParams, EMPTY_PARAM, getCellsForAgent, getRelease, getStanding } from '@/lib/data';
+import {
+  allAgentParams,
+  EMPTY_PARAM,
+  getCellsForAgent,
+  getPrices,
+  getRelease,
+  getStanding,
+} from '@/lib/data';
 import {
   formatAgentLabel,
   formatCategory,
@@ -12,11 +19,17 @@ import {
   formatTokens,
 } from '@/lib/format';
 import { canonicalUrl, pageMetadata } from '@/lib/site';
+import { buildAgentVerdict, type Rank, rankAmong } from '@/lib/verdict';
 import { EmptyState } from '../../../../components/EmptyState';
 import { RunLink } from '../../../../components/RunLink';
 import { ShareButton } from '../../../../components/ShareButton';
 import { SpreadBand } from '../../../../components/SpreadBand';
 import { TelemetryBadge } from '../../../../components/TelemetryBadge';
+import { TokenCostBar } from '../../../../components/TokenCostBar';
+
+function rankLabel(rank: Rank | null): string {
+  return rank ? `#${rank.rank} of ${rank.total}` : '—';
+}
 
 export function generateStaticParams() {
   return allAgentParams();
@@ -49,6 +62,24 @@ export default async function AgentPage({ params }: { params: Promise<Params> })
   const categories = CATEGORIES.filter((c) => release.categoryWeights[c] !== undefined);
   const shareText = `${formatAgentLabel(standing.agent)} on ${release.release}: ${formatScore(standing.overall)} overall, ${formatCost(standing.usage.costUsdEquivalent)} API-equivalent.`;
 
+  const overallRank = rankAmong(release.standings, (s) => s.overall, 'higher-is-better', standing);
+  const costEfficiencyRank = rankAmong(
+    release.standings,
+    (s) => s.scorePerDollar,
+    'higher-is-better',
+    standing,
+  );
+  const wallTimeRank = rankAmong(
+    release.standings,
+    (s) => (s.usage.durationMs > 0 ? s.usage.durationMs : null),
+    'lower-is-better',
+    standing,
+  );
+  const verdict = buildAgentVerdict(release.standings, standing);
+  const prices = getPrices();
+  const priceKey = priceKeyFor(standing.agent.model);
+  const price = prices && priceKey ? prices.models[priceKey] : undefined;
+
   return (
     <div className="mx-auto max-w-5xl px-6 py-12">
       <p className="text-xs uppercase tracking-[0.25em] text-accent">
@@ -76,6 +107,38 @@ export default async function AgentPage({ params }: { params: Promise<Params> })
       </div>
 
       <section className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        {[
+          ['Overall rank', rankLabel(overallRank)],
+          ['Cost efficiency rank', rankLabel(costEfficiencyRank)],
+          ['Wall time rank', rankLabel(wallTimeRank)],
+        ].map(([label, value]) => (
+          <div key={label} className="rounded border border-border p-3">
+            <p className="text-[10px] uppercase tracking-[0.1em] text-text-faint">{label}</p>
+            <p className="mt-1 tabular text-lg text-text">{value}</p>
+          </div>
+        ))}
+        <div className="rounded border border-border p-3">
+          <p className="text-[10px] uppercase tracking-[0.1em] text-text-faint">Telemetry</p>
+          <p className="mt-1.5">
+            <TelemetryBadge telemetry={standing.telemetry} />
+          </p>
+        </div>
+      </section>
+
+      <p className="mt-6 max-w-[70ch] text-[15px] leading-relaxed text-text-dim">{verdict}</p>
+
+      <section className="mt-10">
+        <h2 className="font-display text-xl italic text-text">Tokens by class</h2>
+        <p className="mt-1 text-sm text-text-dim">
+          Segment width is dollar share, not token share — where the API-equivalent cost actually
+          went.
+        </p>
+        <div className="mt-4 max-w-2xl">
+          <TokenCostBar usage={standing.usage} price={price} />
+        </div>
+      </section>
+
+      <section className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
         {[
           ['Tokens in', formatTokens(standing.usage.input)],
           ['Tokens out', formatTokens(standing.usage.output)],

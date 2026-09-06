@@ -37,8 +37,29 @@ export function agentsWithNoResult(standings: Standing[]): Standing[] {
   return standings.filter((s) => s.overall === null);
 }
 
-function agentKey(agent: AgentSpec): string {
+export function agentKey(agent: AgentSpec): string {
   return `${agent.cli}:${agent.model}${agent.effort ? `@${agent.effort}` : ''}`;
+}
+
+export type Rank = { rank: number; total: number };
+
+/** Where `agent` places among standings that have this metric, best first per `direction`. Null
+ *  when `agent` itself lacks the metric — there is no meaningful rank to show. */
+export function rankAmong(
+  standings: Standing[],
+  metric: (s: Standing) => number | null,
+  direction: 'higher-is-better' | 'lower-is-better',
+  agent: Standing,
+): Rank | null {
+  if (metric(agent) === null) return null;
+  const eligible = standings.filter((s) => metric(s) !== null);
+  const sorted = [...eligible].sort((a, b) => {
+    const av = metric(a) as number;
+    const bv = metric(b) as number;
+    return direction === 'higher-is-better' ? bv - av : av - bv;
+  });
+  const index = sorted.findIndex((s) => agentKey(s.agent) === agentKey(agent.agent));
+  return index === -1 ? null : { rank: index + 1, total: sorted.length };
 }
 
 /**
