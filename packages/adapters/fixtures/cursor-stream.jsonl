@@ -1,0 +1,3 @@
+{"type":"assistant","message":{"content":[{"type":"text","text":"Working on it."}]}}
+{"type":"assistant","message":{"content":[{"type":"text","text":"Implemented the change."}]}}
+{"type":"result","duration_ms":18450,"result":"Implemented the requested change across two files."}

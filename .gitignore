@@ -2,6 +2,7 @@ node_modules
 .turbo
 .vercel
 .worktrees
+.runs
 dist
 out
 .next

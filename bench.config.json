@@ -1,0 +1,15 @@
+{
+  "suiteVersion": "v2026.09",
+  "categoryWeights": {
+    "ux-ui": 1,
+    "frontend": 1,
+    "backend": 1,
+    "planning-audit": 1,
+    "bugfix": 1,
+    "signature": 0
+  },
+  "judges": ["claude:opus@high", "codex:gpt-6-astra@high", "grok:grok-4.6@high"],
+  "repeat": 3,
+  "dataDir": "data",
+  "tasksDir": "tasks"
+}

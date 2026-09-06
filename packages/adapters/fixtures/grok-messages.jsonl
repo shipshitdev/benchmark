@@ -1,0 +1,3 @@
+{"type":"message_start"}
+{"type":"message","role":"assistant","content":[{"type":"text","text":"I'll check the repo structure first."}]}
+{"type":"message","role":"assistant","content":[{"type":"tool_use","name":"read_file","input":{}},{"type":"text","text":"Found the bug in the parser."}]}
