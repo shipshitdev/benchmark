@@ -16,6 +16,12 @@
   --color-accent-dim: #b8632c;
   --color-good: #5ee6a0;
   --color-bad: #ff5c5c;
+
+  /* One color per CLI, used consistently for legends and chart series across the site. */
+  --color-vendor-claude: #c77dff;
+  --color-vendor-codex: #5ee6a0;
+  --color-vendor-grok: #ff5c5c;
+  --color-vendor-cursor: #4fb0ff;
 }
 
 html {
