@@ -3,6 +3,7 @@ import { ImageResponse } from 'next/og';
 import { allReleaseParams, EMPTY_PARAM, getRelease } from '@/lib/data';
 import { formatAgentLabel, formatScore } from '@/lib/format';
 import { SITE_NAME } from '@/lib/site';
+import { buildReleaseVerdict } from '@/lib/verdict';
 
 export const dynamic = 'force-static';
 export const alt = 'Release standings';
@@ -62,6 +63,7 @@ export default async function OgImage({ params }: { params: Promise<Params> }) {
   const top3 = [...release.standings]
     .sort((a, b) => (b.overall ?? -1) - (a.overall ?? -1))
     .slice(0, 3);
+  const verdict = buildReleaseVerdict(release.standings);
 
   return new ImageResponse(
     <div
@@ -110,6 +112,7 @@ export default async function OgImage({ params }: { params: Promise<Params> }) {
         >
           {release.title}
         </div>
+        <div style={{ fontSize: 24, color: DIM, maxWidth: 980, lineHeight: 1.4 }}>{verdict}</div>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>

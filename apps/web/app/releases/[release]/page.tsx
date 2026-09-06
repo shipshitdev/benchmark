@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { allReleaseParams, EMPTY_PARAM, getRelease, listReleases } from '@/lib/data';
 import { formatAgentLabel, formatDate, formatScore } from '@/lib/format';
 import { canonicalUrl, pageMetadata, SITE_NAME } from '@/lib/site';
+import { buildReleaseVerdict } from '@/lib/verdict';
 import { EmptyState } from '../../components/EmptyState';
 import { ReleasePicker } from '../../components/ReleasePicker';
 import { ScoreCostScatter } from '../../components/ScoreCostScatter';
@@ -53,6 +54,10 @@ export default async function ReleasePage({ params }: { params: Promise<Params> 
           <ShareButton text={shareText} url={canonicalUrl(`/releases/${release.release}/`)} />
         </div>
       </div>
+
+      <p className="mt-8 max-w-[70ch] font-display text-2xl italic leading-snug text-text">
+        {buildReleaseVerdict(release.standings)}
+      </p>
 
       <section className="mt-10">
         <StandingsTable release={release} />
