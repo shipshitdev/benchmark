@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, symlink } from 'node:fs/promises';
+import { copyFile, mkdir, mkdtemp } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { basename, extname, join } from 'node:path';
 import type { RunResult } from '@benchmark/schema';
@@ -8,8 +8,9 @@ import type { EvidenceRef } from './promptBuilder';
 export type EvidenceKind = 'screenshots' | 'diff' | 'report' | 'transcript-summary';
 
 /**
- * Materializes a blind-labelled entry's evidence as symlinks in a scratch directory, so a judge
- * running with `cwd` set there can `Read` them without ever seeing a path that names the agent.
+ * Copies a blind-labelled entry's evidence into a scratch directory, so a judge running with `cwd`
+ * set there can `Read` them without ever seeing a path that names the agent. Copies, not symlinks:
+ * some CLIs' file tools skip links that point outside the working directory.
  */
 export async function buildEvidenceScratchDir(
   dataDir: string,
@@ -25,13 +26,13 @@ export async function buildEvidenceScratchDir(
 
     if (evidenceKinds.includes('diff') && run.artifacts.diff) {
       const linkName = `${label}-diff.patch`;
-      await symlink(join(runDirectory, run.artifacts.diff), join(scratchDir, linkName));
+      await copyFile(join(runDirectory, run.artifacts.diff), join(scratchDir, linkName));
       ref.diffPath = linkName;
     }
 
     if (evidenceKinds.includes('report') && run.artifacts.report) {
       const linkName = `${label}-report${extname(run.artifacts.report) || '.md'}`;
-      await symlink(join(runDirectory, run.artifacts.report), join(scratchDir, linkName));
+      await copyFile(join(runDirectory, run.artifacts.report), join(scratchDir, linkName));
       ref.reportPath = linkName;
     }
 
@@ -41,7 +42,7 @@ export async function buildEvidenceScratchDir(
       const linkedPaths: string[] = [];
       for (const screenshot of run.artifacts.screenshots) {
         const linkName = basename(screenshot.file);
-        await symlink(join(runDirectory, screenshot.file), join(screenshotDir, linkName));
+        await copyFile(join(runDirectory, screenshot.file), join(screenshotDir, linkName));
         linkedPaths.push(join(`${label}-screenshots`, linkName));
       }
       ref.screenshots = linkedPaths;

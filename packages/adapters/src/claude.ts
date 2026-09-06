@@ -100,8 +100,10 @@ function buildCommand(input: AdapterRunInput): { command: string[]; permissionMo
 
   let permissionMode: string;
   if (input.readOnly) {
-    command.push('--permission-mode', 'plan', '--tools', 'Read,Glob,Grep');
-    permissionMode = 'plan+tools:Read,Glob,Grep';
+    // Plan mode makes Claude refuse non-coding requests such as grading; dontAsk with a read-only
+    // tool set is the actual read-only contract.
+    command.push('--permission-mode', 'dontAsk', '--tools', 'Read,Glob,Grep');
+    permissionMode = 'dontAsk+tools:Read,Glob,Grep';
   } else {
     command.push('--dangerously-skip-permissions');
     permissionMode = 'dangerously-skip-permissions';

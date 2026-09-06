@@ -57,9 +57,12 @@ function runSubjective(run: RunResult): number | null {
 export function buildCell(
   task: TaskId,
   agent: AgentSpec,
-  runs: RunResult[],
+  allRuns: RunResult[],
   weights: CellWeights,
 ): Cell {
+  // A run the harness or CLI could not complete (auth, quota, crash) says nothing about the model;
+  // it is excluded from every score. A timeout or failed gate is the agent's result and counts.
+  const runs = allRuns.filter((run) => run.status !== 'error');
   const gatesPassed = (run: RunResult) =>
     run.gates.length === 0 || run.gates.every((gate) => gate.pass);
   const gatePassRate = runs.length > 0 ? runs.filter(gatesPassed).length / runs.length : 0;
@@ -82,11 +85,11 @@ export function buildCell(
   return {
     task,
     agent,
-    runs: runs.map((run) => run.id),
+    runs: allRuns.map((run) => run.id),
     gatePassRate,
     objective: computeSpread(objectiveScores),
     subjective: computeSpread(subjectiveScores),
-    score: allGateFailed ? null : computeSpread(combinedScores),
+    score: allGateFailed || runs.length === 0 ? null : computeSpread(combinedScores),
     usage: buildUsageTotals(runs),
   };
 }

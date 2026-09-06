@@ -84,6 +84,31 @@ describe('buildCell', () => {
     expect(cell.objective?.n).toBe(1);
   });
 
+  test('an errored attempt is excluded from scores but still listed', () => {
+    const cell = buildCell(
+      task,
+      agent,
+      [
+        makeRun({ attempt: 1, objective: 80, judgments: [] }),
+        makeRun({ attempt: 2, status: 'error', objective: null, judgments: [] }),
+      ],
+      weights,
+    );
+    expect(cell.runs).toHaveLength(2);
+    expect(cell.score?.n).toBe(1);
+    expect(cell.objective?.mean).toBe(80);
+  });
+
+  test('a cell whose every attempt errored has no score', () => {
+    const cell = buildCell(
+      task,
+      agent,
+      [makeRun({ attempt: 1, status: 'error', objective: null, judgments: [] })],
+      weights,
+    );
+    expect(cell.score).toBeNull();
+  });
+
   test('score is null only when every attempt failed a gate', () => {
     const runs = [
       makeRun({

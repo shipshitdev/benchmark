@@ -107,13 +107,15 @@ async function judgeSubjective(
     subjective.evidence as EvidenceKind[],
   );
   const rubricMarkdown = await Bun.file(join(task.dir, subjective.rubric)).text();
-  const prompt = buildJudgePrompt({
-    taskTitle: task.manifest.title,
-    rubricMarkdown,
-    dimensions: subjective.dimensions,
-    pairwise: subjective.pairwise,
-    entries,
-  });
+  const prompt = `${`Evidence files are in your working directory: ${scratchDir}\n\n`}${buildJudgePrompt(
+    {
+      taskTitle: task.manifest.title,
+      rubricMarkdown,
+      dimensions: subjective.dimensions,
+      pairwise: subjective.pairwise,
+      entries,
+    },
+  )}`;
 
   const transcriptPath = join(
     transcriptsDir,
@@ -151,7 +153,8 @@ async function judgeSubjective(
       (existing) => !(existing.judge.cli === judge.cli && existing.judge.model === judge.model),
     );
     judgments.push(judgment);
-    await writeRunResult(dataDir, { ...run, judgments });
+    run.judgments = judgments;
+    await writeRunResult(dataDir, run);
   }
 
   if (subjective.pairwise && Array.isArray(parsed.pairs)) {
@@ -284,7 +287,7 @@ export function registerJudge(program: Command): void {
           for (const judge of judgeSpecs) {
             await judgeSubjective(dataDir, options.release, task, judge, okRuns, transcriptsDir);
           }
-          log.info(`${task.manifest.id}: judged ${okRuns.length} run(s) subjectively`);
+          log.info(`${task.manifest.id}: ${okRuns.length} run(s) offered to the judge panel`);
         }
 
         if (task.manifest.scoring.objective?.type === 'checklist') {

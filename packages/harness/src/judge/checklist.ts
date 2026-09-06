@@ -5,15 +5,23 @@ export interface ChecklistItem {
   description: string;
 }
 
-/** `task.yaml`'s `scoring.objective.checklist` file: a YAML list of `{ id, description }`. */
+/**
+ * `task.yaml`'s `scoring.objective.checklist` file: a YAML list of `{ id, summary | description }`,
+ * optionally with `file`, which is folded into the description so the judge can match by location.
+ */
 export function parseChecklist(yaml: string): ChecklistItem[] {
   const parsed = parseYaml(yaml);
   if (!Array.isArray(parsed)) throw new Error('checklist file must be a YAML list');
   return parsed.map((entry, index) => {
-    if (typeof entry?.id !== 'string' || typeof entry?.description !== 'string') {
-      throw new Error(`checklist item ${index} must have string "id" and "description"`);
+    const text = typeof entry?.summary === 'string' ? entry.summary : entry?.description;
+    if (typeof entry?.id !== 'string' || typeof text !== 'string') {
+      throw new Error(
+        `checklist item ${index} must have string "id" and "summary" or "description"`,
+      );
     }
-    return { id: entry.id, description: entry.description };
+    const description =
+      typeof entry.file === 'string' ? `${entry.file}: ${text.trim()}` : text.trim();
+    return { id: entry.id, description };
   });
 }
 
