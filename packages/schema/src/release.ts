@@ -69,7 +69,7 @@ export const Release = z.object({
   release: z.string().min(1),
   title: z.string().min(1),
   suiteVersion: z.string().min(1),
-  generatedAt: z.string().datetime(),
+  generatedAt: z.iso.datetime(),
   pricesAsOf: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   categoryWeights: z.record(Category, z.number().nonnegative()),
   agents: z.array(AgentSpec),

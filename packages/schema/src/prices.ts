@@ -8,7 +8,7 @@ export const ModelPrice = z.object({
   output: z.number().nonnegative().nullable(),
   cacheRead: z.number().nonnegative().nullable(),
   cacheWrite: z.number().nonnegative().nullable(),
-  source: z.string().url(),
+  source: z.url(),
   note: z.string().default(''),
 });
 export type ModelPrice = z.infer<typeof ModelPrice>;

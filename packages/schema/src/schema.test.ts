@@ -18,7 +18,7 @@ describe('agent specs', () => {
   test('run ids are stable and parse back', () => {
     const task = TaskId.parse('ux-ui/pricing-page');
     const id = runId('v2026.09-fable', task, parseAgentSpec('grok:grok-4.6@high'), 2);
-    expect(id).toBe('v2026.09-fable__ux-ui--pricing-page__grok--grok-4.6--high__2');
+    expect(String(id)).toBe('v2026.09-fable__ux-ui--pricing-page__grok--grok-4.6--high__2');
     expect(agentSlug(parseAgentSpec('codex:gpt-6-astra'))).toBe('codex--gpt-6-astra');
   });
 });
