@@ -1,0 +1,5 @@
+{"type":"turn.completed","usage":{"input_tokens":800,"cached_input_tokens":200,"output_tokens":150}}
+{"type":"item.completed","item":{"type":"command_execution","command":"bun test"}}
+{"type":"item.completed","item":{"type":"agent_message","text":"Ran the tests and fixed the failing case."}}
+{"type":"turn.completed","usage":{"input_tokens":300,"cached_input_tokens":0,"output_tokens":90}}
+{"type":"item.completed","item":{"type":"file_change","path":"src/index.ts"}}
