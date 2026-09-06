@@ -1,0 +1,4 @@
+node_modules
+*.db
+bun.lock
+.DS_Store

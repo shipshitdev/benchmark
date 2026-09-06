@@ -1,0 +1,8 @@
+{
+  "name": "inventory-api-fixture",
+  "private": true,
+  "devDependencies": {
+    "typescript": "7.0.2",
+    "@types/bun": "1.4.1"
+  }
+}

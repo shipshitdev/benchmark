@@ -1,0 +1,69 @@
+id: ux-ui/pricing-page
+category: ux-ui
+title: Shipcut pricing page
+summary: >
+  Build a responsive, accessible pricing page for Shipcut, a fictional CLI dev tool, with
+  three tiers, a monthly/annual toggle, a feature comparison table, and an FAQ.
+version: 1
+authored: 2026-09-06
+prompt: prompt.md
+fixture: fixture
+caps:
+  maxTurns: 60
+  maxBudgetUsd: 10
+  timeboxMinutes: 30
+gates:
+  - type: command
+    id: install
+    run: bun install
+    timeoutSeconds: 300
+  - type: command
+    id: build
+    run: bun run build
+    timeoutSeconds: 300
+  - type: axe
+    id: axe-pricing
+    paths:
+      - /pricing
+    serve:
+      run: bun run start
+      port: 4173
+      readyPath: /pricing
+      readyTimeoutSeconds: 90
+    failOn: serious
+scoring:
+  subjective:
+    rubric: rubric.md
+    dimensions:
+      - id: aesthetics
+        label: Aesthetics
+        weight: 30
+      - id: hierarchy
+        label: Visual hierarchy
+        weight: 25
+      - id: interaction-states
+        label: Interaction states
+        weight: 25
+      - id: responsiveness
+        label: Responsiveness
+        weight: 20
+    pairwise: true
+    evidence:
+      - screenshots
+      - diff
+  weights:
+    objective: 0
+    subjective: 1
+artifacts:
+  screenshots:
+    - path: /pricing
+      viewports:
+        - mobile
+        - tablet
+        - desktop
+      serve:
+        run: bun run start
+        port: 4173
+        readyPath: /pricing
+        readyTimeoutSeconds: 90
+      settleMs: 500

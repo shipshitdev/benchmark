@@ -1,0 +1,59 @@
+{
+  "id": "sample-synthetic__bugfix--pagination-off-by-one__codex--gpt-6-astra--high__1",
+  "release": "sample-synthetic",
+  "suiteVersion": "v2026.09-sample-synthetic",
+  "task": "bugfix/pagination-off-by-one",
+  "taskVersion": 1,
+  "agent": {
+    "cli": "codex",
+    "model": "gpt-6-astra",
+    "effort": "high",
+    "version": "0.153.2",
+    "permissionMode": "full-auto",
+    "caps": {
+      "maxTurns": 40,
+      "maxBudgetUsd": 5,
+      "timeboxMinutes": 30
+    },
+    "command": ["codex", "exec", "--json", "--model", "gpt-6-astra", "--effort", "high"]
+  },
+  "attempt": 1,
+  "startedAt": "2026-09-06T12:00:00.000Z",
+  "finishedAt": "2026-09-06T12:01:12.000Z",
+  "host": "sample-host.local",
+  "status": "ok",
+  "usage": {
+    "input": 15000,
+    "output": 3600,
+    "cacheRead": 3000,
+    "cacheWrite": 500,
+    "turns": 10,
+    "toolCalls": 17,
+    "durationMs": 72000,
+    "costUsdEquivalent": 0.091,
+    "priceKey": "gpt-6-astra"
+  },
+  "gates": [
+    {
+      "id": "build",
+      "pass": true,
+      "durationMs": 9000,
+      "detail": "tsc --noEmit succeeded"
+    },
+    {
+      "id": "typecheck",
+      "pass": true,
+      "durationMs": 6000,
+      "detail": "no type errors"
+    }
+  ],
+  "objective": 87.5,
+  "judgments": [],
+  "artifacts": {
+    "transcript": "transcript.jsonl.gz",
+    "diff": "diff.patch",
+    "screenshots": [],
+    "report": null
+  },
+  "notes": ["synthetic sample for site development"]
+}

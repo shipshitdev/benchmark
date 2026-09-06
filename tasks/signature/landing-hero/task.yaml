@@ -1,0 +1,55 @@
+id: signature/landing-hero
+category: signature
+title: shipshit.dev landing hero
+summary: >
+  Design and build the landing hero for shipshit.dev from a fixed visual brief, reused
+  verbatim every release so results are comparable across models over time.
+version: 1
+authored: 2026-09-06
+prompt: prompt.md
+fixture: fixture
+caps:
+  maxTurns: 50
+  maxBudgetUsd: 8
+  timeboxMinutes: 25
+gates:
+  - type: command
+    id: install
+    run: bun install
+    timeoutSeconds: 300
+  - type: command
+    id: build
+    run: bun run build
+    timeoutSeconds: 300
+scoring:
+  subjective:
+    rubric: rubric.md
+    dimensions:
+      - id: aesthetics
+        label: Aesthetics
+        weight: 40
+      - id: typography
+        label: Typography
+        weight: 30
+      - id: motion-and-detail
+        label: Motion and detail
+        weight: 30
+    pairwise: true
+    evidence:
+      - screenshots
+  weights:
+    objective: 0
+    subjective: 1
+artifacts:
+  screenshots:
+    - path: /
+      viewports:
+        - mobile
+        - tablet
+        - desktop
+      serve:
+        run: bun run start
+        port: 4176
+        readyPath: /
+        readyTimeoutSeconds: 90
+      settleMs: 800

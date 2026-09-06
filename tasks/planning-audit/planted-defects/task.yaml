@@ -1,0 +1,39 @@
+id: planning-audit/planted-defects
+category: planning-audit
+title: Codebase audit, planted defects
+summary: >
+  Audit a small Bun and TypeScript HTTP service that has ten planted defects and write a
+  findings report with a sequenced remediation plan, without modifying any code.
+version: 1
+authored: 2026-09-06
+prompt: prompt.md
+fixture: fixture
+caps:
+  maxTurns: 40
+  maxBudgetUsd: 8
+  timeboxMinutes: 25
+scoring:
+  objective:
+    type: checklist
+    checklist: verify/checklist.yaml
+    report: AUDIT.md
+    hallucinationPenalty: 5
+  subjective:
+    rubric: rubric.md
+    dimensions:
+      - id: actionability
+        label: Actionability
+        weight: 40
+      - id: sequencing-and-risk
+        label: Sequencing and risk coverage
+        weight: 30
+      - id: precision
+        label: Precision
+        weight: 30
+    pairwise: false
+    evidence:
+      - report
+    report: AUDIT.md
+  weights:
+    objective: 0.6
+    subjective: 0.4

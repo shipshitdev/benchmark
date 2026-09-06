@@ -1,0 +1,25 @@
+{
+  "asOf": "2026-09-06",
+  "currency": "USD",
+  "unit": "per 1M tokens",
+  "models": {
+    "claude-fable-5-1": {
+      "vendorId": "claude-fable-5-1",
+      "input": 5,
+      "output": 25,
+      "cacheRead": 0.5,
+      "cacheWrite": 6.25,
+      "source": "https://www.anthropic.com/pricing",
+      "note": "placeholder price for synthetic sample data"
+    },
+    "gpt-6-astra": {
+      "vendorId": "gpt-6-astra",
+      "input": 3,
+      "output": 12,
+      "cacheRead": 0.3,
+      "cacheWrite": 3.75,
+      "source": "https://openai.com/api/pricing",
+      "note": "placeholder price for synthetic sample data"
+    }
+  }
+}

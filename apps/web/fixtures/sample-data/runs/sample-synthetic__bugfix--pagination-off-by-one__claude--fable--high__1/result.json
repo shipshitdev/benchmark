@@ -1,0 +1,73 @@
+{
+  "id": "sample-synthetic__bugfix--pagination-off-by-one__claude--fable--high__1",
+  "release": "sample-synthetic",
+  "suiteVersion": "v2026.09-sample-synthetic",
+  "task": "bugfix/pagination-off-by-one",
+  "taskVersion": 1,
+  "agent": {
+    "cli": "claude",
+    "model": "fable",
+    "effort": "high",
+    "version": "2.1.260",
+    "permissionMode": "bypassPermissions",
+    "caps": {
+      "maxTurns": 40,
+      "maxBudgetUsd": 5,
+      "timeboxMinutes": 30
+    },
+    "command": [
+      "claude",
+      "-p",
+      "--output-format",
+      "json",
+      "--model",
+      "fable",
+      "--effort",
+      "high",
+      "--max-turns",
+      "40",
+      "--max-budget-usd",
+      "5"
+    ]
+  },
+  "attempt": 1,
+  "startedAt": "2026-09-06T12:00:00.000Z",
+  "finishedAt": "2026-09-06T12:01:05.000Z",
+  "host": "sample-host.local",
+  "status": "ok",
+  "usage": {
+    "input": 12000,
+    "output": 3000,
+    "cacheRead": 4000,
+    "cacheWrite": 800,
+    "turns": 8,
+    "toolCalls": 14,
+    "durationMs": 65000,
+    "costUsdEquivalent": 0.142,
+    "reportedCostUsd": 0.142,
+    "priceKey": "claude-fable-5-1"
+  },
+  "gates": [
+    {
+      "id": "build",
+      "pass": true,
+      "durationMs": 9000,
+      "detail": "tsc --noEmit succeeded"
+    },
+    {
+      "id": "typecheck",
+      "pass": true,
+      "durationMs": 6000,
+      "detail": "no type errors"
+    }
+  ],
+  "objective": 100,
+  "judgments": [],
+  "artifacts": {
+    "transcript": "transcript.jsonl.gz",
+    "diff": "diff.patch",
+    "screenshots": [],
+    "report": null
+  },
+  "notes": ["synthetic sample for site development"]
+}
