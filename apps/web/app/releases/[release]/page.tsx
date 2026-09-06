@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const ranked = [...release.standings].sort((a, b) => (b.overall ?? -1) - (a.overall ?? -1));
   const leader = ranked[0];
   return pageMetadata({
-    title: `${release.release} leaderboard · ${SITE_NAME}`,
+    title: `${release.release} leaderboard`,
     description: `${release.agents.length} agents, ${release.tasks.length} tasks${leader?.overall !== null && leader ? `. Leader: ${formatAgentLabel(leader.agent)} at ${formatScore(leader.overall)}` : ''}. Scored on gates, hidden tests and blind judging, with tokens and API-equivalent cost.`,
     path: `/releases/${release.release}/`,
   });

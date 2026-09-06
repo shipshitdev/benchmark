@@ -7,7 +7,7 @@ import { pageMetadata, SITE_NAME } from '@/lib/site';
 import { leaderForTask, scoringBadges, TASK_QUESTIONS } from '@/lib/tests';
 
 export const metadata: Metadata = pageMetadata({
-  title: `Tests · ${SITE_NAME}`,
+  title: `Tests`,
   description:
     'The six-task suite, one card per task: what it tests, how it is scored, and who leads it.',
   path: '/tests/',

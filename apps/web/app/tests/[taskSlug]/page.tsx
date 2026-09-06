@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const task = getLoadedTask(slug);
   if (!task) return {};
   return pageMetadata({
-    title: `${task.manifest.title} · ${SITE_NAME}`,
+    title: `${task.manifest.title} · test`,
     description: task.manifest.summary,
     path: `/tests/${slug}/`,
   });
