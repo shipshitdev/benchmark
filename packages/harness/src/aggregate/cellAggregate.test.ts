@@ -21,7 +21,6 @@ function makeRun(overrides: Partial<RunResult> & { attempt: number }): RunResult
       caps: { maxTurns: 40, maxBudgetUsd: 5, timeboxMinutes: 30 },
       command: ['claude'],
     },
-    attempt: overrides.attempt,
     startedAt: '2026-09-06T00:00:00.000Z',
     finishedAt: '2026-09-06T00:01:00.000Z',
     host: 'test-host',

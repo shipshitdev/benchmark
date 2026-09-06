@@ -37,8 +37,8 @@ export function findConfigPath(startDir: string): string {
 }
 
 export interface ConfigOverrides {
-  dataDir?: string;
-  tasksDir?: string;
+  dataDir?: string | undefined;
+  tasksDir?: string | undefined;
 }
 
 export async function loadConfig(
