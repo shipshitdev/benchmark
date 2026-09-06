@@ -1,0 +1,105 @@
+diff --git a/src/dateRange.ts b/src/dateRange.ts
+index 11c410a..406efd6 100644
+--- a/src/dateRange.ts
++++ b/src/dateRange.ts
+@@ -20,7 +20,7 @@ export function rangeDurationMs(range: DateRange): number {
+ }
+ 
+ export function overlaps(a: DateRange, b: DateRange): boolean {
+-  return a.start.getTime() < b.end.getTime() && b.start.getTime() < a.end.getTime();
++  return a.start.getTime() <= b.end.getTime() && b.start.getTime() <= a.end.getTime();
+ }
+ 
+ /**
+diff --git a/src/recurrence.ts b/src/recurrence.ts
+index 7428d51..e7990d7 100644
+--- a/src/recurrence.ts
++++ b/src/recurrence.ts
+@@ -13,8 +13,6 @@ export interface DailyRecurrenceRule {
+   readonly days: number;
+ }
+ 
+-const MS_PER_DAY = 24 * 60 * 60 * 1000;
+-
+ export function expandDailyRecurrence(rule: DailyRecurrenceRule): DateRange[] {
+   if (rule.days <= 0) {
+     return [];
+@@ -25,7 +23,8 @@ export function expandDailyRecurrence(rule: DailyRecurrenceRule): DateRange[] {
+ 
+   const ranges: DateRange[] = [];
+   for (let day = 0; day < rule.days; day++) {
+-    const dayStart = new Date(firstStart.getTime() + day * MS_PER_DAY);
++    const dayStart = new Date(firstStart);
++    dayStart.setDate(firstStart.getDate() + day);
+     const dayEnd = new Date(dayStart);
+     dayEnd.setHours(rule.endHour, rule.endMinute, 0, 0);
+     ranges.push(createRange(dayStart, dayEnd));
+diff --git a/test/dateRange.test.ts b/test/dateRange.test.ts
+index 1274f73..10f9b16 100644
+--- a/test/dateRange.test.ts
++++ b/test/dateRange.test.ts
+@@ -31,6 +31,12 @@ describe("overlaps", () => {
+     const b = createRange(new Date(2026, 0, 1, 10, 0, 0), new Date(2026, 0, 1, 11, 0, 0));
+     expect(overlaps(a, b)).toBe(false);
+   });
++
++  test("is true when two closed ranges touch at one instant", () => {
++    const a = createRange(new Date(2026, 2, 8, 9, 0, 0), new Date(2026, 2, 8, 13, 0, 0));
++    const b = createRange(new Date(2026, 2, 8, 13, 0, 0), new Date(2026, 2, 8, 17, 0, 0));
++    expect(overlaps(a, b)).toBe(true);
++  });
+ });
+ 
+ describe("mergeRanges", () => {
+@@ -50,6 +56,23 @@ describe("mergeRanges", () => {
+     expect(merged).toHaveLength(2);
+   });
+ 
++  test("combines ranges that touch at exactly one instant", () => {
++    const morning = createRange(
++      new Date(2026, 2, 8, 9, 0, 0),
++      new Date(2026, 2, 8, 13, 0, 0),
++    );
++    const afternoon = createRange(
++      new Date(2026, 2, 8, 13, 0, 0),
++      new Date(2026, 2, 8, 17, 0, 0),
++    );
++
++    const merged = mergeRanges([morning, afternoon]);
++
++    expect(merged).toHaveLength(1);
++    expect(merged[0].start.getTime()).toBe(morning.start.getTime());
++    expect(merged[0].end.getTime()).toBe(afternoon.end.getTime());
++  });
++
+   test("sorts unsorted input before merging", () => {
+     const a = createRange(new Date(2026, 0, 1, 8, 0, 0), new Date(2026, 0, 1, 10, 0, 0));
+     const b = createRange(new Date(2026, 0, 1, 9, 0, 0), new Date(2026, 0, 1, 12, 0, 0));
+diff --git a/test/recurrence.test.ts b/test/recurrence.test.ts
+index bdf22ef..a72f17f 100644
+--- a/test/recurrence.test.ts
++++ b/test/recurrence.test.ts
+@@ -36,6 +36,23 @@ describe("expandDailyRecurrence", () => {
+     expect(days.map((range) => range.start.getDate())).toEqual([1, 2, 3]);
+   });
+ 
++  test("preserves local times and duration across a daylight-saving transition", () => {
++    const days = expandDailyRecurrence({
++      startDate: new Date(2026, 2, 7),
++      startHour: 9,
++      startMinute: 0,
++      endHour: 17,
++      endMinute: 0,
++      days: 5,
++    });
++
++    expect(days.map((range) => range.start.getHours())).toEqual([9, 9, 9, 9, 9]);
++    expect(days.map((range) => range.end.getHours())).toEqual([17, 17, 17, 17, 17]);
++    expect(days.map((range) => range.end.getTime() - range.start.getTime())).toEqual(
++      Array(5).fill(8 * 60 * 60 * 1000),
++    );
++  });
++
+   test("returns an empty array when days is zero", () => {
+     const days = expandDailyRecurrence({
+       startDate: new Date(2026, 5, 1),

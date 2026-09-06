@@ -1,0 +1,108 @@
+{
+  "id": "v2026.09-smoke__backend--inventory-api__claude--haiku--low__1",
+  "release": "v2026.09-smoke",
+  "suiteVersion": "v2026.09",
+  "task": "backend/inventory-api",
+  "taskVersion": 1,
+  "agent": {
+    "cli": "claude",
+    "model": "haiku",
+    "effort": "low",
+    "version": "2.1.263 (Claude Code)",
+    "permissionMode": "dangerously-skip-permissions",
+    "caps": {
+      "maxTurns": 80,
+      "maxBudgetUsd": 15,
+      "timeboxMinutes": 45
+    },
+    "command": [
+      "claude",
+      "-p",
+      "# Implement the inventory service\n\nYou are working inside an empty Bun and TypeScript project. `openapi.yaml` in this directory\ndescribes an inventory service contract. `README.md` describes the runtime requirements.\nImplement the service so it conforms to the contract.\n\n## Scope\n\nRead `openapi.yaml` fully before writing code. It defines:\n\n- Products: create, list (paginated), fetch by id, update.\n- Warehouses: create, list.\n- Stock movements: record a movement of stock for a product at a warehouse, supporting a\n  client-supplied idempotency key so retried requests do not double-apply.\n- A low-stock report endpoint that lists products whose stock has fallen below their\n  configured reorder threshold.\n- Pagination on every list endpoint.\n- A fixed error shape for validation failures, used consistently across every endpoint.\n\n## Requirements\n\n- Design a schema for products, warehouses, and stock movements, and store it in SQLite via\n  `bun:sqlite`, reading the database file path from the `DATABASE_PATH` environment\n  variable.\n- Write migrations that create this schema and are safe to run more than once against the\n  same database file without error or duplication.\n- `bun run migrate` must run those migrations.\n- `bun run start` must start an HTTP server listening on the port from the `PORT`\n  environment variable, implementing every endpoint in `openapi.yaml`.\n- Validate every request body and query parameter against the contract, and return the\n  error shape from `openapi.yaml` (not a framework default) for every validation failure.\n- Apply the idempotency key on stock movements: replaying the same key must not create a\n  second movement or double-count stock.\n- Use parameterized queries everywhere; never build SQL by concatenating request input.\n- Add a `GET /health` endpoint that returns `200` once the service is ready to accept\n  traffic. It is not part of the OpenAPI contract; it exists only so the process can be\n  health-checked.\n\n## Constraints\n\n- Bun runtime only. Do not add a separate database server or ORM; use `bun:sqlite` directly.\n- Do not change `openapi.yaml`.\n\nWork only within this fixture directory.\n",
+      "--output-format",
+      "stream-json",
+      "--verbose",
+      "--model",
+      "haiku",
+      "--effort",
+      "low",
+      "--max-turns",
+      "80",
+      "--max-budget-usd",
+      "15",
+      "--dangerously-skip-permissions",
+      "--no-session-persistence",
+      "--setting-sources",
+      "project,local",
+      "--strict-mcp-config",
+      "--mcp-config",
+      "{\"mcpServers\":{}}"
+    ]
+  },
+  "attempt": 1,
+  "startedAt": "2026-09-06T09:38:04.744Z",
+  "finishedAt": "2026-09-06T09:41:00.146Z",
+  "host": "unknown-host",
+  "status": "ok",
+  "usage": {
+    "input": 233,
+    "output": 16985,
+    "cacheRead": 1108811,
+    "cacheWrite": 36628,
+    "turns": 31,
+    "toolCalls": 30,
+    "durationMs": 173436,
+    "costUsdEquivalent": 0.2418,
+    "reportedCostUsd": 0.2707611,
+    "priceKey": "claude-haiku-4-5"
+  },
+  "gates": [
+    {
+      "id": "install",
+      "pass": true,
+      "durationMs": 203,
+      "detail": "bun install v1.4.2 (744846f84)\n\n+ @types/bun@1.4.1\n+ typescript@7.0.2\n\n6 packages installed [192.00ms]\n\nResolving dependencies\nResolved, downloaded and extracted [2]\nSaved lockfile"
+    },
+    {
+      "id": "migrate",
+      "pass": true,
+      "durationMs": 61,
+      "detail": "Migrations completed\nMigrations completed\n\n$ bun run src/migrate.ts\n$ bun run src/migrate.ts"
+    }
+  ],
+  "objective": 100,
+  "judgments": [
+    {
+      "judge": {
+        "cli": "codex",
+        "model": "gpt-5.6-sol",
+        "version": "codex-cli 0.153.4"
+      },
+      "blindLabel": "A",
+      "scores": {
+        "schema-soundness": 2,
+        "boundaries-and-errors": 1,
+        "security": 2
+      },
+      "subjective": 42.5,
+      "rationale": "The normalized tables have primary keys, foreign keys, required fields, unique SKU/code/idempotency constraints, and an audit-style stock movement history, but lack indexes for movement aggregation, low-stock reporting, and pagination; database-level checks for movement type, quantities, and thresholds are also absent. Error responses use a consistent envelope and common cases receive appropriate statuses, but malformed JSON or non-object bodies become 500s, PATCH accepts unknown-only payloads, pagination uses permissive parseInt parsing, and idempotent replays compare unvalidated bodies. Queries are parameterized and internal errors are not returned, but numeric inputs lack safe upper bounds and concurrent identical idempotent requests race: the unique constraint prevents duplicate insertion, yet the loser receives a 500 instead of the stored successful result.",
+      "usage": {
+        "input": 109870,
+        "output": 863,
+        "cacheRead": 89216,
+        "cacheWrite": null,
+        "turns": 1,
+        "toolCalls": 3,
+        "durationMs": 31736,
+        "costUsdEquivalent": null
+      }
+    }
+  ],
+  "artifacts": {
+    "transcript": "transcript.jsonl.gz",
+    "diff": "diff.patch",
+    "screenshots": [],
+    "report": null
+  },
+  "notes": []
+}

@@ -1,0 +1,857 @@
+{
+  "release": "v2026.09-smoke",
+  "title": "v2026.09-smoke",
+  "suiteVersion": "v2026.09",
+  "generatedAt": "2026-09-06T09:53:00.349Z",
+  "pricesAsOf": "2026-09-06",
+  "categoryWeights": {
+    "ux-ui": 1,
+    "frontend": 1,
+    "backend": 1,
+    "planning-audit": 1,
+    "bugfix": 1,
+    "signature": 0
+  },
+  "agents": [
+    {
+      "cli": "grok",
+      "model": "grok-4.6"
+    },
+    {
+      "cli": "claude",
+      "model": "haiku",
+      "effort": "low"
+    },
+    {
+      "cli": "codex",
+      "model": "gpt-5.6-sol",
+      "effort": "low"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "frontend/issue-board-filters",
+      "category": "frontend",
+      "title": "Issue board filters",
+      "version": 1
+    },
+    {
+      "id": "signature/landing-hero",
+      "category": "signature",
+      "title": "shipshit.dev landing hero",
+      "version": 1
+    },
+    {
+      "id": "planning-audit/planted-defects",
+      "category": "planning-audit",
+      "title": "Codebase audit, planted defects",
+      "version": 1
+    },
+    {
+      "id": "backend/inventory-api",
+      "category": "backend",
+      "title": "Inventory service",
+      "version": 1
+    },
+    {
+      "id": "ux-ui/pricing-page",
+      "category": "ux-ui",
+      "title": "Shipcut pricing page",
+      "version": 1
+    },
+    {
+      "id": "bugfix/date-range-overlap",
+      "category": "bugfix",
+      "title": "Fix date range overlap bug",
+      "version": 1
+    }
+  ],
+  "cells": [
+    {
+      "task": "frontend/issue-board-filters",
+      "agent": {
+        "cli": "grok",
+        "model": "grok-4.6"
+      },
+      "runs": [
+        "v2026.09-smoke__frontend--issue-board-filters__grok--grok-4.6__1"
+      ],
+      "gatePassRate": 0,
+      "objective": null,
+      "subjective": null,
+      "score": null,
+      "usage": {
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0,
+        "turns": 0,
+        "toolCalls": 0,
+        "durationMs": 0,
+        "costUsdEquivalent": 0
+      }
+    },
+    {
+      "task": "frontend/issue-board-filters",
+      "agent": {
+        "cli": "claude",
+        "model": "haiku",
+        "effort": "low"
+      },
+      "runs": [
+        "v2026.09-smoke__frontend--issue-board-filters__claude--haiku--low__1"
+      ],
+      "gatePassRate": 1,
+      "objective": {
+        "mean": 55.55555555555556,
+        "min": 55.55555555555556,
+        "max": 55.55555555555556,
+        "n": 1
+      },
+      "subjective": {
+        "mean": 62.5,
+        "min": 62.5,
+        "max": 62.5,
+        "n": 1
+      },
+      "score": {
+        "mean": 58.333333333333336,
+        "min": 58.333333333333336,
+        "max": 58.333333333333336,
+        "n": 1
+      },
+      "usage": {
+        "input": 302,
+        "output": 20086,
+        "cacheRead": 1515991,
+        "cacheWrite": 49896,
+        "turns": 38,
+        "toolCalls": 36,
+        "durationMs": 242321,
+        "costUsdEquivalent": 0.3147
+      }
+    },
+    {
+      "task": "frontend/issue-board-filters",
+      "agent": {
+        "cli": "codex",
+        "model": "gpt-5.6-sol",
+        "effort": "low"
+      },
+      "runs": [
+        "v2026.09-smoke__frontend--issue-board-filters__codex--gpt-5.6-sol--low__1"
+      ],
+      "gatePassRate": 1,
+      "objective": {
+        "mean": 55.55555555555556,
+        "min": 55.55555555555556,
+        "max": 55.55555555555556,
+        "n": 1
+      },
+      "subjective": null,
+      "score": {
+        "mean": 55.555555555555564,
+        "min": 55.555555555555564,
+        "max": 55.555555555555564,
+        "n": 1
+      },
+      "usage": {
+        "input": 1078416,
+        "output": 8629,
+        "cacheRead": 1038464,
+        "cacheWrite": null,
+        "turns": 1,
+        "toolCalls": 16,
+        "durationMs": 306178,
+        "costUsdEquivalent": 4.9016
+      }
+    },
+    {
+      "task": "signature/landing-hero",
+      "agent": {
+        "cli": "grok",
+        "model": "grok-4.6"
+      },
+      "runs": [
+        "v2026.09-smoke__signature--landing-hero__grok--grok-4.6__1"
+      ],
+      "gatePassRate": 0,
+      "objective": null,
+      "subjective": null,
+      "score": null,
+      "usage": {
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0,
+        "turns": 0,
+        "toolCalls": 0,
+        "durationMs": 0,
+        "costUsdEquivalent": 0
+      }
+    },
+    {
+      "task": "signature/landing-hero",
+      "agent": {
+        "cli": "claude",
+        "model": "haiku",
+        "effort": "low"
+      },
+      "runs": [
+        "v2026.09-smoke__signature--landing-hero__claude--haiku--low__1"
+      ],
+      "gatePassRate": 1,
+      "objective": null,
+      "subjective": {
+        "mean": 57.49999999999999,
+        "min": 57.49999999999999,
+        "max": 57.49999999999999,
+        "n": 1
+      },
+      "score": {
+        "mean": 57.49999999999999,
+        "min": 57.49999999999999,
+        "max": 57.49999999999999,
+        "n": 1
+      },
+      "usage": {
+        "input": 153,
+        "output": 5014,
+        "cacheRead": 486334,
+        "cacheWrite": 29552,
+        "turns": 19,
+        "toolCalls": 18,
+        "durationMs": 69542,
+        "costUsdEquivalent": 0.1108
+      }
+    },
+    {
+      "task": "signature/landing-hero",
+      "agent": {
+        "cli": "codex",
+        "model": "gpt-5.6-sol",
+        "effort": "low"
+      },
+      "runs": [
+        "v2026.09-smoke__signature--landing-hero__codex--gpt-5.6-sol--low__1"
+      ],
+      "gatePassRate": 1,
+      "objective": null,
+      "subjective": null,
+      "score": null,
+      "usage": {
+        "input": 553396,
+        "output": 11777,
+        "cacheRead": 516864,
+        "cacheWrite": null,
+        "turns": 1,
+        "toolCalls": 12,
+        "durationMs": 262233,
+        "costUsdEquivalent": 2.6559
+      }
+    },
+    {
+      "task": "planning-audit/planted-defects",
+      "agent": {
+        "cli": "grok",
+        "model": "grok-4.6"
+      },
+      "runs": [
+        "v2026.09-smoke__planning-audit--planted-defects__grok--grok-4.6__1"
+      ],
+      "gatePassRate": 0,
+      "objective": null,
+      "subjective": null,
+      "score": null,
+      "usage": {
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0,
+        "turns": 0,
+        "toolCalls": 0,
+        "durationMs": 0,
+        "costUsdEquivalent": 0
+      }
+    },
+    {
+      "task": "planning-audit/planted-defects",
+      "agent": {
+        "cli": "claude",
+        "model": "haiku",
+        "effort": "low"
+      },
+      "runs": [
+        "v2026.09-smoke__planning-audit--planted-defects__claude--haiku--low__1"
+      ],
+      "gatePassRate": 1,
+      "objective": {
+        "mean": 75,
+        "min": 75,
+        "max": 75,
+        "n": 1
+      },
+      "subjective": {
+        "mean": 85,
+        "min": 85,
+        "max": 85,
+        "n": 1
+      },
+      "score": {
+        "mean": 79,
+        "min": 79,
+        "max": 79,
+        "n": 1
+      },
+      "usage": {
+        "input": 57,
+        "output": 6665,
+        "cacheRead": 179429,
+        "cacheWrite": 25488,
+        "turns": 16,
+        "toolCalls": 15,
+        "durationMs": 76024,
+        "costUsdEquivalent": 0.0832
+      }
+    },
+    {
+      "task": "planning-audit/planted-defects",
+      "agent": {
+        "cli": "codex",
+        "model": "gpt-5.6-sol",
+        "effort": "low"
+      },
+      "runs": [
+        "v2026.09-smoke__planning-audit--planted-defects__codex--gpt-5.6-sol--low__1"
+      ],
+      "gatePassRate": 1,
+      "objective": null,
+      "subjective": null,
+      "score": null,
+      "usage": {
+        "input": 192376,
+        "output": 5723,
+        "cacheRead": 161152,
+        "cacheWrite": null,
+        "turns": 1,
+        "toolCalls": 5,
+        "durationMs": 134934,
+        "costUsdEquivalent": 0.9484
+      }
+    },
+    {
+      "task": "backend/inventory-api",
+      "agent": {
+        "cli": "grok",
+        "model": "grok-4.6"
+      },
+      "runs": [
+        "v2026.09-smoke__backend--inventory-api__grok--grok-4.6__1"
+      ],
+      "gatePassRate": 0,
+      "objective": null,
+      "subjective": null,
+      "score": null,
+      "usage": {
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0,
+        "turns": 0,
+        "toolCalls": 0,
+        "durationMs": 0,
+        "costUsdEquivalent": 0
+      }
+    },
+    {
+      "task": "backend/inventory-api",
+      "agent": {
+        "cli": "claude",
+        "model": "haiku",
+        "effort": "low"
+      },
+      "runs": [
+        "v2026.09-smoke__backend--inventory-api__claude--haiku--low__1"
+      ],
+      "gatePassRate": 1,
+      "objective": {
+        "mean": 100,
+        "min": 100,
+        "max": 100,
+        "n": 1
+      },
+      "subjective": {
+        "mean": 42.5,
+        "min": 42.5,
+        "max": 42.5,
+        "n": 1
+      },
+      "score": {
+        "mean": 77,
+        "min": 77,
+        "max": 77,
+        "n": 1
+      },
+      "usage": {
+        "input": 233,
+        "output": 16985,
+        "cacheRead": 1108811,
+        "cacheWrite": 36628,
+        "turns": 31,
+        "toolCalls": 30,
+        "durationMs": 173436,
+        "costUsdEquivalent": 0.2418
+      }
+    },
+    {
+      "task": "backend/inventory-api",
+      "agent": {
+        "cli": "codex",
+        "model": "gpt-5.6-sol",
+        "effort": "low"
+      },
+      "runs": [
+        "v2026.09-smoke__backend--inventory-api__codex--gpt-5.6-sol--low__1"
+      ],
+      "gatePassRate": 0,
+      "objective": null,
+      "subjective": null,
+      "score": null,
+      "usage": {
+        "input": 315699,
+        "output": 8075,
+        "cacheRead": 290432,
+        "cacheWrite": null,
+        "turns": 1,
+        "toolCalls": 8,
+        "durationMs": 172156,
+        "costUsdEquivalent": 1.5405
+      }
+    },
+    {
+      "task": "ux-ui/pricing-page",
+      "agent": {
+        "cli": "grok",
+        "model": "grok-4.6"
+      },
+      "runs": [
+        "v2026.09-smoke__ux-ui--pricing-page__grok--grok-4.6__1"
+      ],
+      "gatePassRate": 0,
+      "objective": null,
+      "subjective": null,
+      "score": null,
+      "usage": {
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0,
+        "turns": 0,
+        "toolCalls": 0,
+        "durationMs": 0,
+        "costUsdEquivalent": 0
+      }
+    },
+    {
+      "task": "ux-ui/pricing-page",
+      "agent": {
+        "cli": "claude",
+        "model": "haiku",
+        "effort": "low"
+      },
+      "runs": [
+        "v2026.09-smoke__ux-ui--pricing-page__claude--haiku--low__1"
+      ],
+      "gatePassRate": 0,
+      "objective": null,
+      "subjective": null,
+      "score": null,
+      "usage": {
+        "input": 194,
+        "output": 10208,
+        "cacheRead": 735217,
+        "cacheWrite": 28118,
+        "turns": 25,
+        "toolCalls": 23,
+        "durationMs": 115306,
+        "costUsdEquivalent": 0.1599
+      }
+    },
+    {
+      "task": "ux-ui/pricing-page",
+      "agent": {
+        "cli": "codex",
+        "model": "gpt-5.6-sol",
+        "effort": "low"
+      },
+      "runs": [
+        "v2026.09-smoke__ux-ui--pricing-page__codex--gpt-5.6-sol--low__1"
+      ],
+      "gatePassRate": 1,
+      "objective": null,
+      "subjective": null,
+      "score": null,
+      "usage": {
+        "input": 833408,
+        "output": 15501,
+        "cacheRead": 788736,
+        "cacheWrite": null,
+        "turns": 1,
+        "toolCalls": 15,
+        "durationMs": 332242,
+        "costUsdEquivalent": 3.9591
+      }
+    },
+    {
+      "task": "bugfix/date-range-overlap",
+      "agent": {
+        "cli": "grok",
+        "model": "grok-4.6"
+      },
+      "runs": [
+        "v2026.09-smoke__bugfix--date-range-overlap__grok--grok-4.6__1"
+      ],
+      "gatePassRate": 0,
+      "objective": null,
+      "subjective": null,
+      "score": null,
+      "usage": {
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0,
+        "turns": 0,
+        "toolCalls": 0,
+        "durationMs": 0,
+        "costUsdEquivalent": 0
+      }
+    },
+    {
+      "task": "bugfix/date-range-overlap",
+      "agent": {
+        "cli": "claude",
+        "model": "haiku",
+        "effort": "low"
+      },
+      "runs": [
+        "v2026.09-smoke__bugfix--date-range-overlap__claude--haiku--low__1"
+      ],
+      "gatePassRate": 1,
+      "objective": {
+        "mean": 100,
+        "min": 100,
+        "max": 100,
+        "n": 1
+      },
+      "subjective": null,
+      "score": {
+        "mean": 100,
+        "min": 100,
+        "max": 100,
+        "n": 1
+      },
+      "usage": {
+        "input": 129,
+        "output": 9778,
+        "cacheRead": 482170,
+        "cacheWrite": 24627,
+        "turns": 19,
+        "toolCalls": 18,
+        "durationMs": 73788,
+        "costUsdEquivalent": 0.128
+      }
+    },
+    {
+      "task": "bugfix/date-range-overlap",
+      "agent": {
+        "cli": "codex",
+        "model": "gpt-5.6-sol",
+        "effort": "low"
+      },
+      "runs": [
+        "v2026.09-smoke__bugfix--date-range-overlap__codex--gpt-5.6-sol--low__1"
+      ],
+      "gatePassRate": 1,
+      "objective": {
+        "mean": 100,
+        "min": 100,
+        "max": 100,
+        "n": 1
+      },
+      "subjective": null,
+      "score": {
+        "mean": 100,
+        "min": 100,
+        "max": 100,
+        "n": 1
+      },
+      "usage": {
+        "input": 263288,
+        "output": 2864,
+        "cacheRead": 229504,
+        "cacheWrite": null,
+        "turns": 1,
+        "toolCalls": 8,
+        "durationMs": 70631,
+        "costUsdEquivalent": 1.2022
+      }
+    }
+  ],
+  "standings": [
+    {
+      "agent": {
+        "cli": "grok",
+        "model": "grok-4.6"
+      },
+      "overall": null,
+      "categories": [
+        {
+          "category": "frontend",
+          "agent": {
+            "cli": "grok",
+            "model": "grok-4.6"
+          },
+          "score": null,
+          "tasks": 1
+        },
+        {
+          "category": "signature",
+          "agent": {
+            "cli": "grok",
+            "model": "grok-4.6"
+          },
+          "score": null,
+          "tasks": 1
+        },
+        {
+          "category": "planning-audit",
+          "agent": {
+            "cli": "grok",
+            "model": "grok-4.6"
+          },
+          "score": null,
+          "tasks": 1
+        },
+        {
+          "category": "backend",
+          "agent": {
+            "cli": "grok",
+            "model": "grok-4.6"
+          },
+          "score": null,
+          "tasks": 1
+        },
+        {
+          "category": "ux-ui",
+          "agent": {
+            "cli": "grok",
+            "model": "grok-4.6"
+          },
+          "score": null,
+          "tasks": 1
+        },
+        {
+          "category": "bugfix",
+          "agent": {
+            "cli": "grok",
+            "model": "grok-4.6"
+          },
+          "score": null,
+          "tasks": 1
+        }
+      ],
+      "usage": {
+        "input": null,
+        "output": null,
+        "cacheRead": null,
+        "cacheWrite": null,
+        "turns": null,
+        "toolCalls": 0,
+        "durationMs": 32764,
+        "costUsdEquivalent": null
+      },
+      "scorePerDollar": null,
+      "telemetry": "partial"
+    },
+    {
+      "agent": {
+        "cli": "claude",
+        "model": "haiku",
+        "effort": "low"
+      },
+      "overall": 78.58333333333334,
+      "categories": [
+        {
+          "category": "frontend",
+          "agent": {
+            "cli": "claude",
+            "model": "haiku",
+            "effort": "low"
+          },
+          "score": 58.333333333333336,
+          "tasks": 1
+        },
+        {
+          "category": "signature",
+          "agent": {
+            "cli": "claude",
+            "model": "haiku",
+            "effort": "low"
+          },
+          "score": 57.49999999999999,
+          "tasks": 1
+        },
+        {
+          "category": "planning-audit",
+          "agent": {
+            "cli": "claude",
+            "model": "haiku",
+            "effort": "low"
+          },
+          "score": 79,
+          "tasks": 1
+        },
+        {
+          "category": "backend",
+          "agent": {
+            "cli": "claude",
+            "model": "haiku",
+            "effort": "low"
+          },
+          "score": 77,
+          "tasks": 1
+        },
+        {
+          "category": "ux-ui",
+          "agent": {
+            "cli": "claude",
+            "model": "haiku",
+            "effort": "low"
+          },
+          "score": null,
+          "tasks": 1
+        },
+        {
+          "category": "bugfix",
+          "agent": {
+            "cli": "claude",
+            "model": "haiku",
+            "effort": "low"
+          },
+          "score": 100,
+          "tasks": 1
+        }
+      ],
+      "usage": {
+        "input": 1068,
+        "output": 68736,
+        "cacheRead": 4507952,
+        "cacheWrite": 194309,
+        "turns": 148,
+        "toolCalls": 140,
+        "durationMs": 750417,
+        "costUsdEquivalent": 1.0384
+      },
+      "scorePerDollar": 75.67732408834105,
+      "telemetry": "full"
+    },
+    {
+      "agent": {
+        "cli": "codex",
+        "model": "gpt-5.6-sol",
+        "effort": "low"
+      },
+      "overall": 77.77777777777779,
+      "categories": [
+        {
+          "category": "frontend",
+          "agent": {
+            "cli": "codex",
+            "model": "gpt-5.6-sol",
+            "effort": "low"
+          },
+          "score": 55.555555555555564,
+          "tasks": 1
+        },
+        {
+          "category": "signature",
+          "agent": {
+            "cli": "codex",
+            "model": "gpt-5.6-sol",
+            "effort": "low"
+          },
+          "score": null,
+          "tasks": 1
+        },
+        {
+          "category": "planning-audit",
+          "agent": {
+            "cli": "codex",
+            "model": "gpt-5.6-sol",
+            "effort": "low"
+          },
+          "score": null,
+          "tasks": 1
+        },
+        {
+          "category": "backend",
+          "agent": {
+            "cli": "codex",
+            "model": "gpt-5.6-sol",
+            "effort": "low"
+          },
+          "score": null,
+          "tasks": 1
+        },
+        {
+          "category": "ux-ui",
+          "agent": {
+            "cli": "codex",
+            "model": "gpt-5.6-sol",
+            "effort": "low"
+          },
+          "score": null,
+          "tasks": 1
+        },
+        {
+          "category": "bugfix",
+          "agent": {
+            "cli": "codex",
+            "model": "gpt-5.6-sol",
+            "effort": "low"
+          },
+          "score": 100,
+          "tasks": 1
+        }
+      ],
+      "usage": {
+        "input": 3236583,
+        "output": 52569,
+        "cacheRead": 3025152,
+        "cacheWrite": null,
+        "turns": 6,
+        "toolCalls": 64,
+        "durationMs": 1278374,
+        "costUsdEquivalent": 15.207699999999999
+      },
+      "scorePerDollar": 5.1143682330515325,
+      "telemetry": "partial"
+    }
+  ],
+  "pairwise": [],
+  "judges": [
+    {
+      "cli": "claude",
+      "model": "opus"
+    },
+    {
+      "cli": "codex",
+      "model": "gpt-6-astra"
+    },
+    {
+      "cli": "grok",
+      "model": "grok-4.6"
+    }
+  ],
+  "notes": []
+}

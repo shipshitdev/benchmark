@@ -1,0 +1,65 @@
+{
+  "id": "v2026.09-smoke__bugfix--date-range-overlap__grok--grok-4.6__1",
+  "release": "v2026.09-smoke",
+  "suiteVersion": "v2026.09",
+  "task": "bugfix/date-range-overlap",
+  "taskVersion": 1,
+  "agent": {
+    "cli": "grok",
+    "model": "grok-4.6",
+    "version": "grok 1.0.4 (d846eb93d94d)",
+    "permissionMode": "always-approve",
+    "caps": {
+      "maxTurns": 40,
+      "maxBudgetUsd": 5,
+      "timeboxMinutes": 20
+    },
+    "command": [
+      "grok",
+      "-p",
+      "# Fix the reported date range bug\n\n`ISSUE.md` in this directory describes a bug reported against this library, with a symptom,\na minimal repro, and the expected behavior. Read it, then fix the bug.\n\n## Requirements\n\n- Fix the root cause of the behavior described in `ISSUE.md`. Do not special-case the exact\n  repro; fix the underlying logic so every equivalent input behaves correctly.\n- Keep every existing test in `test/` passing.\n- Add at least one new test that reproduces the reported bug and would fail against the old\n  code, alongside the existing tests.\n\n## Constraints\n\n- Do not change the public API of `src/index.ts` (function names, parameter order, or\n  return shapes) unless the bug cannot be fixed without it; if you do, update every caller\n  in this fixture.\n- Do not add a third-party date library; this project has none as a dependency and should\n  keep it that way.\n\nWork only within this fixture directory.\n",
+      "--output-format",
+      "streaming-messages-json",
+      "-m",
+      "grok-4.6",
+      "--session-id",
+      "fe3b3f47-c92a-4938-9589-688d5d230793",
+      "--max-turns",
+      "40",
+      "--always-approve",
+      "--cwd",
+      "/Users/decod3rslabs/www/shipshitdev/public/benchmark/.runs/v2026.09-smoke__bugfix--date-range-overlap__grok--grok-4.6__1/workspace"
+    ]
+  },
+  "attempt": 1,
+  "startedAt": "2026-09-06T09:42:09.051Z",
+  "finishedAt": "2026-09-06T09:42:14.644Z",
+  "host": "unknown-host",
+  "status": "error",
+  "usage": {
+    "input": null,
+    "output": null,
+    "cacheRead": null,
+    "cacheWrite": null,
+    "turns": null,
+    "toolCalls": 0,
+    "durationMs": 5160,
+    "costUsdEquivalent": null,
+    "priceKey": "grok-4-6"
+  },
+  "gates": [],
+  "objective": null,
+  "judgments": [],
+  "artifacts": {
+    "transcript": "transcript.jsonl.gz",
+    "diff": "diff.patch",
+    "screenshots": [],
+    "report": null
+  },
+  "notes": [
+    "grok: token usage not present in CLI output",
+    "grok: stderr tail: Error: Internal error: {\n  \"message\": \"API error (status 402 Payment Required): Grok Build usage balance exhausted\",\n  \"http_status\": 402\n}\n",
+    "grok: telemetry unavailable",
+    "token counts unavailable; cost left null"
+  ]
+}

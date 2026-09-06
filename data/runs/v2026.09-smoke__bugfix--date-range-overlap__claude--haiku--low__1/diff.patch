@@ -1,0 +1,110 @@
+diff --git a/src/dateRange.ts b/src/dateRange.ts
+index 11c410a..406efd6 100644
+--- a/src/dateRange.ts
++++ b/src/dateRange.ts
+@@ -20,7 +20,7 @@ export function rangeDurationMs(range: DateRange): number {
+ }
+ 
+ export function overlaps(a: DateRange, b: DateRange): boolean {
+-  return a.start.getTime() < b.end.getTime() && b.start.getTime() < a.end.getTime();
++  return a.start.getTime() <= b.end.getTime() && b.start.getTime() <= a.end.getTime();
+ }
+ 
+ /**
+diff --git a/src/recurrence.ts b/src/recurrence.ts
+index 7428d51..608e905 100644
+--- a/src/recurrence.ts
++++ b/src/recurrence.ts
+@@ -13,21 +13,22 @@ export interface DailyRecurrenceRule {
+   readonly days: number;
+ }
+ 
+-const MS_PER_DAY = 24 * 60 * 60 * 1000;
+-
+ export function expandDailyRecurrence(rule: DailyRecurrenceRule): DateRange[] {
+   if (rule.days <= 0) {
+     return [];
+   }
+ 
+-  const firstStart = new Date(rule.startDate);
+-  firstStart.setHours(rule.startHour, rule.startMinute, 0, 0);
+-
+   const ranges: DateRange[] = [];
+   for (let day = 0; day < rule.days; day++) {
+-    const dayStart = new Date(firstStart.getTime() + day * MS_PER_DAY);
+-    const dayEnd = new Date(dayStart);
++    const date = new Date(rule.startDate);
++    date.setDate(date.getDate() + day);
++
++    const dayStart = new Date(date);
++    dayStart.setHours(rule.startHour, rule.startMinute, 0, 0);
++
++    const dayEnd = new Date(date);
+     dayEnd.setHours(rule.endHour, rule.endMinute, 0, 0);
++
+     ranges.push(createRange(dayStart, dayEnd));
+   }
+ 
+diff --git a/test/dateRange.test.ts b/test/dateRange.test.ts
+index 1274f73..4affc19 100644
+--- a/test/dateRange.test.ts
++++ b/test/dateRange.test.ts
+@@ -31,6 +31,12 @@ describe("overlaps", () => {
+     const b = createRange(new Date(2026, 0, 1, 10, 0, 0), new Date(2026, 0, 1, 11, 0, 0));
+     expect(overlaps(a, b)).toBe(false);
+   });
++
++  test("is true when two ranges touch at exactly one instant", () => {
++    const a = createRange(new Date(2026, 0, 1, 8, 0, 0), new Date(2026, 0, 1, 9, 0, 0));
++    const b = createRange(new Date(2026, 0, 1, 9, 0, 0), new Date(2026, 0, 1, 10, 0, 0));
++    expect(overlaps(a, b)).toBe(true);
++  });
+ });
+ 
+ describe("mergeRanges", () => {
+@@ -50,6 +56,15 @@ describe("mergeRanges", () => {
+     expect(merged).toHaveLength(2);
+   });
+ 
++  test("combines two ranges that touch at exactly one instant", () => {
++    const a = createRange(new Date(2026, 0, 1, 8, 0, 0), new Date(2026, 0, 1, 9, 0, 0));
++    const b = createRange(new Date(2026, 0, 1, 9, 0, 0), new Date(2026, 0, 1, 10, 0, 0));
++    const merged = mergeRanges([a, b]);
++    expect(merged).toHaveLength(1);
++    expect(merged[0].start.getTime()).toBe(a.start.getTime());
++    expect(merged[0].end.getTime()).toBe(b.end.getTime());
++  });
++
+   test("sorts unsorted input before merging", () => {
+     const a = createRange(new Date(2026, 0, 1, 8, 0, 0), new Date(2026, 0, 1, 10, 0, 0));
+     const b = createRange(new Date(2026, 0, 1, 9, 0, 0), new Date(2026, 0, 1, 12, 0, 0));
+diff --git a/test/recurrence.test.ts b/test/recurrence.test.ts
+index bdf22ef..9954aed 100644
+--- a/test/recurrence.test.ts
++++ b/test/recurrence.test.ts
+@@ -47,4 +47,25 @@ describe("expandDailyRecurrence", () => {
+     });
+     expect(days).toEqual([]);
+   });
++
++  test("preserves times correctly across DST transitions", () => {
++    const days = expandDailyRecurrence({
++      startDate: new Date(2026, 2, 7), // Mar 7, 2026 - before spring-forward DST
++      startHour: 9,
++      startMinute: 0,
++      endHour: 17,
++      endMinute: 0,
++      days: 5, // Mar 7-11, spanning the DST change on Mar 8
++    });
++
++    expect(days).toHaveLength(5);
++    for (let i = 0; i < days.length; i++) {
++      expect(days[i].start.getHours()).toBe(9);
++      expect(days[i].start.getMinutes()).toBe(0);
++      expect(days[i].end.getHours()).toBe(17);
++      expect(days[i].end.getMinutes()).toBe(0);
++      // Each day should be 8 hours (28800000 ms)
++      expect(days[i].end.getTime() - days[i].start.getTime()).toBe(8 * 60 * 60 * 1000);
++    }
++  });
+ });

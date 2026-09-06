@@ -1,0 +1,538 @@
+diff --git a/AGENTS.md b/AGENTS.md
+new file mode 100644
+index 0000000..643577d
+--- /dev/null
++++ b/AGENTS.md
+@@ -0,0 +1,9 @@
++<!-- BEGIN:nextjs-agent-rules -->
++
++# This is NOT the Next.js you know
++
++This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
++
++This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
++
++<!-- END:nextjs-agent-rules -->
+diff --git a/CLAUDE.md b/CLAUDE.md
+new file mode 100644
+index 0000000..43c994c
+--- /dev/null
++++ b/CLAUDE.md
+@@ -0,0 +1 @@
++@AGENTS.md
+diff --git a/app/pricing/page.tsx b/app/pricing/page.tsx
+index 76e1b20..4f2e856 100644
+--- a/app/pricing/page.tsx
++++ b/app/pricing/page.tsx
+@@ -1,5 +1,497 @@
++"use client";
++
+ import type { ReactNode } from "react";
++import { useState } from "react";
++import Link from "next/link";
++
++type BillingPeriod = "monthly" | "annual";
++
++const TIERS = [
++  {
++    name: "Starter",
++    description: "Perfect for solo streamers getting started",
++    monthlyPrice: 29,
++    annualPrice: 290,
++    cta: "Start free trial",
++    highlighted: false,
++    features: [
++      "Up to 4 livestreams/month",
++      "1 long-form recap video",
++      "Up to 10 short clips",
++      "Basic quality (1080p)",
++      "Standard turnaround (24 hours)",
++      "Community support",
++    ],
++  },
++  {
++    name: "Pro",
++    description: "For growing content teams",
++    monthlyPrice: 99,
++    annualPrice: 990,
++    cta: "Start free trial",
++    highlighted: true,
++    features: [
++      "Unlimited livestreams",
++      "Unlimited recap videos",
++      "Unlimited short clips",
++      "Premium quality (4K)",
++      "Priority turnaround (4 hours)",
++      "Email support",
++      "Custom clip templates",
++      "Advanced analytics",
++    ],
++  },
++  {
++    name: "Studio",
++    description: "For agencies and large studios",
++    monthlyPrice: 299,
++    annualPrice: 2990,
++    cta: "Contact sales",
++    highlighted: false,
++    features: [
++      "Everything in Pro",
++      "Dedicated account manager",
++      "White-label clips",
++      "API access",
++      "Multi-user team management",
++      "Custom integration",
++      "Priority phone support",
++      "SLA guarantee",
++    ],
++  },
++];
++
++const ALL_FEATURES = [
++  { name: "Livestreams per month", category: "Core" },
++  { name: "Recap videos", category: "Core" },
++  { name: "Short clips", category: "Core" },
++  { name: "Video quality", category: "Quality" },
++  { name: "Turnaround time", category: "Quality" },
++  { name: "Custom clip templates", category: "Features" },
++  { name: "Advanced analytics", category: "Features" },
++  { name: "White-label clips", category: "Features" },
++  { name: "API access", category: "Features" },
++  { name: "Team management", category: "Support" },
++  { name: "Dedicated account manager", category: "Support" },
++  { name: "Phone support", category: "Support" },
++];
++
++const FEATURE_MATRIX = {
++  Starter: {
++    "Livestreams per month": "Up to 4",
++    "Recap videos": "1 per month",
++    "Short clips": "Up to 10",
++    "Video quality": "1080p",
++    "Turnaround time": "24 hours",
++    "Custom clip templates": false,
++    "Advanced analytics": false,
++    "White-label clips": false,
++    "API access": false,
++    "Team management": false,
++    "Dedicated account manager": false,
++    "Phone support": false,
++  },
++  Pro: {
++    "Livestreams per month": "Unlimited",
++    "Recap videos": "Unlimited",
++    "Short clips": "Unlimited",
++    "Video quality": "4K",
++    "Turnaround time": "4 hours",
++    "Custom clip templates": true,
++    "Advanced analytics": true,
++    "White-label clips": false,
++    "API access": false,
++    "Team management": true,
++    "Dedicated account manager": false,
++    "Phone support": false,
++  },
++  Studio: {
++    "Livestreams per month": "Unlimited",
++    "Recap videos": "Unlimited",
++    "Short clips": "Unlimited",
++    "Video quality": "4K",
++    "Turnaround time": "1 hour",
++    "Custom clip templates": true,
++    "Advanced analytics": true,
++    "White-label clips": true,
++    "API access": true,
++    "Team management": true,
++    "Dedicated account manager": true,
++    "Phone support": true,
++  },
++};
++
++function BillingToggle({
++  billingPeriod,
++  onToggle,
++}: {
++  billingPeriod: BillingPeriod;
++  onToggle: (period: BillingPeriod) => void;
++}): ReactNode {
++  return (
++    <div className="flex items-center justify-center gap-4">
++      <button
++        onClick={() => onToggle("monthly")}
++        className={`px-4 py-2 font-medium transition-colors ${
++          billingPeriod === "monthly"
++            ? "text-[var(--foreground)]"
++            : "text-[var(--foreground)]/60 hover:text-[var(--foreground)]/80"
++        }`}
++        aria-pressed={billingPeriod === "monthly"}
++      >
++        Monthly
++      </button>
++      <div
++        className="h-8 w-14 rounded-full bg-slate-300 dark:bg-slate-700 p-1 cursor-pointer transition-all"
++        onClick={() => onToggle(billingPeriod === "monthly" ? "annual" : "monthly")}
++        role="switch"
++        aria-checked={billingPeriod === "annual"}
++        aria-label="Toggle between monthly and annual billing"
++        tabIndex={0}
++        onKeyDown={(e) => {
++          if (e.key === "Enter" || e.key === " ") {
++            e.preventDefault();
++            onToggle(billingPeriod === "monthly" ? "annual" : "monthly");
++          }
++        }}
++      >
++        <div
++          className={`h-6 w-6 rounded-full bg-white dark:bg-slate-900 transition-transform ${
++            billingPeriod === "annual" ? "translate-x-6" : ""
++          }`}
++        />
++      </div>
++      <button
++        onClick={() => onToggle("annual")}
++        className={`px-4 py-2 font-medium transition-colors ${
++          billingPeriod === "annual"
++            ? "text-[var(--foreground)]"
++            : "text-[var(--foreground)]/60 hover:text-[var(--foreground)]/80"
++        }`}
++        aria-pressed={billingPeriod === "annual"}
++      >
++        Annual
++        <span className="ml-2 inline-block rounded bg-emerald-100 dark:bg-emerald-900 px-2 py-1 text-xs font-semibold text-emerald-900 dark:text-emerald-100">
++          Save 17%
++        </span>
++      </button>
++    </div>
++  );
++}
++
++function PricingCard({
++  tier,
++  billingPeriod,
++}: {
++  tier: (typeof TIERS)[0];
++  billingPeriod: BillingPeriod;
++}): ReactNode {
++  const price =
++    billingPeriod === "monthly" ? tier.monthlyPrice : tier.annualPrice;
++  const displayPrice = billingPeriod === "annual" ? Math.floor(price / 12) : price;
++
++  return (
++    <div
++      className={`rounded-xl border-2 px-6 py-8 flex flex-col h-full transition-all ${
++        tier.highlighted
++          ? "border-blue-500 bg-blue-50 dark:bg-blue-950/30 ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-0"
++          : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950"
++      }`}
++    >
++      {tier.highlighted && (
++        <div className="mb-4 inline-block w-fit rounded-full bg-blue-500 px-3 py-1 text-xs font-semibold text-white">
++          Most popular
++        </div>
++      )}
++      <h3 className="text-2xl font-bold">{tier.name}</h3>
++      <p className="mt-2 text-sm text-[var(--foreground)]/70">
++        {tier.description}
++      </p>
++      <div className="mt-6 mb-8">
++        <div className="flex items-baseline gap-2">
++          <span className="text-4xl font-bold">${displayPrice}</span>
++          <span className="text-[var(--foreground)]/60">
++            /{billingPeriod === "monthly" ? "month" : "month (annual)"}
++          </span>
++        </div>
++        {billingPeriod === "annual" && (
++          <p className="mt-2 text-sm text-[var(--foreground)]/60">
++            ${price}/year, billed annually
++          </p>
++        )}
++      </div>
++      <Link
++        href="#"
++        className={`mb-8 block rounded-lg px-4 py-3 text-center font-semibold transition-colors ${
++          tier.highlighted
++            ? "bg-blue-500 text-white hover:bg-blue-600 dark:hover:bg-blue-400"
++            : "bg-slate-100 dark:bg-slate-800 text-[var(--foreground)] hover:bg-slate-200 dark:hover:bg-slate-700"
++        }`}
++      >
++        {tier.cta}
++      </Link>
++      <div className="space-y-3 flex-grow">
++        {tier.features.map((feature, idx) => (
++          <div key={idx} className="flex gap-3">
++            <svg
++              className="h-5 w-5 flex-shrink-0 text-emerald-600 dark:text-emerald-400"
++              fill="currentColor"
++              viewBox="0 0 20 20"
++            >
++              <path
++                fillRule="evenodd"
++                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
++                clipRule="evenodd"
++              />
++            </svg>
++            <span className="text-sm text-[var(--foreground)]/90">
++              {feature}
++            </span>
++          </div>
++        ))}
++      </div>
++    </div>
++  );
++}
++
++function FeatureTable(): ReactNode {
++  const tierNames = ["Starter", "Pro", "Studio"];
++
++  return (
++    <div className="overflow-x-auto">
++      <table className="w-full border-collapse">
++        <thead>
++          <tr className="border-b-2 border-slate-200 dark:border-slate-800">
++            <th className="px-4 py-4 text-left font-semibold text-[var(--foreground)]">
++              Feature
++            </th>
++            {tierNames.map((name) => (
++              <th
++                key={name}
++                className="px-4 py-4 text-center font-semibold text-[var(--foreground)]"
++              >
++                {name}
++              </th>
++            ))}
++          </tr>
++        </thead>
++        <tbody>
++          {ALL_FEATURES.map((feature, idx) => (
++            <tr
++              key={idx}
++              className={`border-b border-slate-200 dark:border-slate-800 ${
++                idx % 2 === 0
++                  ? "bg-slate-50 dark:bg-slate-950/50"
++                  : "bg-white dark:bg-slate-950"
++              }`}
++            >
++              <td className="px-4 py-4">
++                <div>
++                  <div className="font-medium text-[var(--foreground)]">
++                    {feature.name}
++                  </div>
++                  <div className="text-xs text-[var(--foreground)]/60">
++                    {feature.category}
++                  </div>
++                </div>
++              </td>
++              {tierNames.map((tierName) => {
++                const value =
++                  FEATURE_MATRIX[tierName as keyof typeof FEATURE_MATRIX][
++                    feature.name as keyof (typeof FEATURE_MATRIX)[keyof typeof FEATURE_MATRIX]
++                  ];
++
++                return (
++                  <td key={tierName} className="px-4 py-4 text-center">
++                    {typeof value === "boolean" ? (
++                      value ? (
++                        <svg
++                          className="mx-auto h-5 w-5 text-emerald-600 dark:text-emerald-400"
++                          fill="currentColor"
++                          viewBox="0 0 20 20"
++                        >
++                          <path
++                            fillRule="evenodd"
++                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
++                            clipRule="evenodd"
++                          />
++                        </svg>
++                      ) : (
++                        <svg
++                          className="mx-auto h-5 w-5 text-slate-300 dark:text-slate-700"
++                          fill="currentColor"
++                          viewBox="0 0 20 20"
++                        >
++                          <path
++                            fillRule="evenodd"
++                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
++                            clipRule="evenodd"
++                          />
++                        </svg>
++                      )
++                    ) : (
++                      <span className="text-sm text-[var(--foreground)]/90">
++                        {value}
++                      </span>
++                    )}
++                  </td>
++                );
++              })}
++            </tr>
++          ))}
++        </tbody>
++      </table>
++    </div>
++  );
++}
++
++function FAQItem({
++  question,
++  answer,
++}: {
++  question: string;
++  answer: string;
++}): ReactNode {
++  const [isOpen, setIsOpen] = useState(false);
++
++  return (
++    <div className="border-b border-slate-200 dark:border-slate-800">
++      <button
++        onClick={() => setIsOpen(!isOpen)}
++        className="flex w-full items-center justify-between gap-4 px-6 py-4 text-left font-semibold text-[var(--foreground)] hover:bg-slate-50 dark:hover:bg-slate-950/50 transition-colors"
++        aria-expanded={isOpen}
++      >
++        {question}
++        <svg
++          className={`h-5 w-5 flex-shrink-0 transition-transform ${
++            isOpen ? "rotate-180" : ""
++          }`}
++          fill="none"
++          stroke="currentColor"
++          viewBox="0 0 24 24"
++        >
++          <path
++            strokeLinecap="round"
++            strokeLinejoin="round"
++            strokeWidth={2}
++            d="M19 14l-7 7m0 0l-7-7m7 7V3"
++          />
++        </svg>
++      </button>
++      {isOpen && (
++        <div className="px-6 pb-4 text-[var(--foreground)]/80 leading-relaxed">
++          {answer}
++        </div>
++      )}
++    </div>
++  );
++}
++
++function FAQSection(): ReactNode {
++  const faqs = [
++    {
++      question: "Can I change my plan anytime?",
++      answer:
++        "Yes, you can upgrade or downgrade your plan at any time. Changes take effect at the start of your next billing cycle. If you upgrade mid-month, you'll be charged a prorated amount.",
++    },
++    {
++      question: "Is there a free trial?",
++      answer:
++        "All plans come with a 14-day free trial. No credit card required. After the trial ends, we'll notify you before charging. You can cancel anytime.",
++    },
++    {
++      question: "What platforms does Shipcut support?",
++      answer:
++        "Shipcut works with recordings from Twitch, YouTube, Facebook Live, and any livestream platform. Simply upload your recording to get started. Audio-only streams are not currently supported.",
++    },
++    {
++      question: "What's your refund policy?",
++      answer:
++        "We offer a 30-day money-back guarantee on all annual plans. Monthly plans can be cancelled anytime with no questions asked. Partial refunds are available if you cancel mid-month.",
++    },
++    {
++      question: "Are there any usage limits?",
++      answer:
++        "Starter tier is limited to 4 livestreams per month and 10 clips per video. Pro and Studio tiers have unlimited processing. All tiers support videos up to 12 hours in length.",
++    },
++    {
++      question: "Do you offer custom integrations?",
++      answer:
++        "Studio tier includes API access and custom integration support. Our team will work with you to connect Shipcut to your existing workflow. Contact our sales team for details.",
++    },
++  ];
++
++  return (
++    <div className="mx-auto max-w-3xl">
++      <div className="space-y-1 mb-8">
++        {faqs.map((faq, idx) => (
++          <FAQItem key={idx} question={faq.question} answer={faq.answer} />
++        ))}
++      </div>
++    </div>
++  );
++}
+ 
+ export default function PricingPage(): ReactNode {
+-  return <h1>Pricing</h1>;
++  const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("monthly");
++
++  return (
++    <main className="min-h-screen bg-[var(--background)] py-12 px-6 sm:py-16 lg:py-20">
++      <div className="mx-auto max-w-7xl">
++        <div className="mb-12 text-center">
++          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-4">
++            Simple, transparent pricing
++          </h1>
++          <p className="text-lg text-[var(--foreground)]/70 max-w-2xl mx-auto mb-8">
++            Choose the perfect plan for your content creation needs. All plans
++            include a 14-day free trial.
++          </p>
++          <BillingToggle
++            billingPeriod={billingPeriod}
++            onToggle={setBillingPeriod}
++          />
++        </div>
++
++        <div className="grid md:grid-cols-3 gap-8 mb-16">
++          {TIERS.map((tier) => (
++            <PricingCard
++              key={tier.name}
++              tier={tier}
++              billingPeriod={billingPeriod}
++            />
++          ))}
++        </div>
++
++        <div className="mb-16">
++          <h2 className="text-3xl font-bold mb-8 text-center">
++            Compare all features
++          </h2>
++          <div className="rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden bg-white dark:bg-slate-950">
++            <FeatureTable />
++          </div>
++        </div>
++
++        <div className="mb-16">
++          <h2 className="text-3xl font-bold mb-8 text-center">
++            Frequently asked questions
++          </h2>
++          <div className="rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden bg-white dark:bg-slate-950">
++            <FAQSection />
++          </div>
++        </div>
++
++        <div className="text-center">
++          <p className="text-[var(--foreground)]/70 mb-4">
++            Still have questions? We're here to help.
++          </p>
++          <Link
++            href="mailto:support@shipcut.dev"
++            className="inline-block rounded-lg bg-blue-500 px-6 py-3 font-semibold text-white hover:bg-blue-600 dark:hover:bg-blue-400 transition-colors"
++          >
++            Contact support
++          </Link>
++        </div>
++      </div>
++    </main>
++  );
+ }
+diff --git a/next-env.d.ts b/next-env.d.ts
+new file mode 100644
+index 0000000..ce4e94a
+--- /dev/null
++++ b/next-env.d.ts
+@@ -0,0 +1,7 @@
++/// <reference types="next" />
++/// <reference types="next/image-types/global" />
++import "./.next/types/routes.d.ts";
++import "./.next/types/root-params.d.ts";
++
++// NOTE: This file should not be edited
++// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.

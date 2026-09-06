@@ -1,0 +1,987 @@
+diff --git a/package.json b/package.json
+index 87bcbbb..fcfe3c4 100644
+--- a/package.json
++++ b/package.json
+@@ -1,6 +1,10 @@
+ {
+   "name": "inventory-api-fixture",
+   "private": true,
++  "scripts": {
++    "migrate": "bun run src/migrate.ts",
++    "start": "bun run src/index.ts"
++  },
+   "devDependencies": {
+     "typescript": "7.0.2",
+     "@types/bun": "1.4.1"
+diff --git a/src/db.ts b/src/db.ts
+new file mode 100644
+index 0000000..d9ae104
+--- /dev/null
++++ b/src/db.ts
+@@ -0,0 +1,6 @@
++import { Database } from "bun:sqlite";
++
++const dbPath = process.env.DATABASE_PATH || ":memory:";
++export const db = new Database(dbPath);
++
++db.exec("PRAGMA foreign_keys = ON");
+diff --git a/src/index.ts b/src/index.ts
+new file mode 100644
+index 0000000..eb97402
+--- /dev/null
++++ b/src/index.ts
+@@ -0,0 +1,58 @@
++import { db } from "./db";
++import { handleRequest } from "./server";
++
++// Run migrations on startup
++const migrations = [
++  `
++    CREATE TABLE IF NOT EXISTS products (
++      id TEXT PRIMARY KEY,
++      sku TEXT UNIQUE NOT NULL,
++      name TEXT NOT NULL,
++      reorderThreshold INTEGER NOT NULL,
++      createdAt TEXT NOT NULL,
++      updatedAt TEXT NOT NULL
++    )
++  `,
++  `
++    CREATE TABLE IF NOT EXISTS warehouses (
++      id TEXT PRIMARY KEY,
++      code TEXT UNIQUE NOT NULL,
++      name TEXT NOT NULL,
++      createdAt TEXT NOT NULL
++    )
++  `,
++  `
++    CREATE TABLE IF NOT EXISTS stock_movements (
++      id TEXT PRIMARY KEY,
++      productId TEXT NOT NULL,
++      warehouseId TEXT NOT NULL,
++      type TEXT NOT NULL,
++      quantity INTEGER NOT NULL,
++      note TEXT,
++      idempotencyKey TEXT UNIQUE NOT NULL,
++      resultingStock INTEGER NOT NULL,
++      createdAt TEXT NOT NULL,
++      FOREIGN KEY (productId) REFERENCES products(id),
++      FOREIGN KEY (warehouseId) REFERENCES warehouses(id)
++    )
++  `,
++];
++
++for (const migration of migrations) {
++  try {
++    db.exec(migration);
++  } catch (e) {
++    if (!(e instanceof Error && e.message.includes("already exists"))) {
++      throw e;
++    }
++  }
++}
++
++const port = parseInt(process.env.PORT || "4175", 10);
++
++const server = Bun.serve({
++  port,
++  fetch: handleRequest,
++});
++
++console.log(`Server listening on http://localhost:${port}`);
+diff --git a/src/migrate.ts b/src/migrate.ts
+new file mode 100644
+index 0000000..805e48d
+--- /dev/null
++++ b/src/migrate.ts
+@@ -0,0 +1,50 @@
++import { db } from "./db";
++
++const migrations = [
++  `
++    CREATE TABLE IF NOT EXISTS products (
++      id TEXT PRIMARY KEY,
++      sku TEXT UNIQUE NOT NULL,
++      name TEXT NOT NULL,
++      reorderThreshold INTEGER NOT NULL,
++      createdAt TEXT NOT NULL,
++      updatedAt TEXT NOT NULL
++    )
++  `,
++  `
++    CREATE TABLE IF NOT EXISTS warehouses (
++      id TEXT PRIMARY KEY,
++      code TEXT UNIQUE NOT NULL,
++      name TEXT NOT NULL,
++      createdAt TEXT NOT NULL
++    )
++  `,
++  `
++    CREATE TABLE IF NOT EXISTS stock_movements (
++      id TEXT PRIMARY KEY,
++      productId TEXT NOT NULL,
++      warehouseId TEXT NOT NULL,
++      type TEXT NOT NULL,
++      quantity INTEGER NOT NULL,
++      note TEXT,
++      idempotencyKey TEXT UNIQUE NOT NULL,
++      resultingStock INTEGER NOT NULL,
++      createdAt TEXT NOT NULL,
++      FOREIGN KEY (productId) REFERENCES products(id),
++      FOREIGN KEY (warehouseId) REFERENCES warehouses(id)
++    )
++  `,
++];
++
++for (const migration of migrations) {
++  try {
++    db.exec(migration);
++  } catch (e) {
++    // Ignore "already exists" errors
++    if (!(e instanceof Error && e.message.includes("already exists"))) {
++      throw e;
++    }
++  }
++}
++
++console.log("Migrations completed");
+diff --git a/src/server.ts b/src/server.ts
+new file mode 100644
+index 0000000..80d545c
+--- /dev/null
++++ b/src/server.ts
+@@ -0,0 +1,726 @@
++import { db } from "./db";
++import {
++  createErrorResponse,
++  ErrorResponse,
++  isValidCode,
++  isValidIdempotencyKey,
++  isValidMovementType,
++  isValidName,
++  isValidNote,
++  isValidQuantity,
++  isValidReorderThreshold,
++  isValidSku,
++  isValidUuid,
++  parsePaginationParams,
++  createPaginationResponse,
++} from "./validation";
++
++function generateUuid(): string {
++  return crypto.randomUUID();
++}
++
++function getCurrentTimestamp(): string {
++  return new Date().toISOString();
++}
++
++export async function handleRequest(req: Request): Promise<Response> {
++  const url = new URL(req.url);
++  const path = url.pathname;
++  const method = req.method;
++
++  // Health check
++  if (path === "/health" && method === "GET") {
++    return new Response(JSON.stringify({ status: "ok" }), {
++      status: 200,
++      headers: { "Content-Type": "application/json" },
++    });
++  }
++
++  // Products endpoints
++  if (path === "/products" && method === "POST") {
++    return handleCreateProduct(req);
++  }
++  if (path === "/products" && method === "GET") {
++    return handleListProducts(req);
++  }
++
++  const productIdMatch = path.match(/^\/products\/([^/]+)$/);
++  if (productIdMatch) {
++    const productId = productIdMatch[1];
++    if (method === "GET") {
++      return handleGetProduct(productId);
++    }
++    if (method === "PATCH") {
++      return handleUpdateProduct(productId, req);
++    }
++  }
++
++  // Warehouses endpoints
++  if (path === "/warehouses" && method === "POST") {
++    return handleCreateWarehouse(req);
++  }
++  if (path === "/warehouses" && method === "GET") {
++    return handleListWarehouses(req);
++  }
++
++  // Stock movements endpoint
++  if (path === "/stock-movements" && method === "POST") {
++    return handleCreateStockMovement(req);
++  }
++
++  // Low stock report
++  if (path === "/reports/low-stock" && method === "GET") {
++    return handleLowStockReport(req);
++  }
++
++  return new Response(JSON.stringify(createErrorResponse("not_found", "Not found")), {
++    status: 404,
++    headers: { "Content-Type": "application/json" },
++  });
++}
++
++async function handleCreateProduct(req: Request): Promise<Response> {
++  try {
++    const body = await req.json();
++    const errors: Array<{ field: string; issue: string }> = [];
++
++    if (typeof body.sku !== "string" || !isValidSku(body.sku)) {
++      errors.push({
++        field: "sku",
++        issue: "must be 1-64 characters, alphanumeric, dash, or underscore",
++      });
++    }
++    if (typeof body.name !== "string" || !isValidName(body.name)) {
++      errors.push({ field: "name", issue: "must be 1-200 characters" });
++    }
++    if (!isValidReorderThreshold(body.reorderThreshold)) {
++      errors.push({ field: "reorderThreshold", issue: "must be a non-negative integer" });
++    }
++
++    if (errors.length > 0) {
++      return new Response(
++        JSON.stringify(createErrorResponse("validation_error", "Validation failed", errors)),
++        { status: 400, headers: { "Content-Type": "application/json" } }
++      );
++    }
++
++    // Check if SKU already exists
++    const existing = db.prepare("SELECT id FROM products WHERE sku = ?").get(body.sku);
++    if (existing) {
++      return new Response(
++        JSON.stringify(
++          createErrorResponse("conflict", "A product with this sku already exists")
++        ),
++        { status: 409, headers: { "Content-Type": "application/json" } }
++      );
++    }
++
++    const id = generateUuid();
++    const now = getCurrentTimestamp();
++
++    db.prepare(
++      `INSERT INTO products (id, sku, name, reorderThreshold, createdAt, updatedAt)
++       VALUES (?, ?, ?, ?, ?, ?)`
++    ).run(id, body.sku, body.name, body.reorderThreshold, now, now);
++
++    const product = {
++      id,
++      sku: body.sku,
++      name: body.name,
++      reorderThreshold: body.reorderThreshold,
++      stock: 0,
++      createdAt: now,
++      updatedAt: now,
++    };
++
++    return new Response(JSON.stringify(product), {
++      status: 201,
++      headers: { "Content-Type": "application/json" },
++    });
++  } catch (e) {
++    console.error(e);
++    return new Response(
++      JSON.stringify(
++        createErrorResponse("internal_error", "Internal server error")
++      ),
++      { status: 500, headers: { "Content-Type": "application/json" } }
++    );
++  }
++}
++
++async function handleListProducts(req: Request): Promise<Response> {
++  try {
++    const url = new URL(req.url);
++    const paginationResult = parsePaginationParams(
++      Object.fromEntries(url.searchParams)
++    );
++    if ("error" in paginationResult) {
++      return new Response(JSON.stringify(paginationResult), {
++        status: 400,
++        headers: { "Content-Type": "application/json" },
++      });
++    }
++
++    const { page, pageSize } = paginationResult;
++    const offset = (page - 1) * pageSize;
++
++    const totalRow = db.prepare("SELECT COUNT(*) as count FROM products").get() as { count: number };
++    const total = totalRow.count;
++
++    const products = db
++      .prepare(
++        `SELECT id, sku, name, reorderThreshold, createdAt, updatedAt FROM products
++         ORDER BY createdAt ASC LIMIT ? OFFSET ?`
++      )
++      .all(pageSize, offset) as Array<{
++      id: string;
++      sku: string;
++      name: string;
++      reorderThreshold: number;
++      createdAt: string;
++      updatedAt: string;
++    }>;
++
++    const data = products.map((p) => {
++      const stock = calculateProductStock(p.id);
++      return { ...p, stock };
++    });
++
++    return new Response(
++      JSON.stringify({
++        data,
++        pagination: createPaginationResponse(page, pageSize, total),
++      }),
++      { status: 200, headers: { "Content-Type": "application/json" } }
++    );
++  } catch (e) {
++    console.error(e);
++    return new Response(
++      JSON.stringify(
++        createErrorResponse("internal_error", "Internal server error")
++      ),
++      { status: 500, headers: { "Content-Type": "application/json" } }
++    );
++  }
++}
++
++async function handleGetProduct(productId: string): Promise<Response> {
++  try {
++    if (!isValidUuid(productId)) {
++      return new Response(
++        JSON.stringify(createErrorResponse("not_found", "No product with this id")),
++        { status: 404, headers: { "Content-Type": "application/json" } }
++      );
++    }
++
++    const product = db
++      .prepare(
++        `SELECT id, sku, name, reorderThreshold, createdAt, updatedAt FROM products WHERE id = ?`
++      )
++      .get(productId) as {
++      id: string;
++      sku: string;
++      name: string;
++      reorderThreshold: number;
++      createdAt: string;
++      updatedAt: string;
++    } | undefined;
++
++    if (!product) {
++      return new Response(
++        JSON.stringify(createErrorResponse("not_found", "No product with this id")),
++        { status: 404, headers: { "Content-Type": "application/json" } }
++      );
++    }
++
++    const stock = calculateProductStock(productId);
++
++    return new Response(JSON.stringify({ ...product, stock }), {
++      status: 200,
++      headers: { "Content-Type": "application/json" },
++    });
++  } catch (e) {
++    console.error(e);
++    return new Response(
++      JSON.stringify(
++        createErrorResponse("internal_error", "Internal server error")
++      ),
++      { status: 500, headers: { "Content-Type": "application/json" } }
++    );
++  }
++}
++
++async function handleUpdateProduct(productId: string, req: Request): Promise<Response> {
++  try {
++    if (!isValidUuid(productId)) {
++      return new Response(
++        JSON.stringify(createErrorResponse("not_found", "No product with this id")),
++        { status: 404, headers: { "Content-Type": "application/json" } }
++      );
++    }
++
++    const body = await req.json();
++    const errors: Array<{ field: string; issue: string }> = [];
++
++    if (Object.keys(body).length === 0) {
++      errors.push({ field: "", issue: "at least one property must be provided" });
++    }
++
++    if (body.name !== undefined) {
++      if (typeof body.name !== "string" || !isValidName(body.name)) {
++        errors.push({ field: "name", issue: "must be 1-200 characters" });
++      }
++    }
++
++    if (body.reorderThreshold !== undefined) {
++      if (!isValidReorderThreshold(body.reorderThreshold)) {
++        errors.push({ field: "reorderThreshold", issue: "must be a non-negative integer" });
++      }
++    }
++
++    if (errors.length > 0) {
++      return new Response(
++        JSON.stringify(createErrorResponse("validation_error", "Validation failed", errors)),
++        { status: 400, headers: { "Content-Type": "application/json" } }
++      );
++    }
++
++    const product = db
++      .prepare(
++        `SELECT id, sku, name, reorderThreshold, createdAt, updatedAt FROM products WHERE id = ?`
++      )
++      .get(productId) as {
++      id: string;
++      sku: string;
++      name: string;
++      reorderThreshold: number;
++      createdAt: string;
++      updatedAt: string;
++    } | undefined;
++
++    if (!product) {
++      return new Response(
++        JSON.stringify(createErrorResponse("not_found", "No product with this id")),
++        { status: 404, headers: { "Content-Type": "application/json" } }
++      );
++    }
++
++    const name = body.name !== undefined ? body.name : product.name;
++    const reorderThreshold =
++      body.reorderThreshold !== undefined ? body.reorderThreshold : product.reorderThreshold;
++    const now = getCurrentTimestamp();
++
++    db.prepare(
++      `UPDATE products SET name = ?, reorderThreshold = ?, updatedAt = ? WHERE id = ?`
++    ).run(name, reorderThreshold, now, productId);
++
++    const stock = calculateProductStock(productId);
++
++    return new Response(
++      JSON.stringify({
++        id: productId,
++        sku: product.sku,
++        name,
++        reorderThreshold,
++        stock,
++        createdAt: product.createdAt,
++        updatedAt: now,
++      }),
++      { status: 200, headers: { "Content-Type": "application/json" } }
++    );
++  } catch (e) {
++    console.error(e);
++    return new Response(
++      JSON.stringify(
++        createErrorResponse("internal_error", "Internal server error")
++      ),
++      { status: 500, headers: { "Content-Type": "application/json" } }
++    );
++  }
++}
++
++async function handleCreateWarehouse(req: Request): Promise<Response> {
++  try {
++    const body = await req.json();
++    const errors: Array<{ field: string; issue: string }> = [];
++
++    if (typeof body.code !== "string" || !isValidCode(body.code)) {
++      errors.push({
++        field: "code",
++        issue: "must be 1-32 characters, alphanumeric, dash, or underscore",
++      });
++    }
++    if (typeof body.name !== "string" || !isValidName(body.name)) {
++      errors.push({ field: "name", issue: "must be 1-200 characters" });
++    }
++
++    if (errors.length > 0) {
++      return new Response(
++        JSON.stringify(createErrorResponse("validation_error", "Validation failed", errors)),
++        { status: 400, headers: { "Content-Type": "application/json" } }
++      );
++    }
++
++    // Check if code already exists
++    const existing = db.prepare("SELECT id FROM warehouses WHERE code = ?").get(body.code);
++    if (existing) {
++      return new Response(
++        JSON.stringify(
++          createErrorResponse("conflict", "A warehouse with this code already exists")
++        ),
++        { status: 409, headers: { "Content-Type": "application/json" } }
++      );
++    }
++
++    const id = generateUuid();
++    const now = getCurrentTimestamp();
++
++    db.prepare(
++      `INSERT INTO warehouses (id, code, name, createdAt) VALUES (?, ?, ?, ?)`
++    ).run(id, body.code, body.name, now);
++
++    return new Response(
++      JSON.stringify({
++        id,
++        code: body.code,
++        name: body.name,
++        createdAt: now,
++      }),
++      { status: 201, headers: { "Content-Type": "application/json" } }
++    );
++  } catch (e) {
++    console.error(e);
++    return new Response(
++      JSON.stringify(
++        createErrorResponse("internal_error", "Internal server error")
++      ),
++      { status: 500, headers: { "Content-Type": "application/json" } }
++    );
++  }
++}
++
++async function handleListWarehouses(req: Request): Promise<Response> {
++  try {
++    const url = new URL(req.url);
++    const paginationResult = parsePaginationParams(
++      Object.fromEntries(url.searchParams)
++    );
++    if ("error" in paginationResult) {
++      return new Response(JSON.stringify(paginationResult), {
++        status: 400,
++        headers: { "Content-Type": "application/json" },
++      });
++    }
++
++    const { page, pageSize } = paginationResult;
++    const offset = (page - 1) * pageSize;
++
++    const totalRow = db.prepare("SELECT COUNT(*) as count FROM warehouses").get() as { count: number };
++    const total = totalRow.count;
++
++    const warehouses = db
++      .prepare(
++        `SELECT id, code, name, createdAt FROM warehouses
++         ORDER BY createdAt ASC LIMIT ? OFFSET ?`
++      )
++      .all(pageSize, offset) as Array<{
++      id: string;
++      code: string;
++      name: string;
++      createdAt: string;
++    }>;
++
++    return new Response(
++      JSON.stringify({
++        data: warehouses,
++        pagination: createPaginationResponse(page, pageSize, total),
++      }),
++      { status: 200, headers: { "Content-Type": "application/json" } }
++    );
++  } catch (e) {
++    console.error(e);
++    return new Response(
++      JSON.stringify(
++        createErrorResponse("internal_error", "Internal server error")
++      ),
++      { status: 500, headers: { "Content-Type": "application/json" } }
++    );
++  }
++}
++
++async function handleCreateStockMovement(req: Request): Promise<Response> {
++  try {
++    const idempotencyKey = req.headers.get("Idempotency-Key");
++    if (!idempotencyKey) {
++      const errors = [{ field: "Idempotency-Key", issue: "header is required" }];
++      return new Response(
++        JSON.stringify(createErrorResponse("validation_error", "Validation failed", errors)),
++        { status: 400, headers: { "Content-Type": "application/json" } }
++      );
++    }
++
++    if (!isValidIdempotencyKey(idempotencyKey)) {
++      const errors = [{ field: "Idempotency-Key", issue: "must be 1-200 characters" }];
++      return new Response(
++        JSON.stringify(createErrorResponse("validation_error", "Validation failed", errors)),
++        { status: 400, headers: { "Content-Type": "application/json" } }
++      );
++    }
++
++    // Check if idempotency key already exists
++    const existing = db
++      .prepare("SELECT id, quantity FROM stock_movements WHERE idempotencyKey = ?")
++      .get(idempotencyKey) as { id: string; quantity: number } | undefined;
++
++    const body = await req.json();
++
++    if (existing) {
++      // Verify the request body matches
++      const storedMovement = db
++        .prepare(
++          `SELECT productId, warehouseId, type, quantity, note FROM stock_movements WHERE idempotencyKey = ?`
++        )
++        .get(idempotencyKey) as {
++        productId: string;
++        warehouseId: string;
++        type: string;
++        quantity: number;
++        note: string | null;
++      };
++
++      if (
++        storedMovement.productId !== body.productId ||
++        storedMovement.warehouseId !== body.warehouseId ||
++        storedMovement.type !== body.type ||
++        storedMovement.quantity !== body.quantity ||
++        storedMovement.note !== (body.note || null)
++      ) {
++        return new Response(
++          JSON.stringify(
++            createErrorResponse("conflict", "Idempotency-Key was reused with a different request body")
++          ),
++          { status: 409, headers: { "Content-Type": "application/json" } }
++        );
++      }
++
++      // Return the existing movement
++      const movement = db
++        .prepare(
++          `SELECT id, productId, warehouseId, type, quantity, note, idempotencyKey, resultingStock, createdAt
++           FROM stock_movements WHERE idempotencyKey = ?`
++        )
++        .get(idempotencyKey) as {
++        id: string;
++        productId: string;
++        warehouseId: string;
++        type: string;
++        quantity: number;
++        note: string | null;
++        idempotencyKey: string;
++        resultingStock: number;
++        createdAt: string;
++      };
++
++      return new Response(JSON.stringify(movement), {
++        status: 201,
++        headers: { "Content-Type": "application/json" },
++      });
++    }
++
++    // Validate request body
++    const errors: Array<{ field: string; issue: string }> = [];
++
++    if (typeof body.productId !== "string" || !isValidUuid(body.productId)) {
++      errors.push({ field: "productId", issue: "must be a valid UUID" });
++    }
++    if (typeof body.warehouseId !== "string" || !isValidUuid(body.warehouseId)) {
++      errors.push({ field: "warehouseId", issue: "must be a valid UUID" });
++    }
++    if (!isValidMovementType(body.type)) {
++      errors.push({ field: "type", issue: "must be one of: receipt, shipment, adjustment" });
++    }
++    if (!isValidQuantity(body.quantity, body.type)) {
++      if (body.type === "adjustment") {
++        errors.push({ field: "quantity", issue: "must be a nonzero integer" });
++      } else {
++        errors.push({ field: "quantity", issue: "must be a positive integer" });
++      }
++    }
++    if (!isValidNote(body.note)) {
++      errors.push({ field: "note", issue: "must be 0-500 characters" });
++    }
++
++    if (errors.length > 0) {
++      return new Response(
++        JSON.stringify(createErrorResponse("validation_error", "Validation failed", errors)),
++        { status: 400, headers: { "Content-Type": "application/json" } }
++      );
++    }
++
++    // Check if product exists
++    const product = db.prepare("SELECT id FROM products WHERE id = ?").get(body.productId);
++    if (!product) {
++      return new Response(
++        JSON.stringify(createErrorResponse("not_found", "Unknown productId or warehouseId")),
++        { status: 404, headers: { "Content-Type": "application/json" } }
++      );
++    }
++
++    // Check if warehouse exists
++    const warehouse = db.prepare("SELECT id FROM warehouses WHERE id = ?").get(body.warehouseId);
++    if (!warehouse) {
++      return new Response(
++        JSON.stringify(createErrorResponse("not_found", "Unknown productId or warehouseId")),
++        { status: 404, headers: { "Content-Type": "application/json" } }
++      );
++    }
++
++    // Calculate new stock
++    const currentStock = calculateProductStock(body.productId);
++    let newStock: number;
++
++    if (body.type === "receipt") {
++      newStock = currentStock + body.quantity;
++    } else if (body.type === "shipment") {
++      newStock = currentStock - body.quantity;
++    } else {
++      // adjustment
++      newStock = currentStock + body.quantity;
++    }
++
++    if (newStock < 0) {
++      return new Response(
++        JSON.stringify(
++          createErrorResponse("conflict", "The movement would take stock below zero")
++        ),
++        { status: 409, headers: { "Content-Type": "application/json" } }
++      );
++    }
++
++    const id = generateUuid();
++    const now = getCurrentTimestamp();
++
++    db.prepare(
++      `INSERT INTO stock_movements
++       (id, productId, warehouseId, type, quantity, note, idempotencyKey, resultingStock, createdAt)
++       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
++    ).run(
++      id,
++      body.productId,
++      body.warehouseId,
++      body.type,
++      body.quantity,
++      body.note || null,
++      idempotencyKey,
++      newStock,
++      now
++    );
++
++    return new Response(
++      JSON.stringify({
++        id,
++        productId: body.productId,
++        warehouseId: body.warehouseId,
++        type: body.type,
++        quantity: body.quantity,
++        note: body.note,
++        idempotencyKey,
++        resultingStock: newStock,
++        createdAt: now,
++      }),
++      { status: 201, headers: { "Content-Type": "application/json" } }
++    );
++  } catch (e) {
++    console.error(e);
++    return new Response(
++      JSON.stringify(
++        createErrorResponse("internal_error", "Internal server error")
++      ),
++      { status: 500, headers: { "Content-Type": "application/json" } }
++    );
++  }
++}
++
++async function handleLowStockReport(req: Request): Promise<Response> {
++  try {
++    const url = new URL(req.url);
++    const paginationResult = parsePaginationParams(
++      Object.fromEntries(url.searchParams)
++    );
++    if ("error" in paginationResult) {
++      return new Response(JSON.stringify(paginationResult), {
++        status: 400,
++        headers: { "Content-Type": "application/json" },
++      });
++    }
++
++    const { page, pageSize } = paginationResult;
++    const offset = (page - 1) * pageSize;
++
++    const totalRow = db
++      .prepare(
++        `SELECT COUNT(*) as count FROM products WHERE reorderThreshold > 0`
++      )
++      .get() as { count: number };
++    const total = totalRow.count;
++
++    const products = db
++      .prepare(
++        `SELECT id, sku, name, reorderThreshold FROM products
++         WHERE reorderThreshold > 0
++         ORDER BY createdAt ASC LIMIT ? OFFSET ?`
++      )
++      .all(pageSize, offset) as Array<{
++      id: string;
++      sku: string;
++      name: string;
++      reorderThreshold: number;
++    }>;
++
++    const data = products
++      .map((p) => {
++        const stock = calculateProductStock(p.id);
++        if (stock < p.reorderThreshold) {
++          return {
++            productId: p.id,
++            sku: p.sku,
++            name: p.name,
++            reorderThreshold: p.reorderThreshold,
++            stock,
++          };
++        }
++        return null;
++      })
++      .filter((item) => item !== null);
++
++    return new Response(
++      JSON.stringify({
++        data,
++        pagination: createPaginationResponse(page, pageSize, total),
++      }),
++      { status: 200, headers: { "Content-Type": "application/json" } }
++    );
++  } catch (e) {
++    console.error(e);
++    return new Response(
++      JSON.stringify(
++        createErrorResponse("internal_error", "Internal server error")
++      ),
++      { status: 500, headers: { "Content-Type": "application/json" } }
++    );
++  }
++}
++
++function calculateProductStock(productId: string): number {
++  const result = db
++    .prepare(
++      `SELECT COALESCE(SUM(CASE
++        WHEN type = 'receipt' THEN quantity
++        WHEN type = 'shipment' THEN -quantity
++        WHEN type = 'adjustment' THEN quantity
++        ELSE 0
++      END), 0) as stock FROM stock_movements WHERE productId = ?`
++    )
++    .get(productId) as { stock: number };
++  return Math.max(0, result.stock);
++}
+diff --git a/src/validation.ts b/src/validation.ts
+new file mode 100644
+index 0000000..d0ca9da
+--- /dev/null
++++ b/src/validation.ts
+@@ -0,0 +1,102 @@
++interface ValidationError {
++  field: string;
++  issue: string;
++}
++
++export interface ErrorResponse {
++  error: {
++    code: "validation_error" | "not_found" | "conflict" | "internal_error";
++    message: string;
++    details?: ValidationError[];
++  };
++}
++
++export function createErrorResponse(
++  code: ErrorResponse["error"]["code"],
++  message: string,
++  details?: ValidationError[]
++): ErrorResponse {
++  return {
++    error: {
++      code,
++      message,
++      ...(details && details.length > 0 ? { details } : {}),
++    },
++  };
++}
++
++const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
++const SKU_PATTERN = /^[A-Za-z0-9_-]+$/;
++const CODE_PATTERN = /^[A-Za-z0-9_-]+$/;
++
++export function isValidUuid(id: string): boolean {
++  return UUID_PATTERN.test(id);
++}
++
++export function isValidSku(sku: string): boolean {
++  return sku.length >= 1 && sku.length <= 64 && SKU_PATTERN.test(sku);
++}
++
++export function isValidCode(code: string): boolean {
++  return code.length >= 1 && code.length <= 32 && CODE_PATTERN.test(code);
++}
++
++export function isValidName(name: string): boolean {
++  return name.length >= 1 && name.length <= 200;
++}
++
++export function isValidReorderThreshold(value: unknown): boolean {
++  return typeof value === "number" && Number.isInteger(value) && value >= 0;
++}
++
++export function isValidQuantity(value: unknown, type: string): boolean {
++  if (typeof value !== "number" || !Number.isInteger(value)) return false;
++  if (type === "adjustment") {
++    return value !== 0;
++  }
++  return value > 0;
++}
++
++export function isValidMovementType(type: unknown): boolean {
++  return type === "receipt" || type === "shipment" || type === "adjustment";
++}
++
++export function isValidNote(note: unknown): boolean {
++  return note === undefined || (typeof note === "string" && note.length <= 500);
++}
++
++export function isValidIdempotencyKey(key: string): boolean {
++  return key.length >= 1 && key.length <= 200;
++}
++
++export function parsePaginationParams(
++  query: Record<string, string | string[] | undefined>
++): { page: number; pageSize: number } | ErrorResponse {
++  const page = query.page ? parseInt(query.page as string, 10) : 1;
++  const pageSize = query.pageSize ? parseInt(query.pageSize as string, 10) : 20;
++
++  const errors: ValidationError[] = [];
++
++  if (isNaN(page) || page < 1) {
++    errors.push({ field: "page", issue: "must be an integer >= 1" });
++  }
++  if (isNaN(pageSize) || pageSize < 1 || pageSize > 100) {
++    errors.push({ field: "pageSize", issue: "must be an integer between 1 and 100" });
++  }
++
++  if (errors.length > 0) {
++    return createErrorResponse("validation_error", "Invalid pagination parameters", errors);
++  }
++
++  return { page, pageSize };
++}
++
++export function createPaginationResponse(page: number, pageSize: number, total: number) {
++  const totalPages = Math.ceil(total / pageSize);
++  return {
++    page,
++    pageSize,
++    total,
++    totalPages,
++  };
++}

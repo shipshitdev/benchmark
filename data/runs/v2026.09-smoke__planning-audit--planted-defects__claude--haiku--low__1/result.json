@@ -1,0 +1,97 @@
+{
+  "id": "v2026.09-smoke__planning-audit--planted-defects__claude--haiku--low__1",
+  "release": "v2026.09-smoke",
+  "suiteVersion": "v2026.09",
+  "task": "planning-audit/planted-defects",
+  "taskVersion": 1,
+  "agent": {
+    "cli": "claude",
+    "model": "haiku",
+    "effort": "low",
+    "version": "2.1.263 (Claude Code)",
+    "permissionMode": "dangerously-skip-permissions",
+    "caps": {
+      "maxTurns": 40,
+      "maxBudgetUsd": 8,
+      "timeboxMinutes": 25
+    },
+    "command": [
+      "claude",
+      "-p",
+      "# Audit this service\n\nYou are working inside a small Bun and TypeScript HTTP service. Audit the codebase for\nsecurity, correctness, performance, reliability, and error-handling problems, then write\nyour findings to `AUDIT.md` in this directory.\n\n## What to produce\n\nFor every problem you find, include in `AUDIT.md`:\n\n- The file and line number (or line range) where it occurs.\n- A short summary of the problem.\n- Its severity (critical, high, medium, or low) and why you rated it that way.\n- The fix you recommend, specific enough that another engineer could implement it without\n  further investigation.\n\nAfter listing the individual findings, add a remediation plan that sequences the fixes: say\nwhich should be fixed first and why, call out any fix that depends on another, and flag\nanything that needs a production migration or a coordinated rollout rather than a plain code\nchange.\n\n## Constraints\n\n- Do not modify any file except `AUDIT.md`. This is a read-only audit; do not fix the issues\n  you find.\n- Only report problems you can point to in this codebase. Do not pad the report with\n  speculative or generic advice that isn't tied to a specific location in the code.\n- Read every file in the service before concluding your audit; do not stop at the first\n  file that looks suspicious.\n\nWork only within this fixture directory.\n",
+      "--output-format",
+      "stream-json",
+      "--verbose",
+      "--model",
+      "haiku",
+      "--effort",
+      "low",
+      "--max-turns",
+      "40",
+      "--max-budget-usd",
+      "8",
+      "--dangerously-skip-permissions",
+      "--no-session-persistence",
+      "--setting-sources",
+      "project,local",
+      "--strict-mcp-config",
+      "--mcp-config",
+      "{\"mcpServers\":{}}"
+    ]
+  },
+  "attempt": 1,
+  "startedAt": "2026-09-06T09:36:47.572Z",
+  "finishedAt": "2026-09-06T09:38:04.744Z",
+  "host": "unknown-host",
+  "status": "ok",
+  "usage": {
+    "input": 57,
+    "output": 6665,
+    "cacheRead": 179429,
+    "cacheWrite": 25488,
+    "turns": 16,
+    "toolCalls": 15,
+    "durationMs": 76024,
+    "costUsdEquivalent": 0.0832,
+    "reportedCostUsd": 0.10356090000000001,
+    "priceKey": "claude-haiku-4-5"
+  },
+  "gates": [],
+  "objective": 75,
+  "judgments": [
+    {
+      "judge": {
+        "cli": "codex",
+        "model": "gpt-5.6-sol",
+        "version": "codex-cli 0.153.4"
+      },
+      "blindLabel": "A",
+      "scores": {
+        "actionability": 4,
+        "sequencing-and-risk": 3,
+        "precision": 3
+      },
+      "subjective": 85,
+      "rationale": "Every finding identifies a file and line, explains the concrete consequence, and proposes an implementable change, often naming the affected function, variable, or caller. The remediation plan is sensibly phased into separately shippable batches and distinguishes ordinary code changes from migrations, but its rollout analysis is incomplete: startup validation can expose existing invalid production configuration, and cache TTL alone does not provide immediate key revocation. The findings are specific and generally well-supported with consequence-based severities, though precision is reduced by overstating an unhandled rejection as silently ignored, potentially overstating the SQL injection's ability to execute arbitrary SQL, and incorrectly summarizing three HIGH findings as two.",
+      "usage": {
+        "input": 74037,
+        "output": 1087,
+        "cacheRead": 58752,
+        "cacheWrite": null,
+        "turns": 1,
+        "toolCalls": 2,
+        "durationMs": 31248,
+        "costUsdEquivalent": null
+      }
+    }
+  ],
+  "artifacts": {
+    "transcript": "transcript.jsonl.gz",
+    "diff": "diff.patch",
+    "screenshots": [],
+    "report": "AUDIT.md"
+  },
+  "notes": [
+    "checklist objective scoring happens in \"bench judge\""
+  ]
+}

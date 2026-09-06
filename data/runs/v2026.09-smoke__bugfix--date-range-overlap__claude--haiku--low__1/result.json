@@ -1,0 +1,82 @@
+{
+  "id": "v2026.09-smoke__bugfix--date-range-overlap__claude--haiku--low__1",
+  "release": "v2026.09-smoke",
+  "suiteVersion": "v2026.09",
+  "task": "bugfix/date-range-overlap",
+  "taskVersion": 1,
+  "agent": {
+    "cli": "claude",
+    "model": "haiku",
+    "effort": "low",
+    "version": "2.1.263 (Claude Code)",
+    "permissionMode": "dangerously-skip-permissions",
+    "caps": {
+      "maxTurns": 40,
+      "maxBudgetUsd": 5,
+      "timeboxMinutes": 20
+    },
+    "command": [
+      "claude",
+      "-p",
+      "# Fix the reported date range bug\n\n`ISSUE.md` in this directory describes a bug reported against this library, with a symptom,\na minimal repro, and the expected behavior. Read it, then fix the bug.\n\n## Requirements\n\n- Fix the root cause of the behavior described in `ISSUE.md`. Do not special-case the exact\n  repro; fix the underlying logic so every equivalent input behaves correctly.\n- Keep every existing test in `test/` passing.\n- Add at least one new test that reproduces the reported bug and would fail against the old\n  code, alongside the existing tests.\n\n## Constraints\n\n- Do not change the public API of `src/index.ts` (function names, parameter order, or\n  return shapes) unless the bug cannot be fixed without it; if you do, update every caller\n  in this fixture.\n- Do not add a third-party date library; this project has none as a dependency and should\n  keep it that way.\n\nWork only within this fixture directory.\n",
+      "--output-format",
+      "stream-json",
+      "--verbose",
+      "--model",
+      "haiku",
+      "--effort",
+      "low",
+      "--max-turns",
+      "40",
+      "--max-budget-usd",
+      "5",
+      "--dangerously-skip-permissions",
+      "--no-session-persistence",
+      "--setting-sources",
+      "project,local",
+      "--strict-mcp-config",
+      "--mcp-config",
+      "{\"mcpServers\":{}}"
+    ]
+  },
+  "attempt": 1,
+  "startedAt": "2026-09-06T09:42:59.680Z",
+  "finishedAt": "2026-09-06T09:44:14.743Z",
+  "host": "unknown-host",
+  "status": "ok",
+  "usage": {
+    "input": 129,
+    "output": 9778,
+    "cacheRead": 482170,
+    "cacheWrite": 24627,
+    "turns": 19,
+    "toolCalls": 18,
+    "durationMs": 73788,
+    "costUsdEquivalent": 0.128,
+    "reportedCostUsd": 0.147668,
+    "priceKey": "claude-haiku-4-5"
+  },
+  "gates": [
+    {
+      "id": "install",
+      "pass": true,
+      "durationMs": 58,
+      "detail": "bun install v1.4.2 (744846f84)\n\n+ @types/bun@1.4.1\n+ typescript@7.0.2\n\n6 packages installed [50.00ms]\n\nSaved lockfile"
+    },
+    {
+      "id": "existing-tests",
+      "pass": true,
+      "durationMs": 15,
+      "detail": "bun test v1.4.2 (744846f84)\n\n\ntest/recurrence.test.ts:\n(pass) expandDailyRecurrence > returns one range per day with the requested start and end time [1.97ms]\n(pass) expandDailyRecurrence > advances the calendar date by one day per entry [0.10ms]\n(pass) expandDailyRecurrence > returns an empty array when days is zero [0.01ms]\n(pass) expandDailyRecurrence > preserves times correctly across DST transitions [0.04ms]\n\ntest/dateRange.test.ts:\n(pass) createRange > throws when start is after end [0.07ms]\n(pass) createRange > stores independent copies of the given dates [0.02ms]\n(pass) overlaps > is true when two ranges genuinely overlap [0.02ms]\n(pass) overlaps > is false when two ranges have a real gap between them [0.01ms]\n(pass) overlaps > is true when two ranges touch at exactly one instant\n(pass) mergeRanges > combines two overlapping ranges into one [0.07ms]\n(pass) mergeRanges > keeps ranges with a real gap separate [0.01ms]\n(pass) mergeRanges > combines two ranges that touch at exactly one instant [0.02ms]\n(pass) mergeRanges > sorts unsorted input before merging [0.03ms]\n(pass) mergeRanges > returns an empty array for an empty input\n(pass) rangeDurationMs > computes the millisecond span between start and end [0.01ms]\n\n 15 pass\n 0 fail\n 62 expect() calls\nRan 15 tests across 2 files. [6.00ms]"
+    }
+  ],
+  "objective": 100,
+  "judgments": [],
+  "artifacts": {
+    "transcript": "transcript.jsonl.gz",
+    "diff": "diff.patch",
+    "screenshots": [],
+    "report": null
+  },
+  "notes": []
+}

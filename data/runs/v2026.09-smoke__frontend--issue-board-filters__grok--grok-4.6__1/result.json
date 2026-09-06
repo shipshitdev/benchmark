@@ -1,0 +1,65 @@
+{
+  "id": "v2026.09-smoke__frontend--issue-board-filters__grok--grok-4.6__1",
+  "release": "v2026.09-smoke",
+  "suiteVersion": "v2026.09",
+  "task": "frontend/issue-board-filters",
+  "taskVersion": 1,
+  "agent": {
+    "cli": "grok",
+    "model": "grok-4.6",
+    "version": "grok 1.0.4 (d846eb93d94d)",
+    "permissionMode": "always-approve",
+    "caps": {
+      "maxTurns": 70,
+      "maxBudgetUsd": 12,
+      "timeboxMinutes": 35
+    },
+    "command": [
+      "grok",
+      "-p",
+      "# Add filters to the issue board\n\nYou are working inside an existing Next.js app that renders a list of issues on the home\npage (`/`), reading from static JSON data. There is already one working filter, for issue\nstatus. Read `README.md` in this fixture before making changes; it documents the existing\n`components/` and `lib/` structure and the `data-testid` convention used by this app's\ntests.\n\n## Requirements\n\nAdd the following to the existing issue board, matching the way the status filter is\nalready built (same folder, same state and query-param approach, same component style):\n\n- A label filter that lets the user select multiple labels at once. An issue matches when it\n  has at least one of the selected labels.\n- An assignee filter that lets the user pick a single assignee (or \"unassigned\").\n- A free-text search box that filters issues by matching the search text against the issue\n  title, case-insensitively.\n- All filter state (status, labels, assignees, search text) must be reflected in the URL\n  query string, so that reloading the page or sharing the URL preserves the current filters.\n- When the combination of active filters matches zero issues, show a clear empty state\n  instead of an empty list.\n- Every new interactive control must be usable with the keyboard alone (tab to reach it,\n  and the expected key operates it), and must have an accessible name.\n- Use the existing `data-testid` convention documented in the README for every new\n  interactive element, so they are consistent with the existing status filter's test ids.\n\n## Constraints\n\n- Follow the existing patterns in `components/` and `lib/` rather than introducing a new\n  state-management approach, a new folder layout, or a new UI library.\n- Do not change the on-disk shape of the issue data or remove the existing status filter.\n- Keep `bun run build`, `bun run start`, and `bun run typecheck` working exactly as\n  documented in the fixture's README.\n\nWork only within this fixture directory.\n",
+      "--output-format",
+      "streaming-messages-json",
+      "-m",
+      "grok-4.6",
+      "--session-id",
+      "5db91ea6-899b-46b2-8ee0-203384b6aefb",
+      "--max-turns",
+      "70",
+      "--always-approve",
+      "--cwd",
+      "/Users/decod3rslabs/www/shipshitdev/public/benchmark/.runs/v2026.09-smoke__frontend--issue-board-filters__grok--grok-4.6__1/workspace"
+    ]
+  },
+  "attempt": 1,
+  "startedAt": "2026-09-06T09:25:12.672Z",
+  "finishedAt": "2026-09-06T09:25:18.934Z",
+  "host": "unknown-host",
+  "status": "error",
+  "usage": {
+    "input": null,
+    "output": null,
+    "cacheRead": null,
+    "cacheWrite": null,
+    "turns": null,
+    "toolCalls": 0,
+    "durationMs": 5859,
+    "costUsdEquivalent": null,
+    "priceKey": "grok-4-6"
+  },
+  "gates": [],
+  "objective": null,
+  "judgments": [],
+  "artifacts": {
+    "transcript": "transcript.jsonl.gz",
+    "diff": "diff.patch",
+    "screenshots": [],
+    "report": null
+  },
+  "notes": [
+    "grok: token usage not present in CLI output",
+    "grok: stderr tail: Error: Internal error: {\n  \"message\": \"API error (status 402 Payment Required): Grok Build usage balance exhausted\",\n  \"http_status\": 402\n}\n",
+    "grok: telemetry unavailable",
+    "token counts unavailable; cost left null"
+  ]
+}

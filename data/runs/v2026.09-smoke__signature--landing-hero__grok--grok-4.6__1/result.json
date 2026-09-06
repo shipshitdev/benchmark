@@ -1,0 +1,65 @@
+{
+  "id": "v2026.09-smoke__signature--landing-hero__grok--grok-4.6__1",
+  "release": "v2026.09-smoke",
+  "suiteVersion": "v2026.09",
+  "task": "signature/landing-hero",
+  "taskVersion": 1,
+  "agent": {
+    "cli": "grok",
+    "model": "grok-4.6",
+    "version": "grok 1.0.4 (d846eb93d94d)",
+    "permissionMode": "always-approve",
+    "caps": {
+      "maxTurns": 50,
+      "maxBudgetUsd": 8,
+      "timeboxMinutes": 25
+    },
+    "command": [
+      "grok",
+      "-p",
+      "# Build the shipshit.dev landing hero\n\nYou are working inside a minimal Next.js app with an empty home page. Design and build the\nlanding hero section for shipshit.dev, a studio that ships open-source developer tools live\non stream.\n\n## Required content\n\nInclude all of the following, with copy you write yourself:\n\n- A headline that communicates what shipshit.dev is.\n- A one- or two-sentence subline underneath the headline.\n- Two calls to action: a primary one (for example, watch the stream) and a secondary one\n  (for example, browse the tools on GitHub).\n- A status pill indicating whether a stream is currently live (you decide the state and its\n  label, for example \"Live now\" or \"Offline, next stream Friday\").\n- A marquee (a horizontally scrolling or looping row) listing six invented open-source tool\n  names shipped by the studio.\n\n## Constraints\n\n- Build this as the full content of `app/page.tsx`, plus any components you add under\n  `components/` or `app/`.\n- No other constraints on layout, color, typography, or motion beyond what is already set up\n  in the fixture (Next.js and Tailwind CSS). Make the design decisions yourself.\n- Do not add a component library beyond what is already in the fixture. Do not add a\n  backend, database, or external API calls; all content is static.\n- Keep `bun run build` and `bun run start` working exactly as documented in the fixture's\n  README.\n\nThis page will be rebuilt from this exact brief every time a new model is evaluated, so the\nresult should represent your best design work, not a placeholder.\n",
+      "--output-format",
+      "streaming-messages-json",
+      "-m",
+      "grok-4.6",
+      "--session-id",
+      "59925a53-383b-4f42-acf2-757342f3ef1b",
+      "--max-turns",
+      "50",
+      "--always-approve",
+      "--cwd",
+      "/Users/decod3rslabs/www/shipshitdev/public/benchmark/.runs/v2026.09-smoke__signature--landing-hero__grok--grok-4.6__1/workspace"
+    ]
+  },
+  "attempt": 1,
+  "startedAt": "2026-09-06T09:29:47.971Z",
+  "finishedAt": "2026-09-06T09:29:53.939Z",
+  "host": "unknown-host",
+  "status": "error",
+  "usage": {
+    "input": null,
+    "output": null,
+    "cacheRead": null,
+    "cacheWrite": null,
+    "turns": null,
+    "toolCalls": 0,
+    "durationMs": 5562,
+    "costUsdEquivalent": null,
+    "priceKey": "grok-4-6"
+  },
+  "gates": [],
+  "objective": null,
+  "judgments": [],
+  "artifacts": {
+    "transcript": "transcript.jsonl.gz",
+    "diff": "diff.patch",
+    "screenshots": [],
+    "report": null
+  },
+  "notes": [
+    "grok: token usage not present in CLI output",
+    "grok: stderr tail: Error: Internal error: {\n  \"message\": \"API error (status 402 Payment Required): Grok Build usage balance exhausted\",\n  \"http_status\": 402\n}\n",
+    "grok: telemetry unavailable",
+    "token counts unavailable; cost left null"
+  ]
+}

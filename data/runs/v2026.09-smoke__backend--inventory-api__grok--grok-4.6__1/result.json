@@ -1,0 +1,65 @@
+{
+  "id": "v2026.09-smoke__backend--inventory-api__grok--grok-4.6__1",
+  "release": "v2026.09-smoke",
+  "suiteVersion": "v2026.09",
+  "task": "backend/inventory-api",
+  "taskVersion": 1,
+  "agent": {
+    "cli": "grok",
+    "model": "grok-4.6",
+    "version": "grok 1.0.4 (d846eb93d94d)",
+    "permissionMode": "always-approve",
+    "caps": {
+      "maxTurns": 80,
+      "maxBudgetUsd": 15,
+      "timeboxMinutes": 45
+    },
+    "command": [
+      "grok",
+      "-p",
+      "# Implement the inventory service\n\nYou are working inside an empty Bun and TypeScript project. `openapi.yaml` in this directory\ndescribes an inventory service contract. `README.md` describes the runtime requirements.\nImplement the service so it conforms to the contract.\n\n## Scope\n\nRead `openapi.yaml` fully before writing code. It defines:\n\n- Products: create, list (paginated), fetch by id, update.\n- Warehouses: create, list.\n- Stock movements: record a movement of stock for a product at a warehouse, supporting a\n  client-supplied idempotency key so retried requests do not double-apply.\n- A low-stock report endpoint that lists products whose stock has fallen below their\n  configured reorder threshold.\n- Pagination on every list endpoint.\n- A fixed error shape for validation failures, used consistently across every endpoint.\n\n## Requirements\n\n- Design a schema for products, warehouses, and stock movements, and store it in SQLite via\n  `bun:sqlite`, reading the database file path from the `DATABASE_PATH` environment\n  variable.\n- Write migrations that create this schema and are safe to run more than once against the\n  same database file without error or duplication.\n- `bun run migrate` must run those migrations.\n- `bun run start` must start an HTTP server listening on the port from the `PORT`\n  environment variable, implementing every endpoint in `openapi.yaml`.\n- Validate every request body and query parameter against the contract, and return the\n  error shape from `openapi.yaml` (not a framework default) for every validation failure.\n- Apply the idempotency key on stock movements: replaying the same key must not create a\n  second movement or double-count stock.\n- Use parameterized queries everywhere; never build SQL by concatenating request input.\n- Add a `GET /health` endpoint that returns `200` once the service is ready to accept\n  traffic. It is not part of the OpenAPI contract; it exists only so the process can be\n  health-checked.\n\n## Constraints\n\n- Bun runtime only. Do not add a separate database server or ORM; use `bun:sqlite` directly.\n- Do not change `openapi.yaml`.\n\nWork only within this fixture directory.\n",
+      "--output-format",
+      "streaming-messages-json",
+      "-m",
+      "grok-4.6",
+      "--session-id",
+      "5c56896c-1e1e-4efc-b828-57109b5daf90",
+      "--max-turns",
+      "80",
+      "--always-approve",
+      "--cwd",
+      "/Users/decod3rslabs/www/shipshitdev/public/benchmark/.runs/v2026.09-smoke__backend--inventory-api__grok--grok-4.6__1/workspace"
+    ]
+  },
+  "attempt": 1,
+  "startedAt": "2026-09-06T09:35:07.686Z",
+  "finishedAt": "2026-09-06T09:35:13.462Z",
+  "host": "unknown-host",
+  "status": "error",
+  "usage": {
+    "input": null,
+    "output": null,
+    "cacheRead": null,
+    "cacheWrite": null,
+    "turns": null,
+    "toolCalls": 0,
+    "durationMs": 5360,
+    "costUsdEquivalent": null,
+    "priceKey": "grok-4-6"
+  },
+  "gates": [],
+  "objective": null,
+  "judgments": [],
+  "artifacts": {
+    "transcript": "transcript.jsonl.gz",
+    "diff": "diff.patch",
+    "screenshots": [],
+    "report": null
+  },
+  "notes": [
+    "grok: token usage not present in CLI output",
+    "grok: stderr tail: Error: Internal error: {\n  \"message\": \"API error (status 402 Payment Required): Grok Build usage balance exhausted\",\n  \"http_status\": 402\n}\n",
+    "grok: telemetry unavailable",
+    "token counts unavailable; cost left null"
+  ]
+}

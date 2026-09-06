@@ -1,0 +1,125 @@
+diff --git a/AUDIT.md b/AUDIT.md
+new file mode 100644
+index 0000000..17dd714
+--- /dev/null
++++ b/AUDIT.md
+@@ -0,0 +1,119 @@
++# Webhook Relay Audit
++
++Scope: every tracked file in this fixture was read. The findings below are limited to concrete behavior in the current implementation.
++
++## Findings
++
++### 1. Event filtering is SQL-injectable and breaks tenant isolation
++
++- **Location:** `src/routes/events.ts:15-30`, especially line 24
++- **Severity:** **critical** — an authenticated tenant controls `type`, which is interpolated into SQL. Crafted input can alter the query and disclose another tenant's event payloads (and potentially other database data via `UNION`). This is a direct confidentiality boundary violation.
++- **Recommended fix:** Keep the SQL text static and bind `type` as a parameter (`... AND type = ?`, then append `type` to `params`). Prefer moving this query into `db.ts` so all database access follows the existing parameterized-query pattern. Add tests with quotes, SQL operators, and `UNION` payloads that prove results remain scoped to `account.id`.
++
++### 2. Webhook URLs permit server-side request forgery
++
++- **Location:** `src/routes/webhooks.ts:44-57`; outbound use at `src/jobs/dispatcher.ts:30-38`
++- **Severity:** **high** — any authenticated account can register an arbitrary absolute URL, after which the service performs a POST from its trusted network. This permits blind access to loopback, private/link-local networks, and cloud metadata or internal HTTP services, including side-effecting requests.
++- **Recommended fix:** At registration and again immediately before dispatch, require `https:` (or an explicitly documented protocol allowlist), reject credentials and nonstandard ports unless required, resolve the hostname, and reject every resolved loopback, private, link-local, multicast, and reserved address for both IPv4 and IPv6. Pin or revalidate the resolved address when connecting so DNS rebinding cannot bypass the check, and apply the same validation to every redirect or disable redirects. If private destinations are a required feature, implement an explicit per-destination allowlist rather than accepting arbitrary URLs.
++
++### 3. In-flight and pending deliveries can be sent more than once concurrently
++
++- **Location:** `src/db.ts:206-215,266-283`; `src/jobs/dispatcher.ts:5-9,26-38`; `src/jobs/retry.ts:5-11`; `src/server.ts:17-23,61-64`; `src/routes/events.ts:52-58`
++- **Severity:** **high** — selecting work and changing it to `sending` are separate operations with no conditional claim. Timer sweeps, the internal route, and event-ingestion nudges can overlap and select the same `pending` row. In addition, every `sending` row has `next_attempt_at IS NULL`, so the retry sweep treats a currently executing request as immediately retryable. Duplicate POSTs can therefore run concurrently and cause duplicate downstream side effects.
++- **Recommended fix:** Replace `listPendingDeliveries` plus unconditional `markSending` with an atomic claim/lease operation in a transaction: select eligible IDs, conditionally update only rows still eligible to `sending`, set a unique lease owner and lease expiry, and return only rows successfully claimed. Retry only expired leases, never all `sending` rows. Make completion updates conditional on the lease owner so a stale worker cannot overwrite a newer attempt. Also prevent overlapping sweeps in-process (a mutex or self-scheduling loop), while retaining database-level claims for multi-process safety.
++
++### 4. API-key rotation or account revocation does not take effect in a running process
++
++- **Location:** `src/middleware/auth.ts:6-29`
++- **Severity:** **high** — successful credentials and their account records are cached forever. After an API key is rotated, deleted, or its account is disabled in the database, the old key remains authorized until every service process restarts.
++- **Recommended fix:** Do not cache credential validation, or use a bounded cache with a short TTL plus explicit invalidation integrated into the key-rotation/revocation path. Cache only the minimum account identity, cap entries, and verify revocation semantics with a test that authenticates, rotates/deletes the key, and confirms the old key is rejected without restarting the process.
++
++### 5. Event creation and fan-out are not atomic
++
++- **Location:** `src/db.ts:181-204`; orchestration at `src/routes/events.ts:45-50`
++- **Severity:** **high** — the event insert commits before delivery rows are created, and delivery inserts are individually committed. A database error or process exit can leave an event with no deliveries or only a partial fan-out, with no code that reconciles the missing rows. Accepted events can be silently lost for some subscribers.
++- **Recommended fix:** Add a single database function that starts a SQLite transaction, inserts the event, snapshots the active webhook IDs, inserts all corresponding deliveries, and commits only after all inserts succeed. Roll back the entire operation on error. Add a uniqueness constraint on `(event_id, webhook_id)` so reconciliation or retries cannot create duplicate delivery rows; introducing that constraint requires checking and deduplicating existing rows first in production.
++
++### 6. Missing webhook/event rows and deactivated webhooks retry forever
++
++- **Location:** `src/jobs/dispatcher.ts:18-23`; `src/db.ts:224-235,272-283`
++- **Severity:** **medium** — this failure branch calls `markFailed` without incrementing `attemptCount`. Such rows always satisfy `attempt_count < maxAttempts`, so the retry job reschedules them indefinitely. Deactivating a webhook with queued deliveries creates permanent retry/database load.
++- **Recommended fix:** Model non-retryable outcomes explicitly (for example `cancelled` or terminal `failed`) and clear `next_attempt_at` for missing/deactivated dependencies. Exclude terminal rows from retry selection. If a schema status constraint is added, deploy the schema change before code writes the new status and backfill existing affected rows as a coordinated migration.
++
++### 7. Event ingestion has no idempotency mechanism
++
++- **Location:** `src/routes/events.ts:34-60`; schema at `src/db.ts:77-95`
++- **Severity:** **medium** — a client that times out after the insert and retries creates a second event and a second full set of deliveries. Network retries are normal, so downstream webhook consumers can receive duplicates even without a worker crash.
++- **Recommended fix:** Require or support an idempotency key on `POST /events`, persist it with the account and request fingerprint, and enforce a unique `(account_id, idempotency_key)` constraint. In one transaction, return the original result for an identical replay and reject reuse with a different body. This needs a production schema migration deployed before enabling the new write path; clients need a coordinated rollout if the header becomes mandatory.
++
++### 8. Dispatch is serial and can fall permanently behind
++
++- **Location:** `src/jobs/dispatcher.ts:5-9`; `src/jobs/retry.ts:9-11`; timeout at `src/config.ts:15`
++- **Severity:** **medium** — each batch awaits up to 50 deliveries sequentially. At the default eight-second timeout, one batch can take roughly 400 seconds while new work arrives every five seconds. This creates unbounded delivery latency and also makes overlapping sweeps much more likely.
++- **Recommended fix:** After implementing the atomic claim/lease in finding 3, process claimed deliveries with bounded concurrency (for example a worker pool of 5-10, configurable based on capacity) using per-request timeouts. Measure queue depth and oldest-pending age, and tune batch/concurrency limits from those metrics. Do not add parallelism before atomic claiming, because that would amplify duplicate sends.
++
++### 9. Unbounded request bodies can exhaust memory and grow the database without limit
++
++- **Location:** `src/routes/events.ts:36-49`; `src/routes/webhooks.ts:34-56`
++- **Severity:** **medium** — both routes fully parse attacker-controlled JSON with no request-size limit, and event payloads/descriptions/types have no stored-size bounds. An authenticated or compromised tenant can consume process memory and disk, blocking all tenants on the single SQLite database.
++- **Recommended fix:** Reject requests whose declared or streamed body exceeds a configured limit before parsing; enforce maximum lengths for event type, serialized payload, URL, and description; return `413` for body limits and `400`/`422` for field limits. Enforce tenant quotas or retention for stored events/deliveries so repeated valid-size requests cannot fill the disk.
++
++### 10. Expected client errors are returned as generic HTTP 500 responses
++
++- **Location:** `src/server.ts:68-75`; error types at `src/lib/http.ts:10-35`
++- **Severity:** **medium** — authentication, validation, and not-found errors already carry 401/400/404 statuses, but the top-level handler ignores them. Clients cannot distinguish malformed requests from outages, monitoring reports false server failures, and retrying clients may unnecessarily repeat invalid requests.
++- **Recommended fix:** In the catch block, detect `err instanceof HttpError` and return its status with a safe error body; log expected 4xx errors at an appropriate level without stack traces. Keep unknown errors as a generic 500 and log a request/correlation ID. Add route tests for missing/invalid keys, validation failures, missing resources, and unexpected exceptions.
++
++### 11. Invalid webhook input reports success
++
++- **Location:** `src/routes/webhooks.ts:36-49`
++- **Severity:** **medium** — missing or unparsable URLs return HTTP 200. Clients using `Response.ok`, retry policy, or metrics will record a successful registration even though no webhook exists.
++- **Recommended fix:** Throw `ValidationError` (or return a 400/422 response) for both cases. Implement finding 10 at the same time so thrown validation errors retain their 4xx status, and standardize the error response shape across both branches.
++
++### 12. Pagination accepts non-finite values and webhook pagination skips the first page
++
++- **Location:** `src/routes/webhooks.ts:8-20`; the same parsing pattern at `src/routes/events.ts:8-13` and `src/routes/deliveries.ts:7-13`
++- **Severity:** **medium** — `/webhooks?page=1` uses an offset of 10, so the newest ten records are never returned on any page. Values such as `page=abc` become `NaN` (because `Math.max` does not sanitize `NaN`) and reach SQLite, producing a 500; arbitrarily large page values can also produce invalid/non-safe offsets.
++- **Recommended fix:** Centralize page parsing: accept only digit strings that convert to a safe integer within an explicit maximum, reject invalid input with a validation error, and compute `(page - 1) * PAGE_SIZE`. Add first-page, second-page, zero, negative, fractional, nonnumeric, and overflow tests for all three list endpoints.
++
++### 13. The immediate dispatch nudge creates an unhandled promise rejection
++
++- **Location:** `src/routes/events.ts:52-58`
++- **Severity:** **medium** — `dispatchPendingDeliveries()` is neither awaited nor caught. Database failures and other errors become unhandled rejections; depending on runtime policy they can destabilize the process, and in all cases the immediate dispatch failure is invisible to operators.
++- **Recommended fix:** Prefer enqueueing/claiming durable work and let the worker own dispatch. If the nudge remains fire-and-forget, explicitly use `void dispatchPendingDeliveries().catch(...)` with structured logging and a metric. Combine this with finding 3 so the nudge cannot race scheduled or operator-triggered sweeps.
++
++### 14. Runtime configuration is not validated
++
++- **Location:** `src/config.ts:1-16`; consumers at `src/server.ts:17-28` and `src/jobs/dispatcher.ts:37`
++- **Severity:** **medium** — malformed, zero, negative, or non-finite numeric environment values are accepted. This can prevent startup, create near-continuous timers, disable useful retries, or make request timeouts invalid. If `INTERNAL_TOKEN` is omitted, the service silently uses a publicly known default token in every environment.
++- **Recommended fix:** Parse and validate configuration once at startup with explicit ranges: valid TCP port, positive bounded intervals/timeouts, and a positive integer attempt limit. Fail startup with a clear variable-specific error. Require `INTERNAL_TOKEN` when `NODE_ENV=production` (or equivalent deployment mode); keep any development default behind an explicit development-only branch.
++
++### 15. Internal-token comparison is not constant-time
++
++- **Location:** `src/middleware/auth.ts:36-40`; existing helper at `src/lib/crypto.ts:16-29`
++- **Severity:** **low** — the shared maintenance credential is compared with `!==`, whose work may vary with the matching prefix. Exploitation over a network is difficult and the protected operation is limited, so this is lower impact than the default-token and authorization issues.
++- **Recommended fix:** After rejecting a missing header, compare the supplied token with `safeCompare` from `lib/crypto.ts`. Also use a sufficiently long random production token and rate-limit failed attempts at the service or ingress layer.
++
++### 16. Delivery listing performs an N+1 query pattern
++
++- **Location:** `src/routes/deliveries.ts:13-22`; query at `src/db.ts:237-247`
++- **Severity:** **low** — each page performs one list query plus up to 25 individual webhook lookups. This adds avoidable SQLite work and request latency under account activity.
++- **Recommended fix:** Join `webhooks` in `listDeliveriesByAccount` and select the destination URL in the same query (using a left join if historical rows may lack a webhook), then return a typed projection. Add a query/result test covering deleted or missing webhook rows.
++
++### 17. “Today” statistics use the server's local midnight against UTC timestamps
++
++- **Location:** `src/routes/deliveries.ts:27-40`; timestamp storage at `src/db.ts:197,218,225`
++- **Severity:** **low** — `setHours` computes local midnight while stored timestamps are UTC ISO strings. On hosts outside UTC, the endpoint includes part of the prior/next UTC day and omits part of the requested day.
++- **Recommended fix:** Define the API's day semantics explicitly. If it means UTC today, use `setUTCHours(0, 0, 0, 0)`. If it means an account-local day, store an account timezone and calculate both UTC start and end boundaries for that zone, then query `created_at >= start AND created_at < end`. Add tests around positive/negative offsets and daylight-saving transitions if account-local behavior is chosen.
++
++## Remediation plan
++
++1. **Immediately block data and network boundary attacks:** fix the SQL injection (finding 1) and SSRF (finding 2). These are the direct cross-tenant/internal-network security risks. Rotate/review credentials and inspect access logs if this code has been exposed, because code changes cannot determine whether either flaw was already abused.
++2. **Make dispatch ownership safe before increasing throughput:** implement the atomic claim/lease and expired-lease recovery model (finding 3), then add bounded concurrency (finding 8) and safely handle the ingestion nudge (finding 13). The concurrency fix explicitly depends on atomic claims. Deploy schema additions for lease owner/expiry first in a backward-compatible migration, deploy compatible workers next, and only then enable concurrent processing. During rollout, avoid mixed versions that interpret all `sending` rows as immediately retryable.
++3. **Protect delivery integrity:** make event creation/fan-out transactional and add the delivery uniqueness constraint (finding 5), then add ingestion idempotency (finding 7). Both require production migrations. Audit/deduplicate existing `(event_id, webhook_id)` rows before creating the unique index; add the nullable idempotency column/index first, deploy code that populates it, and coordinate clients before making an idempotency key mandatory.
++4. **Stop permanent bad work:** introduce a terminal outcome for deactivated/missing dependencies and backfill current poison rows (finding 6). If status values are constrained in production, this is a schema-first coordinated rollout; otherwise the code and backfill can ship together after workers understand the new state.
++5. **Restore authentication and operational safety:** replace or bound the API-key cache (finding 4), validate configuration and remove the production default internal token (finding 14), and use constant-time comparison (finding 15). Coordinate the token change with the caller of `/internal/dispatch-now`; deploy the new secret to both sides without relying on the checked-in fallback.
++6. **Harden the HTTP contract and resource limits:** preserve `HttpError` statuses (finding 10), return proper URL validation errors (finding 11), validate pagination (finding 12), and enforce body/field/storage limits (finding 9). Publish any newly enforced limits to clients before rollout if existing payloads may exceed them.
++7. **Finish lower-risk correctness and efficiency work:** collapse the delivery N+1 query (finding 16) and define/fix day-boundary semantics (finding 17). The latter needs product/API agreement if “today” is intended to be account-local rather than UTC.
++
++Before each rollout, add focused regression tests for the affected behavior and observe queue depth, oldest pending age, retry counts, duplicate-claim conflicts, and terminal failures. The database/worker changes should be rehearsed against a copy of production data and deployed with a rollback path; they are not safe as an uncoordinated code-only release.

@@ -1,0 +1,294 @@
+diff --git a/package.json b/package.json
+index 87bcbbb..7ab5a26 100644
+--- a/package.json
++++ b/package.json
+@@ -1,6 +1,11 @@
+ {
+   "name": "inventory-api-fixture",
+   "private": true,
++  "scripts": {
++    "migrate": "bun run src/migrate.ts",
++    "start": "bun run src/server.ts",
++    "typecheck": "tsc --noEmit"
++  },
+   "devDependencies": {
+     "typescript": "7.0.2",
+     "@types/bun": "1.4.1"
+diff --git a/src/database.ts b/src/database.ts
+new file mode 100644
+index 0000000..4c70d4a
+--- /dev/null
++++ b/src/database.ts
+@@ -0,0 +1,58 @@
++import { Database } from "bun:sqlite";
++
++export function databasePath(): string {
++  const path = process.env.DATABASE_PATH;
++  if (!path) throw new Error("DATABASE_PATH is required");
++  return path;
++}
++
++export function openDatabase(): Database {
++  const db = new Database(databasePath(), { create: true });
++  db.exec("PRAGMA foreign_keys = ON");
++  db.exec("PRAGMA journal_mode = WAL");
++  db.exec("PRAGMA busy_timeout = 5000");
++  return db;
++}
++
++export function migrate(db: Database): void {
++  db.exec(`
++    CREATE TABLE IF NOT EXISTS products (
++      id TEXT PRIMARY KEY,
++      sku TEXT NOT NULL UNIQUE,
++      name TEXT NOT NULL,
++      reorder_threshold INTEGER NOT NULL CHECK (reorder_threshold >= 0),
++      created_at TEXT NOT NULL,
++      updated_at TEXT NOT NULL
++    );
++
++    CREATE TABLE IF NOT EXISTS warehouses (
++      id TEXT PRIMARY KEY,
++      code TEXT NOT NULL UNIQUE,
++      name TEXT NOT NULL,
++      created_at TEXT NOT NULL
++    );
++
++    CREATE TABLE IF NOT EXISTS stock_balances (
++      product_id TEXT NOT NULL REFERENCES products(id),
++      warehouse_id TEXT NOT NULL REFERENCES warehouses(id),
++      quantity INTEGER NOT NULL CHECK (quantity >= 0),
++      PRIMARY KEY (product_id, warehouse_id)
++    );
++
++    CREATE TABLE IF NOT EXISTS stock_movements (
++      id TEXT PRIMARY KEY,
++      product_id TEXT NOT NULL REFERENCES products(id),
++      warehouse_id TEXT NOT NULL REFERENCES warehouses(id),
++      type TEXT NOT NULL CHECK (type IN ('receipt', 'shipment', 'adjustment')),
++      quantity INTEGER NOT NULL,
++      note TEXT,
++      idempotency_key TEXT NOT NULL UNIQUE,
++      request_fingerprint TEXT NOT NULL,
++      resulting_stock INTEGER NOT NULL CHECK (resulting_stock >= 0),
++      created_at TEXT NOT NULL
++    );
++
++    CREATE INDEX IF NOT EXISTS stock_movements_product_id_idx
++      ON stock_movements(product_id);
++  `);
++}
+diff --git a/src/migrate.ts b/src/migrate.ts
+new file mode 100644
+index 0000000..6343f4d
+--- /dev/null
++++ b/src/migrate.ts
+@@ -0,0 +1,8 @@
++import { migrate, openDatabase } from "./database";
++
++const db = openDatabase();
++try {
++  migrate(db);
++} finally {
++  db.close();
++}
+diff --git a/src/server.ts b/src/server.ts
+new file mode 100644
+index 0000000..97b97ce
+--- /dev/null
++++ b/src/server.ts
+@@ -0,0 +1,194 @@
++import type { Database } from "bun:sqlite";
++import { migrate, openDatabase } from "./database";
++
++type Detail = { field: string; issue: string };
++type JsonObject = Record<string, unknown>;
++type ProductRow = { id: string; sku: string; name: string; reorder_threshold: number; created_at: string; updated_at: string; stock: number };
++type WarehouseRow = { id: string; code: string; name: string; created_at: string };
++type MovementRow = { id: string; product_id: string; warehouse_id: string; type: string; quantity: number; note: string | null; idempotency_key: string; request_fingerprint: string; resulting_stock: number; created_at: string };
++
++class HttpError extends Error {
++  constructor(public status: number, public code: "validation_error" | "not_found" | "conflict" | "internal_error", message: string, public details?: Detail[]) { super(message); }
++}
++
++const db = openDatabase();
++migrate(db);
++
++const jsonHeaders = { "content-type": "application/json; charset=utf-8" };
++const respond = (value: unknown, status = 200) => Response.json(value, { status, headers: jsonHeaders });
++const fail = (error: HttpError) => respond({ error: { code: error.code, message: error.message, ...(error.details?.length ? { details: error.details } : {}) } }, error.status);
++const validation = (details: Detail[], message = "Request validation failed"): never => { throw new HttpError(400, "validation_error", message, details); };
++const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
++const codePattern = /^[A-Za-z0-9_-]+$/;
++
++async function body(request: Request): Promise<JsonObject> {
++  let value: unknown;
++  try { value = await request.json(); } catch { validation([{ field: "body", issue: "must be valid JSON" }]); }
++  if (value === null || typeof value !== "object" || Array.isArray(value)) validation([{ field: "body", issue: "must be an object" }]);
++  return value as JsonObject;
++}
++
++function rejectExtra(value: JsonObject, allowed: string[], details: Detail[]): void {
++  for (const key of Object.keys(value)) if (!allowed.includes(key)) details.push({ field: key, issue: "is not allowed" });
++}
++function stringField(value: JsonObject, field: string, details: Detail[], options: { required?: boolean; max: number; pattern?: RegExp }): string | undefined {
++  const item = value[field];
++  if (item === undefined) { if (options.required) details.push({ field, issue: "is required" }); return; }
++  if (typeof item !== "string") { details.push({ field, issue: "must be a string" }); return; }
++  if (item.length < 1) details.push({ field, issue: "must not be empty" });
++  if (item.length > options.max) details.push({ field, issue: `must be at most ${options.max} characters` });
++  if (options.pattern && !options.pattern.test(item)) details.push({ field, issue: "has an invalid format" });
++  return item;
++}
++function integerField(value: JsonObject, field: string, details: Detail[], required = false, minimum = 0): number | undefined {
++  const item = value[field];
++  if (item === undefined) { if (required) details.push({ field, issue: "is required" }); return; }
++  if (!Number.isInteger(item) || (item as number) < minimum) { details.push({ field, issue: `must be an integer greater than or equal to ${minimum}` }); return; }
++  return item as number;
++}
++function uuidField(value: JsonObject, field: string, details: Detail[]): string | undefined {
++  const item = value[field];
++  if (typeof item !== "string") { details.push({ field, issue: item === undefined ? "is required" : "must be a UUID" }); return; }
++  if (!uuidPattern.test(item)) details.push({ field, issue: "must be a UUID" });
++  return item;
++}
++function pathUuid(value: string, field: string): void { if (!uuidPattern.test(value)) validation([{ field, issue: "must be a UUID" }]); }
++
++function pagination(url: URL): { page: number; pageSize: number; offset: number } {
++  const details: Detail[] = [];
++  for (const key of url.searchParams.keys()) if (key !== "page" && key !== "pageSize") details.push({ field: key, issue: "is not allowed" });
++  const parse = (field: string, fallback: number, max?: number) => {
++    const values = url.searchParams.getAll(field);
++    if (values.length > 1) { details.push({ field, issue: "must be provided once" }); return fallback; }
++    if (!values.length) return fallback;
++    const raw = values[0]!;
++    if (!/^[0-9]+$/.test(raw) || Number(raw) < 1 || (max !== undefined && Number(raw) > max)) { details.push({ field, issue: max ? `must be an integer from 1 to ${max}` : "must be an integer greater than or equal to 1" }); return fallback; }
++    return Number(raw);
++  };
++  const page = parse("page", 1), pageSize = parse("pageSize", 20, 100);
++  if (details.length) validation(details, "Invalid pagination parameters");
++  return { page, pageSize, offset: (page - 1) * pageSize };
++}
++
++const productSelect = `SELECT p.id, p.sku, p.name, p.reorder_threshold, p.created_at, p.updated_at, COALESCE(SUM(b.quantity), 0) AS stock FROM products p LEFT JOIN stock_balances b ON b.product_id = p.id`;
++const product = (r: ProductRow) => ({ id: r.id, sku: r.sku, name: r.name, reorderThreshold: r.reorder_threshold, stock: r.stock, createdAt: r.created_at, updatedAt: r.updated_at });
++const warehouse = (r: WarehouseRow) => ({ id: r.id, code: r.code, name: r.name, createdAt: r.created_at });
++const movement = (r: MovementRow) => ({ id: r.id, productId: r.product_id, warehouseId: r.warehouse_id, type: r.type, quantity: r.quantity, ...(r.note !== null ? { note: r.note } : {}), idempotencyKey: r.idempotency_key, resultingStock: r.resulting_stock, createdAt: r.created_at });
++const pageMeta = (page: number, pageSize: number, total: number) => ({ page, pageSize, total, totalPages: Math.ceil(total / pageSize) });
++
++async function createProduct(request: Request): Promise<Response> {
++  const value = await body(request), details: Detail[] = [];
++  rejectExtra(value, ["sku", "name", "reorderThreshold"], details);
++  const sku = stringField(value, "sku", details, { required: true, max: 64, pattern: codePattern });
++  const name = stringField(value, "name", details, { required: true, max: 200 });
++  const threshold = integerField(value, "reorderThreshold", details, true);
++  if (details.length) validation(details);
++  const id = crypto.randomUUID(), now = new Date().toISOString();
++  try { db.query("INSERT INTO products (id, sku, name, reorder_threshold, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)").run(id, sku!, name!, threshold!, now, now); }
++  catch (error) { if (String(error).includes("UNIQUE constraint failed")) throw new HttpError(409, "conflict", "A product with this sku already exists"); throw error; }
++  return respond({ id, sku, name, reorderThreshold: threshold, stock: 0, createdAt: now, updatedAt: now }, 201);
++}
++
++function listProducts(url: URL): Response {
++  const { page, pageSize, offset } = pagination(url);
++  const total = (db.query("SELECT COUNT(*) AS count FROM products").get() as { count: number }).count;
++  const rows = db.query(`${productSelect} GROUP BY p.id ORDER BY p.created_at, p.id LIMIT ? OFFSET ?`).all(pageSize, offset) as ProductRow[];
++  return respond({ data: rows.map(product), pagination: pageMeta(page, pageSize, total) });
++}
++
++function getProduct(id: string): Response {
++  pathUuid(id, "productId");
++  const row = db.query(`${productSelect} WHERE p.id = ? GROUP BY p.id`).get(id) as ProductRow | null;
++  if (!row) throw new HttpError(404, "not_found", "Product not found");
++  return respond(product(row));
++}
++
++async function updateProduct(request: Request, id: string): Promise<Response> {
++  pathUuid(id, "productId");
++  const value = await body(request), details: Detail[] = [];
++  rejectExtra(value, ["name", "reorderThreshold"], details);
++  if (Object.keys(value).length === 0) details.push({ field: "body", issue: "must contain at least one property" });
++  const name = stringField(value, "name", details, { max: 200 });
++  const threshold = integerField(value, "reorderThreshold", details);
++  if (details.length) validation(details);
++  if (!db.query("SELECT 1 FROM products WHERE id = ?").get(id)) throw new HttpError(404, "not_found", "Product not found");
++  const now = new Date().toISOString();
++  db.query("UPDATE products SET name = COALESCE(?, name), reorder_threshold = COALESCE(?, reorder_threshold), updated_at = ? WHERE id = ?").run(name ?? null, threshold ?? null, now, id);
++  return getProduct(id);
++}
++
++async function createWarehouse(request: Request): Promise<Response> {
++  const value = await body(request), details: Detail[] = [];
++  rejectExtra(value, ["code", "name"], details);
++  const code = stringField(value, "code", details, { required: true, max: 32, pattern: codePattern });
++  const name = stringField(value, "name", details, { required: true, max: 200 });
++  if (details.length) validation(details);
++  const id = crypto.randomUUID(), now = new Date().toISOString();
++  try { db.query("INSERT INTO warehouses (id, code, name, created_at) VALUES (?, ?, ?, ?)").run(id, code!, name!, now); }
++  catch (error) { if (String(error).includes("UNIQUE constraint failed")) throw new HttpError(409, "conflict", "A warehouse with this code already exists"); throw error; }
++  return respond({ id, code, name, createdAt: now }, 201);
++}
++
++function listWarehouses(url: URL): Response {
++  const { page, pageSize, offset } = pagination(url);
++  const total = (db.query("SELECT COUNT(*) AS count FROM warehouses").get() as { count: number }).count;
++  const rows = db.query("SELECT id, code, name, created_at FROM warehouses ORDER BY created_at, id LIMIT ? OFFSET ?").all(pageSize, offset) as WarehouseRow[];
++  return respond({ data: rows.map(warehouse), pagination: pageMeta(page, pageSize, total) });
++}
++
++async function createMovement(request: Request): Promise<Response> {
++  const key = request.headers.get("Idempotency-Key"), details: Detail[] = [];
++  if (key === null || key.length < 1) details.push({ field: "Idempotency-Key", issue: "is required" });
++  else if (key.length > 200) details.push({ field: "Idempotency-Key", issue: "must be at most 200 characters" });
++  const value = await body(request);
++  rejectExtra(value, ["productId", "warehouseId", "type", "quantity", "note"], details);
++  const productId = uuidField(value, "productId", details), warehouseId = uuidField(value, "warehouseId", details);
++  const type = value.type;
++  if (typeof type !== "string" || !["receipt", "shipment", "adjustment"].includes(type)) details.push({ field: "type", issue: "must be one of receipt, shipment, adjustment" });
++  const quantity = value.quantity;
++  if (!Number.isInteger(quantity) || (type === "adjustment" ? quantity === 0 : (quantity as number) <= 0)) details.push({ field: "quantity", issue: type === "adjustment" ? "must be a nonzero integer" : "must be a positive integer" });
++  let note: string | undefined;
++  if (value.note !== undefined) { if (typeof value.note !== "string") details.push({ field: "note", issue: "must be a string" }); else { note = value.note; if (note.length > 500) details.push({ field: "note", issue: "must be at most 500 characters" }); } }
++  if (details.length) validation(details);
++  const fingerprint = JSON.stringify({ productId, warehouseId, type, quantity, ...(note !== undefined ? { note } : {}) });
++  const apply = db.transaction((): MovementRow => {
++    const existing = db.query("SELECT * FROM stock_movements WHERE idempotency_key = ?").get(key!) as MovementRow | null;
++    if (existing) { if (existing.request_fingerprint !== fingerprint) throw new HttpError(409, "conflict", "Idempotency-Key was reused with a different request body"); return existing; }
++    if (!db.query("SELECT 1 FROM products WHERE id = ?").get(productId!)) throw new HttpError(404, "not_found", "Product not found");
++    if (!db.query("SELECT 1 FROM warehouses WHERE id = ?").get(warehouseId!)) throw new HttpError(404, "not_found", "Warehouse not found");
++    const current = (db.query("SELECT quantity FROM stock_balances WHERE product_id = ? AND warehouse_id = ?").get(productId!, warehouseId!) as { quantity: number } | null)?.quantity ?? 0;
++    const delta = type === "shipment" ? -(quantity as number) : quantity as number;
++    const next = current + delta;
++    if (next < 0) throw new HttpError(409, "conflict", "Movement would take stock below zero");
++    db.query("INSERT INTO stock_balances (product_id, warehouse_id, quantity) VALUES (?, ?, ?) ON CONFLICT(product_id, warehouse_id) DO UPDATE SET quantity = excluded.quantity").run(productId!, warehouseId!, next);
++    const total = (db.query("SELECT COALESCE(SUM(quantity), 0) AS stock FROM stock_balances WHERE product_id = ?").get(productId!) as { stock: number }).stock;
++    const row: MovementRow = { id: crypto.randomUUID(), product_id: productId!, warehouse_id: warehouseId!, type: type as string, quantity: quantity as number, note: note ?? null, idempotency_key: key!, request_fingerprint: fingerprint, resulting_stock: total, created_at: new Date().toISOString() };
++    db.query("INSERT INTO stock_movements (id, product_id, warehouse_id, type, quantity, note, idempotency_key, request_fingerprint, resulting_stock, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)").run(row.id, row.product_id, row.warehouse_id, row.type, row.quantity, row.note, row.idempotency_key, row.request_fingerprint, row.resulting_stock, row.created_at);
++    return row;
++  });
++  return respond(movement(apply()), 201);
++}
++
++function lowStock(url: URL): Response {
++  const { page, pageSize, offset } = pagination(url);
++  const base = `FROM products p LEFT JOIN stock_balances b ON b.product_id = p.id GROUP BY p.id HAVING COALESCE(SUM(b.quantity), 0) < p.reorder_threshold`;
++  const total = (db.query(`SELECT COUNT(*) AS count FROM (SELECT p.id ${base})`).get() as { count: number }).count;
++  const rows = db.query(`SELECT p.id AS productId, p.sku, p.name, p.reorder_threshold AS reorderThreshold, COALESCE(SUM(b.quantity), 0) AS stock ${base} ORDER BY p.created_at, p.id LIMIT ? OFFSET ?`).all(pageSize, offset);
++  return respond({ data: rows, pagination: pageMeta(page, pageSize, total) });
++}
++
++async function route(request: Request): Promise<Response> {
++  const url = new URL(request.url), method = request.method;
++  if (method === "GET" && url.pathname === "/health") return respond({ status: "ok" });
++  if (url.pathname === "/products") { if (method === "POST") return createProduct(request); if (method === "GET") return listProducts(url); }
++  const productMatch = url.pathname.match(/^\/products\/([^/]+)$/);
++  if (productMatch) { if (method === "GET") return getProduct(productMatch[1]!); if (method === "PATCH") return updateProduct(request, productMatch[1]!); }
++  if (url.pathname === "/warehouses") { if (method === "POST") return createWarehouse(request); if (method === "GET") return listWarehouses(url); }
++  if (url.pathname === "/stock-movements" && method === "POST") return createMovement(request);
++  if (url.pathname === "/reports/low-stock" && method === "GET") return lowStock(url);
++  throw new HttpError(404, "not_found", "Route not found");
++}
++
++const rawPort = process.env.PORT;
++if (!rawPort || !/^\d+$/.test(rawPort) || Number(rawPort) < 1 || Number(rawPort) > 65535) throw new Error("PORT must be an integer from 1 to 65535");
++Bun.serve({ port: Number(rawPort), fetch: async request => { try { return await route(request); } catch (error) { if (error instanceof HttpError) return fail(error); console.error(error); return fail(new HttpError(500, "internal_error", "Internal server error")); } } });

@@ -1,0 +1,94 @@
+{
+  "id": "v2026.09-smoke__signature--landing-hero__codex--gpt-5.6-sol--low__1",
+  "release": "v2026.09-smoke",
+  "suiteVersion": "v2026.09",
+  "task": "signature/landing-hero",
+  "taskVersion": 1,
+  "agent": {
+    "cli": "codex",
+    "model": "gpt-5.6-sol",
+    "effort": "low",
+    "version": "codex-cli 0.153.4",
+    "permissionMode": "workspace-write+bypass-approvals-and-sandbox",
+    "caps": {
+      "maxTurns": 50,
+      "maxBudgetUsd": 8,
+      "timeboxMinutes": 25
+    },
+    "command": [
+      "codex",
+      "exec",
+      "--json",
+      "-m",
+      "gpt-5.6-sol",
+      "-c",
+      "model_reasoning_effort=low",
+      "-s",
+      "workspace-write",
+      "--dangerously-bypass-approvals-and-sandbox",
+      "-C",
+      "/Users/decod3rslabs/www/shipshitdev/public/benchmark/.runs/v2026.09-smoke__signature--landing-hero__codex--gpt-5.6-sol--low__1/workspace",
+      "--skip-git-repo-check",
+      "-o",
+      "/Users/decod3rslabs/www/shipshitdev/public/benchmark/.runs/v2026.09-smoke__signature--landing-hero__codex--gpt-5.6-sol--low__1/workspace/../codex-last-message.md",
+      "# Build the shipshit.dev landing hero\n\nYou are working inside a minimal Next.js app with an empty home page. Design and build the\nlanding hero section for shipshit.dev, a studio that ships open-source developer tools live\non stream.\n\n## Required content\n\nInclude all of the following, with copy you write yourself:\n\n- A headline that communicates what shipshit.dev is.\n- A one- or two-sentence subline underneath the headline.\n- Two calls to action: a primary one (for example, watch the stream) and a secondary one\n  (for example, browse the tools on GitHub).\n- A status pill indicating whether a stream is currently live (you decide the state and its\n  label, for example \"Live now\" or \"Offline, next stream Friday\").\n- A marquee (a horizontally scrolling or looping row) listing six invented open-source tool\n  names shipped by the studio.\n\n## Constraints\n\n- Build this as the full content of `app/page.tsx`, plus any components you add under\n  `components/` or `app/`.\n- No other constraints on layout, color, typography, or motion beyond what is already set up\n  in the fixture (Next.js and Tailwind CSS). Make the design decisions yourself.\n- Do not add a component library beyond what is already in the fixture. Do not add a\n  backend, database, or external API calls; all content is static.\n- Keep `bun run build` and `bun run start` working exactly as documented in the fixture's\n  README.\n\nThis page will be rebuilt from this exact brief every time a new model is evaluated, so the\nresult should represent your best design work, not a placeholder.\n"
+    ]
+  },
+  "attempt": 1,
+  "startedAt": "2026-09-06T09:25:18.935Z",
+  "finishedAt": "2026-09-06T09:29:47.970Z",
+  "host": "unknown-host",
+  "status": "ok",
+  "usage": {
+    "input": 553396,
+    "output": 11777,
+    "cacheRead": 516864,
+    "cacheWrite": null,
+    "turns": 1,
+    "toolCalls": 12,
+    "durationMs": 262233,
+    "costUsdEquivalent": 2.6559,
+    "priceKey": "gpt-5-6-sol"
+  },
+  "gates": [
+    {
+      "id": "install",
+      "pass": true,
+      "durationMs": 18,
+      "detail": "bun install v1.4.2 (744846f84)\n\nChecked 50 installs across 127 packages (no changes) [8.00ms]"
+    },
+    {
+      "id": "build",
+      "pass": true,
+      "durationMs": 2335,
+      "detail": "▲ Next.js 16.3.4 (Turbopack)\n✓ Running next.config.ts took 15ms\n\n  Creating an optimized production build ...\n✓ Compiled successfully in 220ms\n  Running TypeScript ...\n\n  We detected TypeScript in your project and reconfigured your tsconfig.json file for you.\n  The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:\n\n  \t- include was updated to add '.next/dev/types/**/*.ts'\n\n  The following mandatory changes were made to your tsconfig.json:\n\n  \t- jsx was set to react-jsx (next.js uses the React automatic runtime)\n\n  Finished TypeScript in 199ms ...\n  Collecting page data using 4 workers ...\n  Generating static pages using 4 workers (0/3) ...\n✓ Generating static pages using 4 workers (3/3) in 206ms\n  Finalizing page optimization ...\n\nRoute (app)\n┌ ○ /\n└ ○ /_not-found\n\n\n○  (Static)  prerendered as static content\n\n\n$ next build\n⚠ Warning: Next.js ignored package.json in /Users/decod3rslabs/www/shipshitdev/public/benchmark because it is outside the current Git repository (/Users/decod3rslabs/www/shipshitdev/public/benchmark/.runs/v2026.09-smoke__signature--landing-hero__codex--gpt-5.6-sol--low__1/workspace).\n To use this directory, set `turbopack.root` in your Next.js config."
+    }
+  ],
+  "objective": null,
+  "judgments": [],
+  "artifacts": {
+    "transcript": "transcript.jsonl.gz",
+    "diff": "diff.patch",
+    "screenshots": [
+      {
+        "path": "/",
+        "viewport": "mobile",
+        "file": "screenshots/root-mobile.png"
+      },
+      {
+        "path": "/",
+        "viewport": "tablet",
+        "file": "screenshots/root-tablet.png"
+      },
+      {
+        "path": "/",
+        "viewport": "desktop",
+        "file": "screenshots/root-desktop.png"
+      }
+    ],
+    "report": null
+  },
+  "notes": [
+    "codex: no turn cap flag; enforced only by the timebox"
+  ]
+}

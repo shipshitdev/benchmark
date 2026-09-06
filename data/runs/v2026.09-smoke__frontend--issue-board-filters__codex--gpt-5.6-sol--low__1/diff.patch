@@ -1,0 +1,269 @@
+diff --git a/app/page.tsx b/app/page.tsx
+index 094cca2..6f31f7e 100644
+--- a/app/page.tsx
++++ b/app/page.tsx
+@@ -1,6 +1,18 @@
++import { AssigneeFilter } from "@/components/AssigneeFilter";
+ import { IssueList } from "@/components/IssueList";
++import { LabelFilter } from "@/components/LabelFilter";
++import { SearchFilter } from "@/components/SearchFilter";
+ import { StatusFilter } from "@/components/StatusFilter";
+-import { filterByStatus, getIssues, type IssueStatus } from "@/lib/issues";
++import {
++  filterByAssignee,
++  filterByLabels,
++  filterBySearch,
++  filterByStatus,
++  getAllAssignees,
++  getAllLabels,
++  getIssues,
++  type IssueStatus,
++} from "@/lib/issues";
+ 
+ const VALID_STATUSES = new Set<IssueStatus>(["open", "in-progress", "done"]);
+ 
+@@ -11,6 +23,25 @@ function parseStatus(value: string | string[] | undefined): IssueStatus | null {
+   return VALID_STATUSES.has(value as IssueStatus) ? (value as IssueStatus) : null;
+ }
+ 
++function parseLabels(value: string | string[] | undefined): string[] {
++  if (typeof value !== "string") {
++    return [];
++  }
++  const validLabels = new Set(getAllLabels());
++  return value.split(",").filter((label) => validLabels.has(label));
++}
++
++function parseAssignee(value: string | string[] | undefined): string | null {
++  if (typeof value !== "string") {
++    return null;
++  }
++  return value === "unassigned" || getAllAssignees().includes(value) ? value : null;
++}
++
++function parseSearch(value: string | string[] | undefined): string {
++  return typeof value === "string" ? value : "";
++}
++
+ type SearchParams = Record<string, string | string[] | undefined>;
+ 
+ export default async function Home({
+@@ -20,14 +51,23 @@ export default async function Home({
+ }) {
+   const params = await searchParams;
+   const status = parseStatus(params.status);
++  const labels = parseLabels(params.labels);
++  const assignee = parseAssignee(params.assignee);
++  const query = parseSearch(params.q);
+ 
+-  const issues = filterByStatus(getIssues(), status);
++  let issues = filterByStatus(getIssues(), status);
++  issues = filterByLabels(issues, labels);
++  issues = filterByAssignee(issues, assignee);
++  issues = filterBySearch(issues, query);
+ 
+   return (
+     <main className="mx-auto flex max-w-2xl flex-col gap-6 p-6">
+       <h1 className="text-xl font-semibold">Issue board</h1>
+       <div className="flex flex-wrap gap-4">
+         <StatusFilter />
++        <LabelFilter labels={getAllLabels()} />
++        <AssigneeFilter assignees={getAllAssignees()} />
++        <SearchFilter />
+       </div>
+       <IssueList issues={issues} />
+     </main>
+diff --git a/components/AssigneeFilter.tsx b/components/AssigneeFilter.tsx
+new file mode 100644
+index 0000000..1aff106
+--- /dev/null
++++ b/components/AssigneeFilter.tsx
+@@ -0,0 +1,45 @@
++"use client";
++
++import { usePathname, useRouter, useSearchParams } from "next/navigation";
++import type { ChangeEvent } from "react";
++
++export function AssigneeFilter({ assignees }: { assignees: string[] }) {
++  const router = useRouter();
++  const pathname = usePathname();
++  const searchParams = useSearchParams();
++  const currentAssignee = searchParams.get("assignee") ?? "";
++
++  function handleChange(event: ChangeEvent<HTMLSelectElement>) {
++    const value = event.target.value;
++    const params = new URLSearchParams(searchParams.toString());
++    if (value) {
++      params.set("assignee", value);
++    } else {
++      params.delete("assignee");
++    }
++    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
++  }
++
++  return (
++    <div className="flex flex-col gap-1">
++      <label htmlFor="filter-assignee-select" className="text-sm font-medium">
++        Assignee
++      </label>
++      <select
++        id="filter-assignee-select"
++        data-testid="filter-assignee"
++        value={currentAssignee}
++        onChange={handleChange}
++        className="rounded border border-gray-300 bg-white px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800"
++      >
++        <option value="">All assignees</option>
++        <option value="unassigned">Unassigned</option>
++        {assignees.map((assignee) => (
++          <option key={assignee} value={assignee}>
++            {assignee}
++          </option>
++        ))}
++      </select>
++    </div>
++  );
++}
+diff --git a/components/LabelFilter.tsx b/components/LabelFilter.tsx
+new file mode 100644
+index 0000000..fbc4fe0
+--- /dev/null
++++ b/components/LabelFilter.tsx
+@@ -0,0 +1,44 @@
++"use client";
++
++import { usePathname, useRouter, useSearchParams } from "next/navigation";
++import type { ChangeEvent } from "react";
++
++export function LabelFilter({ labels }: { labels: string[] }) {
++  const router = useRouter();
++  const pathname = usePathname();
++  const searchParams = useSearchParams();
++  const selectedLabels = (searchParams.get("labels") ?? "").split(",").filter(Boolean);
++
++  function handleChange(event: ChangeEvent<HTMLInputElement>) {
++    const nextLabels = event.target.checked
++      ? [...selectedLabels, event.target.value]
++      : selectedLabels.filter((label) => label !== event.target.value);
++    const params = new URLSearchParams(searchParams.toString());
++    if (nextLabels.length > 0) {
++      params.set("labels", nextLabels.join(","));
++    } else {
++      params.delete("labels");
++    }
++    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
++  }
++
++  return (
++    <fieldset data-testid="filter-labels" className="flex flex-col gap-1">
++      <legend className="text-sm font-medium">Labels</legend>
++      <div className="flex flex-wrap gap-x-3 gap-y-1">
++        {labels.map((label) => (
++          <label key={label} className="flex items-center gap-1 text-sm">
++            <input
++              type="checkbox"
++              value={label}
++              checked={selectedLabels.includes(label)}
++              onChange={handleChange}
++              data-testid={`filter-label-option-${label}`}
++            />
++            {label}
++          </label>
++        ))}
++      </div>
++    </fieldset>
++  );
++}
+diff --git a/components/SearchFilter.tsx b/components/SearchFilter.tsx
+new file mode 100644
+index 0000000..b1f718f
+--- /dev/null
++++ b/components/SearchFilter.tsx
+@@ -0,0 +1,38 @@
++"use client";
++
++import { usePathname, useRouter, useSearchParams } from "next/navigation";
++import type { ChangeEvent } from "react";
++
++export function SearchFilter() {
++  const router = useRouter();
++  const pathname = usePathname();
++  const searchParams = useSearchParams();
++  const currentQuery = searchParams.get("q") ?? "";
++
++  function handleChange(event: ChangeEvent<HTMLInputElement>) {
++    const value = event.target.value;
++    const params = new URLSearchParams(searchParams.toString());
++    if (value) {
++      params.set("q", value);
++    } else {
++      params.delete("q");
++    }
++    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
++  }
++
++  return (
++    <div className="flex flex-col gap-1">
++      <label htmlFor="filter-search-input" className="text-sm font-medium">
++        Search titles
++      </label>
++      <input
++        id="filter-search-input"
++        data-testid="filter-search"
++        type="search"
++        value={currentQuery}
++        onChange={handleChange}
++        className="rounded border border-gray-300 bg-white px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800"
++      />
++    </div>
++  );
++}
+diff --git a/lib/issues.ts b/lib/issues.ts
+index 9f0851a..c26c40a 100644
+--- a/lib/issues.ts
++++ b/lib/issues.ts
+@@ -49,20 +49,27 @@ export function filterByStatus(issues: Issue[], status: IssueStatus | null): Iss
+   return issues.filter((issue) => issue.status === status);
+ }
+ 
+-// Extension points for filters that do not exist yet (see the fixture README for the
+-// full data-testid and URL query-param convention each one should follow):
+-//
+-// filterByLabels(issues, labels: string[]): Issue[]
+-//   An issue matches when `issue.labels` shares at least one entry with `labels`.
+-//   An empty `labels` array means "no label filter applied" (return `issues` unchanged).
+-//
+-// filterByAssignee(issues, assignee: string | null): Issue[]
+-//   `assignee === "unassigned"` matches issues where `issue.assignee === null`.
+-//   `assignee === null` means "no assignee filter applied" (return `issues` unchanged).
+-//
+-// filterBySearch(issues, query: string): Issue[]
+-//   Case-insensitive substring match of `query` against `issue.title`.
+-//   An empty/blank `query` means "no search filter applied" (return `issues` unchanged).
+-//
+-// Each should be a small, pure function here in lib/issues.ts, mirroring filterByStatus,
+-// and composed together by app/page.tsx the same way it already composes filterByStatus.
++export function filterByLabels(issues: Issue[], labels: string[]): Issue[] {
++  if (labels.length === 0) {
++    return issues;
++  }
++  return issues.filter((issue) => issue.labels.some((label) => labels.includes(label)));
++}
++
++export function filterByAssignee(issues: Issue[], assignee: string | null): Issue[] {
++  if (assignee === null) {
++    return issues;
++  }
++  if (assignee === "unassigned") {
++    return issues.filter((issue) => issue.assignee === null);
++  }
++  return issues.filter((issue) => issue.assignee === assignee);
++}
++
++export function filterBySearch(issues: Issue[], query: string): Issue[] {
++  const normalizedQuery = query.trim().toLocaleLowerCase();
++  if (!normalizedQuery) {
++    return issues;
++  }
++  return issues.filter((issue) => issue.title.toLocaleLowerCase().includes(normalizedQuery));
++}

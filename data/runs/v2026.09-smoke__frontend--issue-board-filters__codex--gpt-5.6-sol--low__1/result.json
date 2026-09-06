@@ -1,0 +1,106 @@
+{
+  "id": "v2026.09-smoke__frontend--issue-board-filters__codex--gpt-5.6-sol--low__1",
+  "release": "v2026.09-smoke",
+  "suiteVersion": "v2026.09",
+  "task": "frontend/issue-board-filters",
+  "taskVersion": 1,
+  "agent": {
+    "cli": "codex",
+    "model": "gpt-5.6-sol",
+    "effort": "low",
+    "version": "codex-cli 0.153.4",
+    "permissionMode": "workspace-write+bypass-approvals-and-sandbox",
+    "caps": {
+      "maxTurns": 70,
+      "maxBudgetUsd": 12,
+      "timeboxMinutes": 35
+    },
+    "command": [
+      "codex",
+      "exec",
+      "--json",
+      "-m",
+      "gpt-5.6-sol",
+      "-c",
+      "model_reasoning_effort=low",
+      "-s",
+      "workspace-write",
+      "--dangerously-bypass-approvals-and-sandbox",
+      "-C",
+      "/Users/decod3rslabs/www/shipshitdev/public/benchmark/.runs/v2026.09-smoke__frontend--issue-board-filters__codex--gpt-5.6-sol--low__1/workspace",
+      "--skip-git-repo-check",
+      "-o",
+      "/Users/decod3rslabs/www/shipshitdev/public/benchmark/.runs/v2026.09-smoke__frontend--issue-board-filters__codex--gpt-5.6-sol--low__1/workspace/../codex-last-message.md",
+      "# Add filters to the issue board\n\nYou are working inside an existing Next.js app that renders a list of issues on the home\npage (`/`), reading from static JSON data. There is already one working filter, for issue\nstatus. Read `README.md` in this fixture before making changes; it documents the existing\n`components/` and `lib/` structure and the `data-testid` convention used by this app's\ntests.\n\n## Requirements\n\nAdd the following to the existing issue board, matching the way the status filter is\nalready built (same folder, same state and query-param approach, same component style):\n\n- A label filter that lets the user select multiple labels at once. An issue matches when it\n  has at least one of the selected labels.\n- An assignee filter that lets the user pick a single assignee (or \"unassigned\").\n- A free-text search box that filters issues by matching the search text against the issue\n  title, case-insensitively.\n- All filter state (status, labels, assignees, search text) must be reflected in the URL\n  query string, so that reloading the page or sharing the URL preserves the current filters.\n- When the combination of active filters matches zero issues, show a clear empty state\n  instead of an empty list.\n- Every new interactive control must be usable with the keyboard alone (tab to reach it,\n  and the expected key operates it), and must have an accessible name.\n- Use the existing `data-testid` convention documented in the README for every new\n  interactive element, so they are consistent with the existing status filter's test ids.\n\n## Constraints\n\n- Follow the existing patterns in `components/` and `lib/` rather than introducing a new\n  state-management approach, a new folder layout, or a new UI library.\n- Do not change the on-disk shape of the issue data or remove the existing status filter.\n- Keep `bun run build`, `bun run start`, and `bun run typecheck` working exactly as\n  documented in the fixture's README.\n\nWork only within this fixture directory.\n"
+    ]
+  },
+  "attempt": 1,
+  "startedAt": "2026-09-06T09:19:54.034Z",
+  "finishedAt": "2026-09-06T09:25:12.670Z",
+  "host": "unknown-host",
+  "status": "ok",
+  "usage": {
+    "input": 1078416,
+    "output": 8629,
+    "cacheRead": 1038464,
+    "cacheWrite": null,
+    "turns": 1,
+    "toolCalls": 16,
+    "durationMs": 306178,
+    "costUsdEquivalent": 4.9016,
+    "priceKey": "gpt-5-6-sol"
+  },
+  "gates": [
+    {
+      "id": "install",
+      "pass": true,
+      "durationMs": 17,
+      "detail": "bun install v1.4.2 (744846f84)\n\nChecked 53 installs across 130 packages (no changes) [7.00ms]"
+    },
+    {
+      "id": "build",
+      "pass": true,
+      "durationMs": 2302,
+      "detail": "▲ Next.js 16.3.4 (Turbopack)\n✓ Running next.config.ts took 16ms\n\n  Creating an optimized production build ...\n✓ Compiled successfully in 221ms\n  Running TypeScript ...\n\n  We detected TypeScript in your project and reconfigured your tsconfig.json file for you.\n  The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:\n\n  \t- include was updated to add '.next/dev/types/**/*.ts'\n\n  The following mandatory changes were made to your tsconfig.json:\n\n  \t- jsx was set to react-jsx (next.js uses the React automatic runtime)\n\n  Finished TypeScript in 205ms ...\n  Collecting page data using 4 workers ...\n  Generating static pages using 4 workers (0/3) ...\n✓ Generating static pages using 4 workers (3/3) in 204ms\n  Finalizing page optimization ...\n\nRoute (app)\n┌ ƒ /\n└ ○ /_not-found\n\n\n○  (Static)   prerendered as static content\nƒ  (Dynamic)  server-rendered on demand\n\n\n$ next build\n⚠ Warning: Next.js ignored package.json in /Users/decod3rslabs/www/shipshitdev/public/benchmark because it is outside the current Git repository (/Users/decod3rslabs/www/shipshitdev/public/benchmark/.runs/v2026.09-smoke__frontend--issue-board-filters__codex--gpt-5.6-sol--low__1/workspace).\n To use this directory, set `turbopack.root` in your Next.js config."
+    },
+    {
+      "id": "typecheck",
+      "pass": true,
+      "durationMs": 171,
+      "detail": "$ tsc --noEmit"
+    },
+    {
+      "id": "axe-home",
+      "pass": true,
+      "durationMs": 1511,
+      "detail": "no violations at or above serious"
+    }
+  ],
+  "objective": 55.55555555555556,
+  "judgments": [],
+  "artifacts": {
+    "transcript": "transcript.jsonl.gz",
+    "diff": "diff.patch",
+    "screenshots": [
+      {
+        "path": "/",
+        "viewport": "mobile",
+        "file": "screenshots/root-mobile.png"
+      },
+      {
+        "path": "/",
+        "viewport": "tablet",
+        "file": "screenshots/root-tablet.png"
+      },
+      {
+        "path": "/",
+        "viewport": "desktop",
+        "file": "screenshots/root-desktop.png"
+      }
+    ],
+    "report": null
+  },
+  "notes": [
+    "codex: no turn cap flag; enforced only by the timebox"
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "id": "v2026.09-smoke__planning-audit--planted-defects__grok--grok-4.6__1",
+  "release": "v2026.09-smoke",
+  "suiteVersion": "v2026.09",
+  "task": "planning-audit/planted-defects",
+  "taskVersion": 1,
+  "agent": {
+    "cli": "grok",
+    "model": "grok-4.6",
+    "version": "grok 1.0.4 (d846eb93d94d)",
+    "permissionMode": "always-approve",
+    "caps": {
+      "maxTurns": 40,
+      "maxBudgetUsd": 8,
+      "timeboxMinutes": 25
+    },
+    "command": [
+      "grok",
+      "-p",
+      "# Audit this service\n\nYou are working inside a small Bun and TypeScript HTTP service. Audit the codebase for\nsecurity, correctness, performance, reliability, and error-handling problems, then write\nyour findings to `AUDIT.md` in this directory.\n\n## What to produce\n\nFor every problem you find, include in `AUDIT.md`:\n\n- The file and line number (or line range) where it occurs.\n- A short summary of the problem.\n- Its severity (critical, high, medium, or low) and why you rated it that way.\n- The fix you recommend, specific enough that another engineer could implement it without\n  further investigation.\n\nAfter listing the individual findings, add a remediation plan that sequences the fixes: say\nwhich should be fixed first and why, call out any fix that depends on another, and flag\nanything that needs a production migration or a coordinated rollout rather than a plain code\nchange.\n\n## Constraints\n\n- Do not modify any file except `AUDIT.md`. This is a read-only audit; do not fix the issues\n  you find.\n- Only report problems you can point to in this codebase. Do not pad the report with\n  speculative or generic advice that isn't tied to a specific location in the code.\n- Read every file in the service before concluding your audit; do not stop at the first\n  file that looks suspicious.\n\nWork only within this fixture directory.\n",
+      "--output-format",
+      "streaming-messages-json",
+      "-m",
+      "grok-4.6",
+      "--session-id",
+      "30d334d2-d787-49f8-a826-48236849b62a",
+      "--max-turns",
+      "40",
+      "--always-approve",
+      "--cwd",
+      "/Users/decod3rslabs/www/shipshitdev/public/benchmark/.runs/v2026.09-smoke__planning-audit--planted-defects__grok--grok-4.6__1/workspace"
+    ]
+  },
+  "attempt": 1,
+  "startedAt": "2026-09-06T09:32:09.059Z",
+  "finishedAt": "2026-09-06T09:32:15.075Z",
+  "host": "unknown-host",
+  "status": "error",
+  "usage": {
+    "input": null,
+    "output": null,
+    "cacheRead": null,
+    "cacheWrite": null,
+    "turns": null,
+    "toolCalls": 0,
+    "durationMs": 5560,
+    "costUsdEquivalent": null,
+    "priceKey": "grok-4-6"
+  },
+  "gates": [],
+  "objective": null,
+  "judgments": [],
+  "artifacts": {
+    "transcript": "transcript.jsonl.gz",
+    "diff": "diff.patch",
+    "screenshots": [],
+    "report": null
+  },
+  "notes": [
+    "grok: token usage not present in CLI output",
+    "grok: stderr tail: Error: Internal error: {\n  \"message\": \"API error (status 402 Payment Required): Grok Build usage balance exhausted\",\n  \"http_status\": 402\n}\n",
+    "grok: telemetry unavailable",
+    "token counts unavailable; cost left null"
+  ]
+}

@@ -1,0 +1,124 @@
+{
+  "id": "v2026.09-smoke__signature--landing-hero__claude--haiku--low__1",
+  "release": "v2026.09-smoke",
+  "suiteVersion": "v2026.09",
+  "task": "signature/landing-hero",
+  "taskVersion": 1,
+  "agent": {
+    "cli": "claude",
+    "model": "haiku",
+    "effort": "low",
+    "version": "2.1.263 (Claude Code)",
+    "permissionMode": "dangerously-skip-permissions",
+    "caps": {
+      "maxTurns": 50,
+      "maxBudgetUsd": 8,
+      "timeboxMinutes": 25
+    },
+    "command": [
+      "claude",
+      "-p",
+      "# Build the shipshit.dev landing hero\n\nYou are working inside a minimal Next.js app with an empty home page. Design and build the\nlanding hero section for shipshit.dev, a studio that ships open-source developer tools live\non stream.\n\n## Required content\n\nInclude all of the following, with copy you write yourself:\n\n- A headline that communicates what shipshit.dev is.\n- A one- or two-sentence subline underneath the headline.\n- Two calls to action: a primary one (for example, watch the stream) and a secondary one\n  (for example, browse the tools on GitHub).\n- A status pill indicating whether a stream is currently live (you decide the state and its\n  label, for example \"Live now\" or \"Offline, next stream Friday\").\n- A marquee (a horizontally scrolling or looping row) listing six invented open-source tool\n  names shipped by the studio.\n\n## Constraints\n\n- Build this as the full content of `app/page.tsx`, plus any components you add under\n  `components/` or `app/`.\n- No other constraints on layout, color, typography, or motion beyond what is already set up\n  in the fixture (Next.js and Tailwind CSS). Make the design decisions yourself.\n- Do not add a component library beyond what is already in the fixture. Do not add a\n  backend, database, or external API calls; all content is static.\n- Keep `bun run build` and `bun run start` working exactly as documented in the fixture's\n  README.\n\nThis page will be rebuilt from this exact brief every time a new model is evaluated, so the\nresult should represent your best design work, not a placeholder.\n",
+      "--output-format",
+      "stream-json",
+      "--verbose",
+      "--model",
+      "haiku",
+      "--effort",
+      "low",
+      "--max-turns",
+      "50",
+      "--max-budget-usd",
+      "8",
+      "--dangerously-skip-permissions",
+      "--no-session-persistence",
+      "--setting-sources",
+      "project,local",
+      "--strict-mcp-config",
+      "--mcp-config",
+      "{\"mcpServers\":{}}"
+    ]
+  },
+  "attempt": 1,
+  "startedAt": "2026-09-06T09:35:31.579Z",
+  "finishedAt": "2026-09-06T09:36:47.571Z",
+  "host": "unknown-host",
+  "status": "ok",
+  "usage": {
+    "input": 153,
+    "output": 5014,
+    "cacheRead": 486334,
+    "cacheWrite": 29552,
+    "turns": 19,
+    "toolCalls": 18,
+    "durationMs": 69542,
+    "costUsdEquivalent": 0.1108,
+    "reportedCostUsd": 0.1343084,
+    "priceKey": "claude-haiku-4-5"
+  },
+  "gates": [
+    {
+      "id": "install",
+      "pass": true,
+      "durationMs": 15,
+      "detail": "bun install v1.4.2 (744846f84)\n\nChecked 50 installs across 127 packages (no changes) [7.00ms]"
+    },
+    {
+      "id": "build",
+      "pass": true,
+      "durationMs": 2297,
+      "detail": "▲ Next.js 16.3.4 (Turbopack)\n✓ Running next.config.ts took 15ms\n\n  Creating an optimized production build ...\n✓ Compiled successfully in 232ms\n  Running TypeScript ...\n  Finished TypeScript in 185ms ...\n  Collecting page data using 4 workers ...\n  Generating static pages using 4 workers (0/3) ...\n✓ Generating static pages using 4 workers (3/3) in 214ms\n  Finalizing page optimization ...\n\nRoute (app)\n┌ ○ /\n└ ○ /_not-found\n\n\n○  (Static)  prerendered as static content\n\n\n$ next build\n⚠ Warning: Next.js ignored package.json in /Users/decod3rslabs/www/shipshitdev/public/benchmark because it is outside the current Git repository (/Users/decod3rslabs/www/shipshitdev/public/benchmark/.runs/v2026.09-smoke__signature--landing-hero__claude--haiku--low__1/workspace).\n To use this directory, set `turbopack.root` in your Next.js config."
+    }
+  ],
+  "objective": null,
+  "judgments": [
+    {
+      "judge": {
+        "cli": "codex",
+        "model": "gpt-5.6-sol",
+        "version": "codex-cli 0.153.4"
+      },
+      "blindLabel": "A",
+      "scores": {
+        "aesthetics": 2,
+        "typography": 3,
+        "motion-and-detail": 2
+      },
+      "subjective": 57.49999999999999,
+      "rationale": "Coherent minimalist hero with strong spacing, responsive composition, and a recognizable violet accent, but the largely empty white canvas, basic controls, harsh marquee gradient, and clipped edge labels limit distinctiveness. The headline has confident scale, weight, line breaking, and hierarchy, while the supporting copy remains conventional. The marquee and treated live-status pill suggest intentional motion, though the screenshots show little additional micro-detail or interaction polish.",
+      "usage": {
+        "input": 74009,
+        "output": 565,
+        "cacheRead": 58624,
+        "cacheWrite": null,
+        "turns": 1,
+        "toolCalls": 1,
+        "durationMs": 24045,
+        "costUsdEquivalent": null
+      }
+    }
+  ],
+  "artifacts": {
+    "transcript": "transcript.jsonl.gz",
+    "diff": "diff.patch",
+    "screenshots": [
+      {
+        "path": "/",
+        "viewport": "mobile",
+        "file": "screenshots/root-mobile.png"
+      },
+      {
+        "path": "/",
+        "viewport": "tablet",
+        "file": "screenshots/root-tablet.png"
+      },
+      {
+        "path": "/",
+        "viewport": "desktop",
+        "file": "screenshots/root-desktop.png"
+      }
+    ],
+    "report": null
+  },
+  "notes": []
+}
