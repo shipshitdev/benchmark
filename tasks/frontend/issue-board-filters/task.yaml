@@ -1,0 +1,77 @@
+id: frontend/issue-board-filters
+category: frontend
+title: Issue board filters
+summary: >
+  Add a label multi-select filter, an assignee filter, and text search to an existing issue
+  board, with URL-synced state and a keyboard-accessible empty state, following the fixture's
+  established component and data patterns.
+version: 1
+authored: 2026-09-06
+prompt: prompt.md
+fixture: fixture
+caps:
+  maxTurns: 70
+  maxBudgetUsd: 12
+  timeboxMinutes: 35
+gates:
+  - type: command
+    id: install
+    run: bun install
+    timeoutSeconds: 300
+  - type: command
+    id: build
+    run: bun run build
+    timeoutSeconds: 300
+  - type: command
+    id: typecheck
+    run: bun run typecheck
+    timeoutSeconds: 180
+  - type: axe
+    id: axe-home
+    paths:
+      - /
+    serve:
+      run: bun run start
+      port: 4174
+      readyPath: /
+      readyTimeoutSeconds: 90
+    failOn: serious
+scoring:
+  objective:
+    type: playwright-pass-rate
+    spec: verify/e2e.spec.ts
+    serve:
+      run: bun run start
+      port: 4174
+      readyPath: /
+      readyTimeoutSeconds: 90
+    timeoutSeconds: 300
+  subjective:
+    rubric: rubric.md
+    dimensions:
+      - id: code-quality
+        label: Code quality and pattern conformance
+        weight: 50
+      - id: ux-polish
+        label: UX polish
+        weight: 50
+    pairwise: false
+    evidence:
+      - diff
+      - screenshots
+  weights:
+    objective: 0.6
+    subjective: 0.4
+artifacts:
+  screenshots:
+    - path: /
+      viewports:
+        - mobile
+        - tablet
+        - desktop
+      serve:
+        run: bun run start
+        port: 4174
+        readyPath: /
+        readyTimeoutSeconds: 90
+      settleMs: 500

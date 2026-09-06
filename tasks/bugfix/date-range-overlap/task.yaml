@@ -1,0 +1,33 @@
+id: bugfix/date-range-overlap
+category: bugfix
+title: Fix date range overlap bug
+summary: >
+  Fix a reported overlap and merge bug in a small date-range utility library, keep the
+  existing tests green, and add a regression test for the reported case.
+version: 1
+authored: 2026-09-06
+prompt: prompt.md
+fixture: fixture
+caps:
+  maxTurns: 40
+  maxBudgetUsd: 5
+  timeboxMinutes: 20
+gates:
+  - type: command
+    id: install
+    run: bun install
+    timeoutSeconds: 180
+  - type: command
+    id: existing-tests
+    run: bun test test/
+    timeoutSeconds: 120
+scoring:
+  objective:
+    type: hidden-tests
+    files:
+      - verify/hidden.test.ts
+    run: cp verify/hidden.test.ts test/hidden.test.ts && bun test test/hidden.test.ts
+    timeoutSeconds: 120
+  weights:
+    objective: 1
+    subjective: 0
