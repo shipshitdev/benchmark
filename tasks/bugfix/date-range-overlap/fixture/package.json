@@ -1,0 +1,13 @@
+{
+  "name": "date-range-fixture",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "bun test test/"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.1",
+    "typescript": "7.0.2"
+  }
+}
