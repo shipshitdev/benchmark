@@ -1,0 +1,142 @@
+{
+  "id": "sample-synthetic__ux-ui--pricing-page__claude--fable--high__1",
+  "release": "sample-synthetic",
+  "suiteVersion": "v2026.09-sample-synthetic",
+  "task": "ux-ui/pricing-page",
+  "taskVersion": 1,
+  "agent": {
+    "cli": "claude",
+    "model": "fable",
+    "effort": "high",
+    "version": "2.1.260",
+    "permissionMode": "bypassPermissions",
+    "caps": {
+      "maxTurns": 40,
+      "maxBudgetUsd": 5,
+      "timeboxMinutes": 30
+    },
+    "command": [
+      "claude",
+      "-p",
+      "--output-format",
+      "json",
+      "--model",
+      "fable",
+      "--effort",
+      "high",
+      "--max-turns",
+      "40",
+      "--max-budget-usd",
+      "5"
+    ]
+  },
+  "attempt": 1,
+  "startedAt": "2026-09-06T12:00:00.000Z",
+  "finishedAt": "2026-09-06T12:03:05.000Z",
+  "host": "sample-host.local",
+  "status": "ok",
+  "usage": {
+    "input": 45000,
+    "output": 8000,
+    "cacheRead": 12000,
+    "cacheWrite": 3000,
+    "turns": 18,
+    "toolCalls": 34,
+    "durationMs": 185000,
+    "costUsdEquivalent": 0.4498,
+    "reportedCostUsd": 0.4498,
+    "priceKey": "claude-fable-5-1"
+  },
+  "gates": [
+    {
+      "id": "build",
+      "pass": true,
+      "durationMs": 21000,
+      "detail": "next build succeeded"
+    },
+    {
+      "id": "axe",
+      "pass": true,
+      "durationMs": 4500,
+      "detail": "no violations at serious impact or above"
+    }
+  ],
+  "objective": 100,
+  "judgments": [
+    {
+      "judge": {
+        "cli": "claude",
+        "model": "opus",
+        "version": "2.1.260"
+      },
+      "blindLabel": "A",
+      "scores": {
+        "aesthetics": 4,
+        "hierarchy": 3,
+        "interaction-states": 3,
+        "responsiveness": 4
+      },
+      "subjective": 87.5,
+      "rationale": "Clear visual hierarchy and a confident headline; the mobile CTA could use more spacing.",
+      "usage": {
+        "input": 2200,
+        "output": 380,
+        "cacheRead": 0,
+        "cacheWrite": 0,
+        "turns": 1,
+        "toolCalls": 0,
+        "durationMs": 7800,
+        "costUsdEquivalent": null
+      }
+    },
+    {
+      "judge": {
+        "cli": "grok",
+        "model": "grok-4.6",
+        "version": "1.0.13"
+      },
+      "blindLabel": "B",
+      "scores": {
+        "aesthetics": 3,
+        "hierarchy": 3,
+        "interaction-states": 4,
+        "responsiveness": 3
+      },
+      "subjective": 81.25,
+      "rationale": "Solid interaction states on hover and focus; tablet layout feels slightly cramped.",
+      "usage": {
+        "input": 2200,
+        "output": 380,
+        "cacheRead": 0,
+        "cacheWrite": 0,
+        "turns": 1,
+        "toolCalls": 0,
+        "durationMs": 7800,
+        "costUsdEquivalent": null
+      }
+    }
+  ],
+  "artifacts": {
+    "transcript": "transcript.jsonl.gz",
+    "diff": "diff.patch",
+    "screenshots": [
+      {
+        "path": "/pricing",
+        "viewport": "mobile",
+        "file": "screenshots/mobile.png"
+      },
+      {
+        "path": "/pricing",
+        "viewport": "tablet",
+        "file": "screenshots/tablet.png"
+      },
+      {
+        "path": "/pricing",
+        "viewport": "desktop",
+        "file": "screenshots/desktop.png"
+      }
+    ],
+    "report": null
+  },
+  "notes": ["synthetic sample for site development"]
+}

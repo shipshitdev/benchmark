@@ -6,9 +6,12 @@ dist
 out
 .next
 coverage
+apps/web/public/runs/
 *.log
 .DS_Store
 .env
 .env.*
 !.env.example
 .agents/sessions/
+next-env.d.ts
+apps/web/public/runs/

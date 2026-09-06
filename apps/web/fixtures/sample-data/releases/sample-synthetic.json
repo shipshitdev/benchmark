@@ -1,0 +1,311 @@
+{
+  "release": "sample-synthetic",
+  "title": "Sample Synthetic Release",
+  "suiteVersion": "v2026.09-sample-synthetic",
+  "generatedAt": "2026-09-06T12:00:00.000Z",
+  "pricesAsOf": "2026-09-06",
+  "categoryWeights": {
+    "ux-ui": 0.5,
+    "frontend": 0,
+    "backend": 0,
+    "planning-audit": 0,
+    "bugfix": 0.5,
+    "signature": 0
+  },
+  "agents": [
+    {
+      "cli": "claude",
+      "model": "fable",
+      "effort": "high"
+    },
+    {
+      "cli": "codex",
+      "model": "gpt-6-astra",
+      "effort": "high"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "ux-ui/pricing-page",
+      "category": "ux-ui",
+      "title": "Redesign the pricing page",
+      "version": 1
+    },
+    {
+      "id": "bugfix/pagination-off-by-one",
+      "category": "bugfix",
+      "title": "Fix off-by-one in paginate()",
+      "version": 1
+    }
+  ],
+  "cells": [
+    {
+      "task": "ux-ui/pricing-page",
+      "agent": {
+        "cli": "claude",
+        "model": "fable",
+        "effort": "high"
+      },
+      "runs": ["sample-synthetic__ux-ui--pricing-page__claude--fable--high__1"],
+      "gatePassRate": 1,
+      "objective": {
+        "mean": 100,
+        "min": 100,
+        "max": 100,
+        "n": 1
+      },
+      "subjective": {
+        "mean": 84.38,
+        "min": 84.38,
+        "max": 84.38,
+        "n": 1
+      },
+      "score": {
+        "mean": 92.19,
+        "min": 92.19,
+        "max": 92.19,
+        "n": 1
+      },
+      "usage": {
+        "input": 45000,
+        "output": 8000,
+        "cacheRead": 12000,
+        "cacheWrite": 3000,
+        "turns": 18,
+        "toolCalls": 34,
+        "durationMs": 185000,
+        "costUsdEquivalent": 0.4498
+      }
+    },
+    {
+      "task": "ux-ui/pricing-page",
+      "agent": {
+        "cli": "codex",
+        "model": "gpt-6-astra",
+        "effort": "high"
+      },
+      "runs": ["sample-synthetic__ux-ui--pricing-page__codex--gpt-6-astra--high__1"],
+      "gatePassRate": 1,
+      "objective": {
+        "mean": 92,
+        "min": 92,
+        "max": 92,
+        "n": 1
+      },
+      "subjective": {
+        "mean": 68.75,
+        "min": 68.75,
+        "max": 68.75,
+        "n": 1
+      },
+      "score": {
+        "mean": 80.38,
+        "min": 80.38,
+        "max": 80.38,
+        "n": 1
+      },
+      "usage": {
+        "input": 38000,
+        "output": 9500,
+        "cacheRead": 9000,
+        "cacheWrite": 2000,
+        "turns": 22,
+        "toolCalls": 41,
+        "durationMs": 210000,
+        "costUsdEquivalent": 0.2382
+      }
+    },
+    {
+      "task": "bugfix/pagination-off-by-one",
+      "agent": {
+        "cli": "claude",
+        "model": "fable",
+        "effort": "high"
+      },
+      "runs": ["sample-synthetic__bugfix--pagination-off-by-one__claude--fable--high__1"],
+      "gatePassRate": 1,
+      "objective": {
+        "mean": 100,
+        "min": 100,
+        "max": 100,
+        "n": 1
+      },
+      "subjective": null,
+      "score": {
+        "mean": 100,
+        "min": 100,
+        "max": 100,
+        "n": 1
+      },
+      "usage": {
+        "input": 12000,
+        "output": 3000,
+        "cacheRead": 4000,
+        "cacheWrite": 800,
+        "turns": 8,
+        "toolCalls": 14,
+        "durationMs": 65000,
+        "costUsdEquivalent": 0.142
+      }
+    },
+    {
+      "task": "bugfix/pagination-off-by-one",
+      "agent": {
+        "cli": "codex",
+        "model": "gpt-6-astra",
+        "effort": "high"
+      },
+      "runs": ["sample-synthetic__bugfix--pagination-off-by-one__codex--gpt-6-astra--high__1"],
+      "gatePassRate": 1,
+      "objective": {
+        "mean": 87.5,
+        "min": 87.5,
+        "max": 87.5,
+        "n": 1
+      },
+      "subjective": null,
+      "score": {
+        "mean": 87.5,
+        "min": 87.5,
+        "max": 87.5,
+        "n": 1
+      },
+      "usage": {
+        "input": 15000,
+        "output": 3600,
+        "cacheRead": 3000,
+        "cacheWrite": 500,
+        "turns": 10,
+        "toolCalls": 17,
+        "durationMs": 72000,
+        "costUsdEquivalent": 0.091
+      }
+    }
+  ],
+  "standings": [
+    {
+      "agent": {
+        "cli": "claude",
+        "model": "fable",
+        "effort": "high"
+      },
+      "overall": 96.1,
+      "categories": [
+        {
+          "category": "ux-ui",
+          "agent": {
+            "cli": "claude",
+            "model": "fable",
+            "effort": "high"
+          },
+          "score": 92.19,
+          "tasks": 1
+        },
+        {
+          "category": "bugfix",
+          "agent": {
+            "cli": "claude",
+            "model": "fable",
+            "effort": "high"
+          },
+          "score": 100,
+          "tasks": 1
+        }
+      ],
+      "usage": {
+        "input": 57000,
+        "output": 11000,
+        "cacheRead": 16000,
+        "cacheWrite": 3800,
+        "turns": 26,
+        "toolCalls": 48,
+        "durationMs": 250000,
+        "costUsdEquivalent": 0.59
+      },
+      "scorePerDollar": 162.88,
+      "telemetry": "full"
+    },
+    {
+      "agent": {
+        "cli": "codex",
+        "model": "gpt-6-astra",
+        "effort": "high"
+      },
+      "overall": 83.94,
+      "categories": [
+        {
+          "category": "ux-ui",
+          "agent": {
+            "cli": "codex",
+            "model": "gpt-6-astra",
+            "effort": "high"
+          },
+          "score": 80.38,
+          "tasks": 1
+        },
+        {
+          "category": "bugfix",
+          "agent": {
+            "cli": "codex",
+            "model": "gpt-6-astra",
+            "effort": "high"
+          },
+          "score": 87.5,
+          "tasks": 1
+        }
+      ],
+      "usage": {
+        "input": 53000,
+        "output": 13100,
+        "cacheRead": 12000,
+        "cacheWrite": 2500,
+        "turns": 32,
+        "toolCalls": 58,
+        "durationMs": 282000,
+        "costUsdEquivalent": 0.33
+      },
+      "scorePerDollar": 254.36,
+      "telemetry": "full"
+    }
+  ],
+  "pairwise": [
+    {
+      "task": "ux-ui/pricing-page",
+      "ratings": [
+        {
+          "agent": {
+            "cli": "claude",
+            "model": "fable",
+            "effort": "high"
+          },
+          "rating": 0.42,
+          "ciLow": -0.15,
+          "ciHigh": 0.99,
+          "comparisons": 1
+        },
+        {
+          "agent": {
+            "cli": "codex",
+            "model": "gpt-6-astra",
+            "effort": "high"
+          },
+          "rating": -0.42,
+          "ciLow": -0.99,
+          "ciHigh": 0.15,
+          "comparisons": 1
+        }
+      ]
+    }
+  ],
+  "judges": [
+    {
+      "cli": "claude",
+      "model": "opus"
+    },
+    {
+      "cli": "grok",
+      "model": "grok-4.6"
+    }
+  ],
+  "notes": ["synthetic sample for site development"]
+}

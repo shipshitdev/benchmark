@@ -1,0 +1,29 @@
+{
+  "name": "@benchmark/web",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prebuild": "bun run scripts/copy-screenshots.ts",
+    "build": "next build",
+    "build:sample": "BENCH_DATA_DIR=./fixtures/sample-data bun run build",
+    "dev": "next dev -p 3002",
+    "sample:generate": "bun run scripts/generate-sample-data.ts",
+    "clean": "rm -rf .next out",
+    "lint": "biome check app/ lib/ scripts/",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@benchmark/schema": "workspace:*",
+    "marked": "18.0.11",
+    "next": "16.3.4",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.7",
+    "tailwindcss": "4.3.3"
+  }
+}
