@@ -224,8 +224,10 @@ export async function runGates(
         detail: `gate error: ${message.split('\n')[0]}`,
       };
     }
+    result.mode = gate.mode;
+    result.penalty = gate.mode === 'penalty' ? gate.penalty : 0;
     results.push(result);
-    if (!result.pass) break;
+    if (!result.pass && gate.mode === 'block') break;
   }
   return results;
 }

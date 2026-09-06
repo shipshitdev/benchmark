@@ -109,6 +109,17 @@ describe('buildCell', () => {
     expect(cell.score).toBeNull();
   });
 
+  test('a failed penalty gate subtracts its points instead of zeroing the run', () => {
+    const run = makeRun({ attempt: 1, objective: 90, judgments: [] });
+    run.gates = [
+      { id: 'build', pass: true, mode: 'block', penalty: 0, durationMs: 1, detail: '' },
+      { id: 'axe', pass: false, mode: 'penalty', penalty: 15, durationMs: 1, detail: '' },
+    ];
+    const cell = buildCell(task, agent, [run], weights);
+    expect(cell.score?.mean).toBe(75);
+    expect(cell.gatePassRate).toBe(0);
+  });
+
   test('a cell whose every attempt errored has no score', () => {
     const cell = buildCell(
       task,

@@ -20,20 +20,30 @@ export const Serve = z.object({
 });
 export type Serve = z.infer<typeof Serve>;
 
+/** How a failed gate affects the run. `block` ends the run with `gate_failed`; `penalty` lets the
+ *  run continue and subtracts `penalty` points from its combined score. */
+const GateMode = {
+  mode: z.enum(['block', 'penalty']).default('block'),
+  penalty: z.number().min(0).max(100).default(10),
+};
+
 /**
- * Deterministic gates run in order inside the run directory. The first failure stops the
- * sequence and the run scores zero on every subjective dimension.
+ * Deterministic gates run in order inside the run directory. A failed blocking gate stops the
+ * sequence and the run scores zero on every subjective dimension; a failed penalty gate is
+ * recorded, costs points, and the run goes on.
  */
 export const Gate = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('command'),
     id: z.string().min(1),
+    ...GateMode,
     run: z.string().min(1),
     timeoutSeconds: z.number().int().positive().default(600),
   }),
   z.object({
     type: z.literal('playwright'),
     id: z.string().min(1),
+    ...GateMode,
     /** Spec path relative to the task directory; copied into the run dir at gate time, never before. */
     spec: z.string().min(1),
     serve: Serve,
@@ -42,6 +52,7 @@ export const Gate = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('axe'),
     id: z.string().min(1),
+    ...GateMode,
     paths: z.array(z.string().min(1)).min(1),
     serve: Serve,
     /** Violations at or above this impact fail the gate. */
@@ -50,6 +61,7 @@ export const Gate = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('http-contract'),
     id: z.string().min(1),
+    ...GateMode,
     /** Contract test file relative to the task directory (a `bun test` file that reads BASE_URL). */
     spec: z.string().min(1),
     serve: Serve,

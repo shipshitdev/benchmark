@@ -25,6 +25,8 @@ gates:
     timeoutSeconds: 300
   - type: axe
     id: axe-themes
+    mode: penalty
+    penalty: 15
     paths:
       - /themes/1
       - /themes/2

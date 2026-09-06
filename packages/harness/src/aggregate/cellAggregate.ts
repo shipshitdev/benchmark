@@ -95,7 +95,11 @@ export function buildCell(
   const combinedScores = runs.flatMap((run) => {
     if (run.status === 'gate_failed') return [0];
     const combined = combineScore(run.objective, runSubjective(run), weights);
-    return combined === null ? [] : [combined];
+    if (combined === null) return [];
+    const penalties = run.gates
+      .filter((gate) => !gate.pass && gate.mode === 'penalty')
+      .reduce((sum, gate) => sum + gate.penalty, 0);
+    return [Math.max(0, combined - penalties)];
   });
 
   return {

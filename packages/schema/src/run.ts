@@ -23,6 +23,9 @@ export type Usage = z.infer<typeof Usage>;
 export const GateResult = z.object({
   id: z.string().min(1),
   pass: z.boolean(),
+  mode: z.enum(['block', 'penalty']).default('block'),
+  /** Points subtracted from the run's combined score when a penalty gate fails. */
+  penalty: z.number().min(0).max(100).default(0),
   durationMs: z.number().int().nonnegative(),
   /** Tail of stdout/stderr or a one-line reason; full logs live in `gates/<id>.log`. */
   detail: z.string(),

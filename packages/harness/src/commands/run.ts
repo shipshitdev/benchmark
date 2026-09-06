@@ -93,7 +93,9 @@ async function runOnce(
   let status: RunResult['status'] = output.status === 'ok' ? 'ok' : output.status;
   const gates =
     status === 'ok' ? await runGates(task.manifest.gates, task.dir, workspaceDir, gatesLogDir) : [];
-  if (status === 'ok' && gates.some((gate) => !gate.pass)) status = 'gate_failed';
+  if (status === 'ok' && gates.some((gate) => !gate.pass && gate.mode === 'block')) {
+    status = 'gate_failed';
+  }
 
   let objective: number | null = null;
   const notes = [...output.notes];
