@@ -36,7 +36,11 @@ function chunk(type: string, data: Buffer): Buffer {
 
 const PNG_SIGNATURE = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
 
-export function encodeSolidPng(width: number, height: number, rgb: [number, number, number]): Buffer {
+export function encodeSolidPng(
+  width: number,
+  height: number,
+  rgb: [number, number, number],
+): Buffer {
   const ihdr = Buffer.alloc(13);
   ihdr.writeUInt32BE(width, 0);
   ihdr.writeUInt32BE(height, 4);
@@ -56,5 +60,10 @@ export function encodeSolidPng(width: number, height: number, rgb: [number, numb
   const raw = Buffer.concat(Array.from({ length: height }, () => row));
   const idatData = deflateSync(raw);
 
-  return Buffer.concat([PNG_SIGNATURE, chunk('IHDR', ihdr), chunk('IDAT', idatData), chunk('IEND', Buffer.alloc(0))]);
+  return Buffer.concat([
+    PNG_SIGNATURE,
+    chunk('IHDR', ihdr),
+    chunk('IDAT', idatData),
+    chunk('IEND', Buffer.alloc(0)),
+  ]);
 }

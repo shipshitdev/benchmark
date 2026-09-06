@@ -1,0 +1,128 @@
+{
+  "id": "sample-synthetic__ux-ui--pricing-page__codex--gpt-6-astra--high__1",
+  "release": "sample-synthetic",
+  "suiteVersion": "v2026.09-sample-synthetic",
+  "task": "ux-ui/pricing-page",
+  "taskVersion": 1,
+  "agent": {
+    "cli": "codex",
+    "model": "gpt-6-astra",
+    "effort": "high",
+    "version": "0.153.2",
+    "permissionMode": "full-auto",
+    "caps": {
+      "maxTurns": 40,
+      "maxBudgetUsd": 5,
+      "timeboxMinutes": 30
+    },
+    "command": ["codex", "exec", "--json", "--model", "gpt-6-astra", "--effort", "high"]
+  },
+  "attempt": 1,
+  "startedAt": "2026-09-06T12:00:00.000Z",
+  "finishedAt": "2026-09-06T12:03:30.000Z",
+  "host": "sample-host.local",
+  "status": "ok",
+  "usage": {
+    "input": 38000,
+    "output": 9500,
+    "cacheRead": 9000,
+    "cacheWrite": 2000,
+    "turns": 22,
+    "toolCalls": 41,
+    "durationMs": 210000,
+    "costUsdEquivalent": 0.2382,
+    "priceKey": "gpt-6-astra"
+  },
+  "gates": [
+    {
+      "id": "build",
+      "pass": true,
+      "durationMs": 21000,
+      "detail": "next build succeeded"
+    },
+    {
+      "id": "axe",
+      "pass": true,
+      "durationMs": 4500,
+      "detail": "no violations at serious impact or above"
+    }
+  ],
+  "objective": 92,
+  "judgments": [
+    {
+      "judge": {
+        "cli": "claude",
+        "model": "opus",
+        "version": "2.1.260"
+      },
+      "blindLabel": "A",
+      "scores": {
+        "aesthetics": 3,
+        "hierarchy": 3,
+        "interaction-states": 2,
+        "responsiveness": 3
+      },
+      "subjective": 68.75,
+      "rationale": "Functional layout but the pricing cards read as a generic template.",
+      "usage": {
+        "input": 2200,
+        "output": 380,
+        "cacheRead": 0,
+        "cacheWrite": 0,
+        "turns": 1,
+        "toolCalls": 0,
+        "durationMs": 7800,
+        "costUsdEquivalent": null
+      }
+    },
+    {
+      "judge": {
+        "cli": "grok",
+        "model": "grok-4.6",
+        "version": "1.0.13"
+      },
+      "blindLabel": "B",
+      "scores": {
+        "aesthetics": 3,
+        "hierarchy": 2,
+        "interaction-states": 3,
+        "responsiveness": 3
+      },
+      "subjective": 68.75,
+      "rationale": "Hierarchy between plans is unclear; the recommended plan does not stand out.",
+      "usage": {
+        "input": 2200,
+        "output": 380,
+        "cacheRead": 0,
+        "cacheWrite": 0,
+        "turns": 1,
+        "toolCalls": 0,
+        "durationMs": 7800,
+        "costUsdEquivalent": null
+      }
+    }
+  ],
+  "artifacts": {
+    "transcript": "transcript.jsonl.gz",
+    "diff": null,
+    "screenshots": [
+      {
+        "path": "/pricing",
+        "viewport": "mobile",
+        "file": "screenshots/mobile.png"
+      },
+      {
+        "path": "/pricing",
+        "viewport": "tablet",
+        "file": "screenshots/tablet.png"
+      },
+      {
+        "path": "/pricing",
+        "viewport": "desktop",
+        "file": "screenshots/desktop.png"
+      }
+    ],
+    "report": null
+  },
+  "notes": ["synthetic sample for site development"]
+}

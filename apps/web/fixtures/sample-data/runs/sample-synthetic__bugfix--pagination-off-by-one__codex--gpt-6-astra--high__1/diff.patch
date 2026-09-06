@@ -1,0 +1,8 @@
+--- a/lib/pagination.ts
++++ b/lib/pagination.ts
+@@ -8,7 +8,7 @@ export function paginate<T>(items: T[], page: number, pageSize: number): T[] {
+   const start = (page - 1) * pageSize;
+-  const sliceEnd = start + pageSize - 1;
++  const sliceEnd = start + pageSize;
+   return items.slice(start, sliceEnd);
+ }
