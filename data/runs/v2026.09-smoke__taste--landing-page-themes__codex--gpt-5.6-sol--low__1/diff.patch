@@ -1,0 +1,205 @@
+diff --git a/THEMES.md b/THEMES.md
+new file mode 100644
+index 0000000..f87f6fc
+--- /dev/null
++++ b/THEMES.md
+@@ -0,0 +1,29 @@
++# Patchwork landing-page directions
++
++## The product
++
++**Kind:** B2B SaaS. **Name:** Patchwork. **Positioning:** The calm client-feedback portal for small creative studios—one link for files, comments, decisions, and approvals. **Target customer:** Independent brand, web, and campaign studios with teams of 2–15 who currently coordinate reviews across email, Slack, PDFs, and project-management tools. **Pricing:** $24 per month for unlimited client guests and ten active projects, with a 14-day card-free trial.
++
++## Theme 1 — The Quiet Edit
++
++An elevated editorial direction built around warm ivory, charcoal, vermilion, large serif headlines, generous space, and a detailed product-review vignette. It treats Patchwork as a piece of calm studio infrastructure and is aimed at brand and design practices that care deeply about how every client-facing surface reflects on them.
++
++## Theme 2 — Signal System
++
++A hard-working Swiss-modernist direction with a strict modular grid, compressed typography, fluorescent red, visible numbering, and data as image. It speaks in short, decisive statements and is aimed at fast-moving multidisciplinary studios whose buying motive is operational clarity and measurable time saved.
++
++## Theme 3 — The Worktable
++
++A tactile and playful direction that turns the page into a creative desk: sticky-note cards, paper shadows, tape, a pencil, coffee, hand-drawn marks, and friendly plainspoken copy. It is aimed at small, personality-led studios that reject stiff enterprise software and want a tool their clients will immediately find approachable.
++
++## Theme 4 — Feedback.exe
++
++A dark terminal-inspired system with acid green telemetry, scan-line grids, event logs, protocol cards, and terse technical language. It frames feedback as structured input in a shipping system and is aimed at web, product, and motion studios with a technically fluent culture.
++
++## Theme 5 — Client Notes
++
++A warm notebook direction with ruled-paper structure, margin notes, human correspondence, sage and terracotta colors, and an intimate founder letter. It emphasizes trust and the emotional quality of a good client relationship, aimed at independent designers and boutique studios that sell a high-touch experience.
++
++## Recommendation
++
++Ship **Theme 1, The Quiet Edit**. Its presentation feels premium without becoming precious, the product demonstration explains the workflow quickly, and the editorial confidence matches the taste level of the target buyer. It also has the broadest range: distinctive enough to be remembered, restrained enough to support future case studies, integrations, and product screenshots without fighting them.
+diff --git a/app/globals.css b/app/globals.css
+index bcfc617..3281b7a 100644
+--- a/app/globals.css
++++ b/app/globals.css
+@@ -1,18 +1,9 @@
+ @import "tailwindcss";
+ 
+-:root {
+-  --background: #ffffff;
+-  --foreground: #111111;
+-}
+-
+-@media (prefers-color-scheme: dark) {
+-  :root {
+-    --background: #0a0a0a;
+-    --foreground: #ededed;
+-  }
+-}
+-
+-body {
+-  background: var(--background);
+-  color: var(--foreground);
+-}
++*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f4f0e8;color:#171713}a{color:inherit;text-decoration:none}button{font:inherit}.index-page{min-height:100vh;padding:28px 4vw 20px;font-family:Arial,sans-serif;background:#ece9e1}.index-head,.index-foot{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #24241f;padding-bottom:18px;font-size:12px;text-transform:uppercase;letter-spacing:.12em}.wordmark{font-weight:900;letter-spacing:-.04em;font-size:17px}.wordmark span,.brand span{color:#ff4f2d;font-size:9px;margin-left:3px}.index-intro{display:grid;grid-template-columns:2fr 1fr;align-items:end;padding:10vh 0 8vh}.index-intro .eyebrow{align-self:start;font-size:11px;text-transform:uppercase;letter-spacing:.14em}.index-intro h1{grid-column:1;margin:0;font:400 clamp(54px,9vw,130px)/.84 Georgia,serif;letter-spacing:-.07em}.index-intro h1 em{font-weight:400;color:#ff4f2d}.index-intro>p:last-child{grid-column:2;line-height:1.6;max-width:380px}.theme-list{border-top:1px solid}.theme-link{display:grid;grid-template-columns:90px 1fr 50px;align-items:center;padding:24px 12px;border-bottom:1px solid;transition:padding .2s,background .2s,color .2s}.theme-link:hover{padding-left:24px;background:#171713;color:#fff}.theme-link>span:nth-child(2){display:grid;grid-template-columns:1fr 1fr;align-items:center}.theme-link strong{font:500 clamp(22px,3vw,42px) Georgia,serif}.theme-link small{opacity:.65;max-width:430px;line-height:1.4}.theme-arrow{text-align:right;font-size:28px}.theme-num{font:12px monospace}.index-foot{border:0;padding-top:25px}.landing{--ink:#191915;--paper:#f5f1e8;--accent:#e94d2f;background:var(--paper);color:var(--ink);min-height:100vh;font-family:Arial,sans-serif}.nav{height:76px;padding:0 clamp(20px,5vw,76px);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;border-bottom:1px solid currentColor}.brand{font:700 20px Georgia,serif}.nav-label{text-transform:uppercase;font-size:10px;letter-spacing:.18em;opacity:.6}.nav-cta{justify-self:end;font-weight:700;font-size:13px}.nav-cta span,.primary span{margin-left:16px}.hero{min-height:680px;padding:clamp(55px,9vw,125px) clamp(20px,6vw,90px);display:grid;grid-template-columns:1.05fr .95fr;gap:7vw;align-items:center}.kicker{text-transform:uppercase;letter-spacing:.16em;font-size:10px;font-weight:700}.hero h1{font-size:clamp(58px,7.2vw,112px);line-height:.91;letter-spacing:-.065em;margin:24px 0 32px}.hero h1 em{font-weight:400}.lede{font-size:clamp(17px,1.5vw,21px);line-height:1.55;max-width:620px}.primary{display:inline-flex;align-items:center;justify-content:space-between;margin-top:24px;padding:18px 22px;background:var(--ink);color:var(--paper);font-size:13px;font-weight:700;min-width:230px;transition:transform .2s,box-shadow .2s}.primary:hover{transform:translateY(-3px);box-shadow:6px 6px 0 var(--accent)}.review-card{background:#fff;padding:10px;box-shadow:0 25px 70px #3128202b;transform:rotate(1.5deg);border:1px solid #d8d1c5}.window-bar{display:flex;align-items:center;gap:5px;height:30px;font-size:9px;color:#716c63}.window-bar i{width:7px;height:7px;background:#ddd;border-radius:50%}.window-bar span{margin-left:auto}.mock-canvas{height:300px;background:#d9ddd1;padding:45px 35px;position:relative}.mock-tag{font:9px monospace}.mock-canvas>b{display:block;margin-top:30px;font:48px/1 Georgia,serif}.pin{position:absolute;width:28px;height:28px;background:var(--accent);color:white;border-radius:50%;display:grid;place-items:center;font-size:11px}.pin-1{top:90px;right:30px}.pin-2{bottom:45px;left:45%}.comment{display:grid;grid-template-columns:34px 1fr auto;gap:10px;padding:17px;align-items:start}.comment>span{background:#25231f;color:#fff;border-radius:50%;height:34px;display:grid;place-items:center;font-size:9px}.comment p{font-size:11px;margin:5px 0}.comment button{border:0;background:#e8f2e5;padding:8px;font-size:9px}.press,.ticker,.t5-trust{display:flex;justify-content:space-around;align-items:center;gap:25px;padding:25px 5vw;border-top:1px solid;border-bottom:1px solid;font-size:10px;letter-spacing:.1em}.editorial-benefits{padding:120px 6vw}.editorial-benefits>div{display:grid;grid-template-columns:repeat(3,1fr);margin-top:55px;border-top:1px solid}.editorial-benefits article{padding:30px 4vw 30px 0;border-right:1px solid}.editorial-benefits article+article{padding-left:4vw}.editorial-benefits h3,.sticky-benefits h3{font:32px/1.1 Georgia,serif}.editorial-benefits p,.sticky-benefits p,.chapter article p{line-height:1.6;color:#59564d}.quote{background:#24231f;color:#f3efe6;padding:12vw 10vw}.quote blockquote{font:clamp(35px,5vw,72px)/1.08 Georgia,serif;margin:0;max-width:1100px}.quote p{text-align:right;margin-top:40px}.faq{padding:110px max(6vw,20px);max-width:1200px;margin:auto}.faq h2{font:clamp(38px,5vw,64px) Georgia,serif}.faq details{border-top:1px solid;padding:22px 0}.faq details:last-child{border-bottom:1px solid}.faq summary{cursor:pointer;display:flex;justify-content:space-between;font-weight:700;list-style:none}.faq details p{max-width:650px;line-height:1.6;color:#646056}.price{padding:70px 7vw;display:flex;justify-content:space-between;align-items:end;background:#e5ddcf}.price h2{font:80px/.8 Georgia,serif;margin:25px 0}.price h2 small{font:16px Arial}.price>div:last-child{display:flex;flex-direction:column}.price>div>small{margin-top:12px;text-align:center}.price-dark{background:#111;color:#d6ff3f}
++.t2{--paper:#ededeb;--ink:#101010;--accent:#ff3b18;font-family:Arial,sans-serif}.t2 .brand{font-family:Arial;font-weight:900}.t2 .hero{padding-top:55px;grid-template-columns:1fr 3fr;align-items:start}.t2-mark{font:bold 22px/1 monospace;border:2px solid;padding:15px;width:90px}.t2 .hero h1{font:900 clamp(76px,12vw,180px)/.72 Arial,sans-serif;letter-spacing:-.09em;margin-top:70px}.t2 .hero h1 span{color:var(--accent)}.t2 .hero .lede{max-width:470px;margin-left:auto}.t2 .hero .primary{float:right;background:var(--accent)}.t2 .ticker{background:var(--ink);color:#fff;font-weight:bold}.signal-grid{display:grid;grid-template-columns:1.3fr repeat(3,1fr);border-bottom:1px solid}.signal-grid>*{padding:65px 30px;border-right:1px solid;min-height:330px}.signal-title strong{font:120px/.8 Arial;display:block;margin-top:40px;letter-spacing:-.1em}.signal-title p{font-weight:bold}.signal-grid article h3{font-size:38px;margin-top:80px}.signal-grid article p{line-height:1.5}.t2-proof{padding:80px 7vw;background:var(--accent);display:flex;justify-content:space-between;align-items:center}.t2-proof p{font:bold clamp(30px,4vw,58px)/1.05 Arial;max-width:850px}.t2-proof span{font-size:10px;font-weight:bold}.stamp{border:3px solid;border-radius:50%;padding:30px;transform:rotate(12deg);font:bold 12px/1.3 monospace;text-align:center}.t2 .faq h2{font-family:Arial;font-weight:900}.t2 .price{background:#d7ff3f}.t2 .price h2{font-family:Arial;font-weight:900}
++.t3{--paper:#f4ca48;--ink:#26352b;--accent:#f15b43;font-family:"Trebuchet MS",Arial,sans-serif;background-color:var(--paper);background-image:radial-gradient(#26352b22 1px,transparent 1px);background-size:20px 20px}.t3 .nav{background:#f4ca48}.t3 .brand{font-family:"Trebuchet MS"}.t3 .hero{min-height:720px}.t3 .hero h1{font:bold clamp(55px,7vw,105px)/.93 "Trebuchet MS";letter-spacing:-.065em}.t3 .hero h1 span{text-decoration:underline;text-decoration-thickness:5px;text-decoration-color:var(--accent)}.tape{display:inline-block;background:#f7e6b2;padding:10px 20px;transform:rotate(-2deg);box-shadow:1px 2px 3px #52451033;font-size:12px}.t3 .hero-copy>small{display:block;margin-top:15px}.desk{height:520px;background:#48725d;border-radius:48% 52% 46% 54%;position:relative;transform:rotate(2deg);box-shadow:20px 22px 0 #26352b}.paper{position:absolute;width:74%;height:390px;left:12%;top:45px;background:#f8f2e5;padding:22px;box-shadow:8px 8px 20px #10211755;transform:rotate(-4deg)}.paper>span{font-size:10px}.mini-site{margin-top:17px;background:#c4d1d7;height:230px;padding:25px}.mini-site i{display:block;background:#f15b43;width:45px;height:12px}.mini-site b{font:42px/1 Georgia;margin-top:35px;display:block}.bubble{position:absolute;padding:10px 14px;border-radius:20px;background:white;box-shadow:2px 3px #26352b;font-size:11px}.b1{right:-30px;top:115px}.b2{left:-35px;bottom:35px;background:#b7f0a1}.pencil{position:absolute;bottom:35px;right:5px;width:230px;background:#ed5d45;color:#fff;padding:9px;text-align:center;transform:rotate(23deg);font-size:9px}.coffee{position:absolute;right:-20px;top:15px;font-size:50px}.scribble{text-align:center;background:#f15b43;color:#fff;padding:24px;font-weight:bold}.scribble span{margin-left:30px}.sticky-benefits{display:grid;grid-template-columns:repeat(3,1fr);padding:120px 7vw;gap:40px}.sticky-benefits article{background:#f8f2e5;padding:35px;box-shadow:8px 8px 0 var(--ink);transform:rotate(-1.5deg)}.sticky-benefits article:nth-child(2){transform:rotate(2deg);background:#cbe9f1}.sticky-benefits article:nth-child(3){transform:rotate(-2deg);background:#efb4cc}.doodle{font-size:54px}.t3-story{background:#dfe8cd;padding:120px 8vw;display:grid;grid-template-columns:1fr 1fr;gap:12vw;align-items:center}.polaroid{background:white;padding:28px 28px 45px;transform:rotate(-4deg);box-shadow:8px 10px 25px #26352b33}.polaroid div{height:200px;background:#efb4cc;font:180px/.9 Georgia;text-align:center}.polaroid p{font:26px Georgia}.t3-story h2{font:bold 60px "Trebuchet MS"}.t3 .price{background:#efb4cc}
++.t4{--paper:#090b0a;--ink:#d8ff3e;--accent:#d8ff3e;background:#090b0a;color:#e8e8df;font-family:"Courier New",monospace;background-image:linear-gradient(#d8ff3e08 1px,transparent 1px),linear-gradient(90deg,#d8ff3e08 1px,transparent 1px);background-size:40px 40px}.t4 .nav{color:var(--ink)}.t4 .brand{font-family:monospace;text-transform:uppercase}.t4 .hero{position:relative;grid-template-columns:1.2fr .8fr}.status{position:absolute;top:25px;left:6vw;font-size:10px;color:#d8ff3e}.status i{display:inline-block;width:7px;height:7px;background:#d8ff3e;border-radius:50%;box-shadow:0 0 12px #d8ff3e}.t4 .hero h1{font:700 clamp(55px,7vw,105px)/.88 "Courier New";letter-spacing:-.08em}.t4 .hero h1 span{color:var(--ink)}.t4 .primary{background:var(--ink);color:#090b0a}.terminal{border:1px solid #d8ff3e;padding:20px;background:#090b0acc;box-shadow:12px 12px 0 #d8ff3e22}.term-head{display:flex;justify-content:space-between;border-bottom:1px solid #d8ff3e;padding-bottom:15px;margin-bottom:30px;font-size:11px}.terminal p{font-size:11px;margin:22px 0}.terminal p i{color:#777}.terminal p b,.terminal p strong{color:#d8ff3e}.term-score{border-top:1px dashed #777;margin-top:35px;padding-top:25px;display:grid;grid-template-columns:1fr auto}.term-score b{font-size:34px;color:#d8ff3e}.term-score span{grid-row:1/3;grid-column:2;font-size:38px}.t4 .ticker{color:#090b0a;background:#d8ff3e}.protocol{padding:120px 6vw;display:grid;grid-template-columns:1.5fr repeat(3,1fr);gap:1px}.protocol>*{border:1px solid #59651f;padding:30px;min-height:320px}.protocol h2{font-size:54px;line-height:.95}.protocol article{position:relative}.protocol article h3{margin-top:75px;color:#d8ff3e}.protocol article p{font-size:12px;line-height:1.6;color:#aaa}.protocol article i{position:absolute;bottom:25px;right:25px;border:1px solid #d8ff3e;color:#d8ff3e;padding:8px;font-style:normal}.t4-proof{margin:0 6vw;padding:30px;border:1px solid #d8ff3e}.t4-proof>p{font-size:10px}.t4-proof>div{display:grid;grid-template-columns:repeat(6,auto);align-items:center;justify-content:space-between}.t4-proof strong{font-size:64px;color:#d8ff3e}.t4-proof span{font-size:10px}.t4 .faq h2{font-family:monospace;color:#d8ff3e}.t4 .faq details p{color:#aaa}.t4 .price h2{font-family:monospace}.t4 .price .primary{background:#d8ff3e;color:#090b0a}
++.t5{--paper:#f6f0e4;--ink:#32372c;--accent:#d5674c;font-family:Georgia,serif;background:#f6f0e4}.t5 .nav{border-color:#afaa9d}.t5 .hero{grid-template-columns:.35fr 1.5fr .85fr;gap:5vw;background:linear-gradient(90deg,transparent 8%,#d96a5a44 8%,#d96a5a44 calc(8% + 1px),transparent calc(8% + 1px)),repeating-linear-gradient(#f6f0e4,#f6f0e4 47px,#c9cec3 48px)}.margin-note{font:italic 14px Georgia;transform:rotate(-3deg);align-self:start;margin-top:80px}.t5 .hero h1{font:400 clamp(56px,7vw,105px)/.97 Georgia;letter-spacing:-.055em}.t5 .hero h1 em{color:var(--accent)}.t5 .hero .lede{font-family:Arial;max-width:570px}.t5 .hero-copy>small{display:block;margin-top:14px;font-family:Arial}.note-card{background:#fffaf0;padding:28px;box-shadow:1px 3px 18px #463e3325;transform:rotate(3deg);border-top:8px solid #d5674c}.note-card>span{font:10px Arial;text-transform:uppercase;letter-spacing:.1em}.note-card>p{font:25px/1.4 Georgia;margin:35px 0 55px}.note-card>div{display:grid;grid-template-columns:40px 1fr 30px;gap:10px;align-items:center}.note-card i{height:38px;border-radius:50%;background:#ccd7c4;display:grid;place-items:center;font:12px Arial}.note-card div span{display:flex;flex-direction:column;font:11px Arial}.note-card div small{margin-top:3px;color:#777}.note-card div strong{color:#5e8955}.t5-trust{font-family:Arial;color:#777}.chapter{padding:130px 7vw;display:grid;grid-template-columns:1fr 1.3fr;gap:10vw}.chapter header>span{font-style:italic}.chapter h2{font:54px/1 Georgia}.chapter article{display:grid;grid-template-columns:50px 1fr}.chapter article>span{font:italic 13px Georgia;color:#d5674c}.chapter article h3{margin:0;font:31px Georgia}.chapter article p{grid-column:2;font-family:Arial;border-bottom:1px solid #bbb;padding-bottom:30px}.letter{background:#6f8466;color:#fff;padding:10vw 15vw}.letter blockquote{font:clamp(36px,5vw,70px)/1.16 Georgia;margin:40px 0}.letter>p:last-child{text-align:right}.t5 .price{background:#e4b9aa}.t5 .primary{background:#d5674c}.t5 .faq details p{font-family:Arial}
++@media(max-width:800px){.index-intro{display:block;padding:80px 0}.index-intro h1{font-size:60px}.index-intro>p:last-child{margin-top:35px}.theme-link{grid-template-columns:40px 1fr 30px}.theme-link>span:nth-child(2){display:block}.theme-link small{display:block;margin-top:6px}.index-foot{display:none}.nav{grid-template-columns:1fr 1fr}.nav-label{display:none}.hero,.t2 .hero,.t5 .hero{grid-template-columns:1fr;min-height:auto;padding:70px 20px}.hero h1,.t2 .hero h1,.t4 .hero h1,.t5 .hero h1{font-size:52px}.review-card,.desk,.terminal,.note-card{margin-top:25px}.press,.t5-trust{overflow:auto;justify-content:flex-start}.editorial-benefits,.sticky-benefits,.protocol{padding:75px 20px}.editorial-benefits>div,.sticky-benefits,.protocol{grid-template-columns:1fr}.editorial-benefits article{border-right:0;border-bottom:1px solid;padding:25px 0!important}.signal-grid{grid-template-columns:1fr}.signal-grid>*{min-height:auto;border-bottom:1px solid}.t2 .hero .primary{float:none}.t2-proof,.price{display:block}.stamp{display:none}.price>div:last-child{align-items:flex-start}.t3-story,.chapter{grid-template-columns:1fr;padding:80px 20px}.desk{height:430px}.paper{width:82%;left:5%}.protocol>*{min-height:auto}.t4-proof>div{grid-template-columns:1fr 1fr;gap:20px}.t4-proof strong{font-size:46px}.margin-note{display:none}.faq{padding:75px 20px}.quote{padding:80px 25px}.price{padding:60px 25px}}
++@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.primary,.theme-link{transition:none}}
+diff --git a/app/layout.tsx b/app/layout.tsx
+index fb034ab..64989bb 100644
+--- a/app/layout.tsx
++++ b/app/layout.tsx
+@@ -3,9 +3,8 @@ import type { ReactNode } from "react";
+ import "./globals.css";
+ 
+ export const metadata: Metadata = {
+-  title: "shipshit.dev",
+-  description:
+-    "shipshit.dev is a studio that ships open-source developer tools live on stream.",
++  title: "Patchwork — Client feedback, finally composed",
++  description: "A calm client-feedback portal for independent creative studios.",
+ };
+ 
+ export default function RootLayout({
+@@ -15,7 +14,7 @@ export default function RootLayout({
+ }) {
+   return (
+     <html lang="en">
+-      <body className="antialiased">{children}</body>
++      <body>{children}</body>
+     </html>
+   );
+ }
+diff --git a/app/page.tsx b/app/page.tsx
+index cd11eee..312c135 100644
+--- a/app/page.tsx
++++ b/app/page.tsx
+@@ -1,7 +1,18 @@
++import Link from "next/link";
++
++const themes = [
++  ["01", "The Quiet Edit", "Editorial restraint, oversized type, and a calm product proof."],
++  ["02", "Signal System", "A precise Swiss grid for studios that value speed and clarity."],
++  ["03", "The Worktable", "A tactile, playful studio desk made from notes, tape, and momentum."],
++  ["04", "Feedback.exe", "A dark command-center aesthetic for digital product teams."],
++  ["05", "Client Notes", "A warm, reassuring notebook that makes collaboration feel human."],
++] as const;
++
+ export default function Home() {
+-  return (
+-    <main>
+-      <p>Coming soon</p>
+-    </main>
+-  );
++  return <main className="index-page">
++    <header className="index-head"><Link href="/" className="wordmark">PATCHWORK<span>●</span></Link><p>Five ways to sell one useful thing.</p></header>
++    <section className="index-intro"><p className="eyebrow">Creative direction study · 2026</p><h1>Feedback that<br /><em>moves work forward.</em></h1><p>Patchwork is the calm client-feedback portal for small creative studios. One link, clear decisions, no archaeology.</p></section>
++    <section className="theme-list" aria-label="Landing page themes">{themes.map(([n, name, description]) => <Link href={`/themes/${Number(n)}`} className={`theme-link theme-link-${n}`} key={n}><span className="theme-num">{n}</span><span><strong>{name}</strong><small>{description}</small></span><span className="theme-arrow" aria-hidden="true">↗</span></Link>)}</section>
++    <footer className="index-foot"><span>One product</span><span>Five voices</span><span>$24 / month</span></footer>
++  </main>;
+ }
+diff --git a/app/themes/[id]/page.tsx b/app/themes/[id]/page.tsx
+new file mode 100644
+index 0000000..7da8e11
+--- /dev/null
++++ b/app/themes/[id]/page.tsx
+@@ -0,0 +1,18 @@
++import Link from "next/link";
++import { notFound } from "next/navigation";
++
++const Arrow = () => <span aria-hidden="true">→</span>;
++const Check = () => <span aria-hidden="true">✓</span>;
++function Frame({ children, theme, label }: { children: React.ReactNode; theme: string; label: string }) { return <main className={`landing ${theme}`}><nav className="nav"><Link href="/" className="brand">Patchwork<span>●</span></Link><span className="nav-label">{label}</span><a href="#pricing" className="nav-cta">Start free <Arrow /></a></nav>{children}</main>; }
++const faq = [["Will my clients need an account?", "No. They open your branded link, leave feedback, and approve. Guest access is frictionless."],["Does it replace my project manager?", "No—and that’s the point. Patchwork makes feedback legible, then sends decisions back to the tools you already use."],["Can I cancel anytime?", "Yes. Export every comment and file, then cancel in one click. Your data stays available for 30 days."]];
++function Price({ dark = false }: { dark?: boolean }) { return <section className={`price ${dark ? "price-dark" : ""}`} id="pricing"><div><p className="kicker">Simple studio pricing</p><h2>$24 <small>/ month</small></h2><p>Unlimited clients · 10 active projects · No setup fees</p></div><div><a className="primary" href="mailto:hello@patchwork.example?subject=Patchwork trial">Start your 14-day trial <Arrow /></a><small>No card required. Cancel in a click.</small></div></section>; }
++function ReviewCard() { return <div className="review-card"><div className="window-bar"><i/><i/><i/><span>Brand launch / Homepage v3</span></div><div className="mock-canvas"><span className="mock-tag">NEW SEASON</span><b>Objects for<br />slower days.</b><div className="pin pin-1">1</div><div className="pin pin-2">2</div></div><div className="comment"><span>MS</span><div><strong>Maya</strong><p>This feels right. Can we make the line break match the campaign?</p></div><button>Resolve ✓</button></div></div> }
++function ThemeOne() { return <Frame theme="t1" label="The quiet edit"><section className="hero"><div className="hero-copy"><p className="kicker">Client feedback, finally composed</p><h1>Good work needs<br /><em>a clean edit.</em></h1><p className="lede">Patchwork turns scattered client comments into one calm, decisive review—so your studio can spend less time translating and more time making.</p><a className="primary" href="#pricing">Start free for 14 days <Arrow /></a></div><ReviewCard /></section><section className="press"><span>Built alongside independent studios</span><strong>FIELD</strong><strong>NORTH/CO</strong><strong>COMMON</strong><strong>STILL LIFE</strong></section><section className="editorial-benefits"><p className="kicker">Less managing. More making.</p><div>{[["01","One clear place to look","Files, versions, comments, and approvals stay together in a link clients understand immediately."],["02","Decisions, not discussions","Turn fuzzy feedback into assigned actions. Close the loop without another status meeting."],["03","Your studio, presented well","Every review feels considered, from your logo and colors to a polished final approval."]].map(([n,t,d])=><article key={n}><span>{n}</span><h3>{t}</h3><p>{d}</p></article>)}</div></section><section className="quote"><blockquote>“We designed Patchwork because ‘final_v7_really-final.pdf’ should never be a project-management strategy.”</blockquote><p>— Mara & Theo, co-founders</p></section><Faq title="Before you ask."/><Price /></Frame>; }
++function ThemeTwo() { return <Frame theme="t2" label="Signal system"><section className="hero"><div className="t2-mark">P/W<br/>01—25</div><div className="hero-copy"><p className="kicker">A feedback system for creative teams</p><h1>FEEDBACK<br/>IN. WORK<br/><span>OUT.</span></h1><p className="lede">Collect, sort, and close client feedback without losing your week to inboxes and meetings.</p><a className="primary" href="#pricing">TRY PATCHWORK <Arrow /></a></div></section><section className="ticker"><span>ONE LINK</span><span>NO CLIENT LOGIN</span><span>CLEAR APPROVALS</span><span>$24 / MONTH</span></section><section className="signal-grid"><div className="signal-title"><small>THE RESULT</small><strong>6.4</strong><p>hours saved per project*</p><small>*average from our 12-studio private beta</small></div>{[["01","SEND","Share one tidy link, not a thread of attachments."],["02","SORT","Comments become clear, owned tasks."],["03","SHIP","Get an explicit approval and move on."]].map(([n,t,d])=><article key={n}><span>{n}</span><h3>{t}</h3><p>{d}</p></article>)}</section><section className="t2-proof"><div><p>“Our clients got it without a walkthrough. That was the test.”</p><span>ANIKA R. — INDEPENDENT BRAND DESIGNER</span></div><div className="stamp">PRIVATE<br/>BETA<br/>2026</div></section><Faq title="QUESTIONS / ANSWERS"/><Price /></Frame>; }
++function Desk(){return <div className="desk"><div className="paper"><span>Homepage / round 2</span><div className="mini-site"><i/><b>Make room<br/>for wonder.</b></div><div className="bubble b1">Love this! ✦</div><div className="bubble b2">Approved ✓</div></div><div className="pencil">PATCHWORK</div><div className="coffee">☕</div></div>}
++function ThemeThree() { return <Frame theme="t3" label="The worktable"><section className="hero"><div className="hero-copy"><span className="tape">For small but mighty studios</span><h1>Keep the good ideas.<br/><span>Lose the feedback mess.</span></h1><p className="lede">Patchwork gives every client project one friendly home for files, comments, to-dos, and the magical words: “approved.”</p><a className="primary" href="#pricing">Tidy up your next project <Arrow /></a><small>14 days free · no card · takes 3 minutes</small></div><Desk /></section><section className="scribble">Loved by 12 picky studios in our private beta <span>★★★★★</span></section><section className="sticky-benefits">{[["◎","Clients know where to go","Send one link. No login, no tutorial, no “which version?”"],["↯","Feedback becomes a plan","Pin it, assign it, resolve it. Everyone sees what happens next."],["♡","You look very organised","A branded review space makes even a tiny studio feel beautifully buttoned-up."]].map(([i,t,d])=><article key={t}><span className="doodle">{i}</span><h3>{t}</h3><p>{d}</p></article>)}</section><section className="t3-story"><div className="polaroid"><div>“</div><p>Monday morning used to mean 46 client emails. Now it means coffee.</p><strong>Sam, Mostly Good Studio</strong></div><div><p className="kicker">Made by two former agency people</p><h2>We know the feeling.</h2><p>Patchwork is small on purpose: the handful of tools that get feedback finished, without a dashboard that becomes another job.</p></div></section><Faq title="Sticky questions"/><Price /></Frame>; }
++function ThemeFour(){return <Frame theme="t4" label="feedback.exe"><section className="hero"><div className="status"><i/> ALL SYSTEMS CLEAR</div><div className="hero-copy"><p className="kicker">PATCHWORK / CLIENT REVIEW OS</p><h1>YOUR BEST WORK<br/>DESERVES BETTER<br/><span>INPUT_</span></h1><p className="lede">A zero-friction review layer for small digital studios. Capture precise feedback. Convert it to tasks. Lock the approval.</p><a className="primary" href="#pricing">INITIALIZE FREE TRIAL <Arrow /></a></div><div className="terminal"><div className="term-head"><span>PW—REVIEW.LOG</span><span>● ● ●</span></div><p><i>09:41:02</i> PROJECT_LINK OPENED</p><p><i>09:42:16</i> COMMENT <b>#12</b> CAPTURED</p><p><i>09:45:03</i> ASSET <b>homepage_v3</b> APPROVED</p><p><i>09:45:04</i> TASKS SYNCED <strong>[3/3]</strong></p><div className="term-score"><small>FEEDBACK STATUS</small><b>RESOLVED</b><span>100%</span></div></div></section><section className="ticker"><span>[ ONE LINK ]</span><span>[ ZERO LOGINS ]</span><span>[ CLEAN HANDOFF ]</span><span>[ $24/MO ]</span></section><section className="protocol"><div><p className="kicker">THE PROTOCOL</p><h2>FROM NOISE<br/>TO SHIPPED.</h2></div>{[["01","INGEST","Every file and comment enters one shared review stream."],["02","ROUTE","Turn input into owned, resolvable actions instantly."],["03","CONFIRM","Record the final yes. Keep a clean decision trail."]].map(([n,t,d])=><article key={n}><span>{n}</span><h3>{t}</h3><p>{d}</p><i><Check/></i></article>)}</section><section className="t4-proof"><p>FIELD TEST // PRIVATE BETA</p><div><strong>12</strong><span>ACTIVE<br/>STUDIOS</span><strong>6.4H</strong><span>SAVED PER<br/>PROJECT</span><strong>0</strong><span>CLIENT<br/>ONBOARDINGS</span></div></section><Faq title="QUERY_LOG"/><Price dark /></Frame>}
++function ThemeFive(){return <Frame theme="t5" label="Client notes"><section className="hero"><div className="margin-note">A calmer client project<br/>starts right here ↓</div><div className="hero-copy"><p className="kicker">PATCHWORK, FOR INDEPENDENT STUDIOS</p><h1>Make feedback feel like part of the <em>creative process.</em></h1><p className="lede">One thoughtful place for your clients to review the work, share what they mean, and confidently say yes.</p><a className="primary" href="#pricing">Begin a free project <Arrow /></a><small>No card needed · 14 days to try everything</small></div><div className="note-card"><span>Client note #04</span><p>“The direction is perfect. Let’s keep the warmer image and ship it.”</p><div><i>AR</i><span><b>Anna replied</b><small>Approved just now</small></span><strong>✓</strong></div></div></section><section className="t5-trust"><span>Created with 12 independent studios</span><span>BRAND</span><span>WEB</span><span>CAMPAIGN</span><span>PACKAGING</span></section><section className="chapter"><header><span>Chapter one</span><h2>A gentler way<br/>to get to yes.</h2></header><div>{[["Keep the thread","Every version, thought, and decision lives together—easy to return to, impossible to lose."],["Guide the conversation","Ask focused questions and collect feedback exactly where it belongs: on the work."],["End with certainty","Turn the final round into a clear approval, not an ambiguous thumbs-up in Slack."]].map(([t,d],i)=><article key={t}><span>0{i+1}</span><h3>{t}</h3><p>{d}</p></article>)}</div></section><section className="letter"><p>Dear studio owner,</p><blockquote>You didn’t start your practice to chase comments across six tabs. We built the calm space we wished our clients had.</blockquote><p>Warmly,<br/><em>Mara & Theo, Patchwork</em></p></section><Faq title="A few good questions"/><Price /></Frame>}
++function Faq({title}:{title:string}){return <section className="faq"><h2>{title}</h2>{faq.map(([q,a])=><details key={q}><summary>{q}<span>+</span></summary><p>{a}</p></details>)}</section>}
++export function generateStaticParams(){ return ["1","2","3","4","5"].map(id=>({id})); }
++export default async function ThemePage({params}:{params:Promise<{id:string}>}){const {id}=await params; const themes:Record<string,React.ReactNode>={"1":<ThemeOne/>,"2":<ThemeTwo/>,"3":<ThemeThree/>,"4":<ThemeFour/>,"5":<ThemeFive/>}; return themes[id] ?? notFound();}
+diff --git a/next-env.d.ts b/next-env.d.ts
+new file mode 100644
+index 0000000..ce4e94a
+--- /dev/null
++++ b/next-env.d.ts
+@@ -0,0 +1,7 @@
++/// <reference types="next" />
++/// <reference types="next/image-types/global" />
++import "./.next/types/routes.d.ts";
++import "./.next/types/root-params.d.ts";
++
++// NOTE: This file should not be edited
++// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.
+diff --git a/tsconfig.json b/tsconfig.json
+index 4a468da..3f0b70d 100644
+--- a/tsconfig.json
++++ b/tsconfig.json
+@@ -1,7 +1,11 @@
+ {
+   "compilerOptions": {
+     "target": "ES2017",
+-    "lib": ["dom", "dom.iterable", "esnext"],
++    "lib": [
++      "dom",
++      "dom.iterable",
++      "esnext"
++    ],
+     "allowJs": false,
+     "skipLibCheck": true,
+     "strict": true,
+@@ -11,13 +15,27 @@
+     "moduleResolution": "bundler",
+     "resolveJsonModule": true,
+     "isolatedModules": true,
+-    "jsx": "preserve",
++    "jsx": "react-jsx",
+     "incremental": true,
+-    "plugins": [{ "name": "next" }],
++    "plugins": [
++      {
++        "name": "next"
++      }
++    ],
+     "paths": {
+-      "@/*": ["./*"]
++      "@/*": [
++        "./*"
++      ]
+     }
+   },
+-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+-  "exclude": ["node_modules"]
++  "include": [
++    "next-env.d.ts",
++    "**/*.ts",
++    "**/*.tsx",
++    ".next/types/**/*.ts",
++    ".next/dev/types/**/*.ts"
++  ],
++  "exclude": [
++    "node_modules"
++  ]
+ }

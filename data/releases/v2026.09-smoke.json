@@ -2,7 +2,7 @@
   "release": "v2026.09-smoke",
   "title": "v2026.09-smoke",
   "suiteVersion": "v2026.09",
-  "generatedAt": "2026-09-06T15:08:05.020Z",
+  "generatedAt": "2026-09-06T15:25:02.853Z",
   "pricesAsOf": "2026-09-06",
   "categoryWeights": {
     "ux-ui": 1,
@@ -88,14 +88,14 @@
       "subjective": null,
       "score": null,
       "usage": {
-        "input": 0,
-        "output": 0,
-        "cacheRead": 0,
-        "cacheWrite": 0,
-        "turns": 0,
-        "toolCalls": 0,
+        "input": null,
+        "output": null,
+        "cacheRead": null,
+        "cacheWrite": null,
+        "turns": null,
+        "toolCalls": null,
         "durationMs": 0,
-        "costUsdEquivalent": 0
+        "costUsdEquivalent": null
       }
     },
     {
@@ -192,14 +192,14 @@
       "subjective": null,
       "score": null,
       "usage": {
-        "input": 0,
-        "output": 0,
-        "cacheRead": 0,
-        "cacheWrite": 0,
-        "turns": 0,
-        "toolCalls": 0,
+        "input": null,
+        "output": null,
+        "cacheRead": null,
+        "cacheWrite": null,
+        "turns": null,
+        "toolCalls": null,
         "durationMs": 0,
-        "costUsdEquivalent": 0
+        "costUsdEquivalent": null
       }
     },
     {
@@ -286,14 +286,14 @@
       "subjective": null,
       "score": null,
       "usage": {
-        "input": 0,
-        "output": 0,
-        "cacheRead": 0,
-        "cacheWrite": 0,
-        "turns": 0,
-        "toolCalls": 0,
+        "input": null,
+        "output": null,
+        "cacheRead": null,
+        "cacheWrite": null,
+        "turns": null,
+        "toolCalls": null,
         "durationMs": 0,
-        "costUsdEquivalent": 0
+        "costUsdEquivalent": null
       }
     },
     {
@@ -390,14 +390,14 @@
       "subjective": null,
       "score": null,
       "usage": {
-        "input": 0,
-        "output": 0,
-        "cacheRead": 0,
-        "cacheWrite": 0,
-        "turns": 0,
-        "toolCalls": 0,
+        "input": null,
+        "output": null,
+        "cacheRead": null,
+        "cacheWrite": null,
+        "turns": null,
+        "toolCalls": null,
         "durationMs": 0,
-        "costUsdEquivalent": 0
+        "costUsdEquivalent": null
       }
     },
     {
@@ -479,14 +479,14 @@
       "subjective": null,
       "score": null,
       "usage": {
-        "input": 0,
-        "output": 0,
-        "cacheRead": 0,
-        "cacheWrite": 0,
-        "turns": 0,
-        "toolCalls": 0,
+        "input": null,
+        "output": null,
+        "cacheRead": null,
+        "cacheWrite": null,
+        "turns": null,
+        "toolCalls": null,
         "durationMs": 0,
-        "costUsdEquivalent": 0
+        "costUsdEquivalent": null
       }
     },
     {
@@ -550,6 +550,66 @@
       }
     },
     {
+      "task": "taste/landing-page-themes",
+      "agent": {
+        "cli": "claude",
+        "model": "haiku",
+        "effort": "low"
+      },
+      "runs": [
+        "v2026.09-smoke__taste--landing-page-themes__claude--haiku--low__1"
+      ],
+      "gatePassRate": 0,
+      "objective": null,
+      "subjective": null,
+      "score": null,
+      "usage": {
+        "input": 329,
+        "output": 28244,
+        "cacheRead": 2085300,
+        "cacheWrite": 65290,
+        "turns": 41,
+        "toolCalls": 40,
+        "durationMs": 256737,
+        "costUsdEquivalent": 0.4317
+      }
+    },
+    {
+      "task": "taste/landing-page-themes",
+      "agent": {
+        "cli": "codex",
+        "model": "gpt-5.6-sol",
+        "effort": "low"
+      },
+      "runs": [
+        "v2026.09-smoke__taste--landing-page-themes__codex--gpt-5.6-sol--low__1"
+      ],
+      "gatePassRate": 1,
+      "objective": null,
+      "subjective": {
+        "mean": 93.75,
+        "min": 93.75,
+        "max": 93.75,
+        "n": 1
+      },
+      "score": {
+        "mean": 93.75,
+        "min": 93.75,
+        "max": 93.75,
+        "n": 1
+      },
+      "usage": {
+        "input": 645288,
+        "output": 21568,
+        "cacheRead": 582912,
+        "cacheWrite": null,
+        "turns": 1,
+        "toolCalls": 11,
+        "durationMs": 432958,
+        "costUsdEquivalent": 3.2457
+      }
+    },
+    {
       "task": "bugfix/date-range-overlap",
       "agent": {
         "cli": "grok",
@@ -563,14 +623,14 @@
       "subjective": null,
       "score": null,
       "usage": {
-        "input": 0,
-        "output": 0,
-        "cacheRead": 0,
-        "cacheWrite": 0,
-        "turns": 0,
-        "toolCalls": 0,
+        "input": null,
+        "output": null,
+        "cacheRead": null,
+        "cacheWrite": null,
+        "turns": null,
+        "toolCalls": null,
         "durationMs": 0,
-        "costUsdEquivalent": 0
+        "costUsdEquivalent": null
       }
     },
     {
@@ -717,14 +777,14 @@
         }
       ],
       "usage": {
-        "input": 0,
-        "output": 0,
-        "cacheRead": 0,
-        "cacheWrite": 0,
-        "turns": 0,
-        "toolCalls": 0,
+        "input": null,
+        "output": null,
+        "cacheRead": null,
+        "cacheWrite": null,
+        "turns": null,
+        "toolCalls": null,
         "durationMs": 0,
-        "costUsdEquivalent": 0
+        "costUsdEquivalent": null
       },
       "scorePerDollar": null,
       "telemetry": "none"
@@ -809,16 +869,16 @@
         }
       ],
       "usage": {
-        "input": 1068,
-        "output": 68736,
-        "cacheRead": 4507952,
-        "cacheWrite": 194309,
-        "turns": 148,
-        "toolCalls": 140,
-        "durationMs": 750417,
-        "costUsdEquivalent": 1.0384
+        "input": 1397,
+        "output": 96980,
+        "cacheRead": 6593252,
+        "cacheWrite": 259599,
+        "turns": 189,
+        "toolCalls": 180,
+        "durationMs": 1007154,
+        "costUsdEquivalent": 1.4701
       },
-      "scorePerDollar": 75.67732408834105,
+      "scorePerDollar": 53.45441353195928,
       "telemetry": "full"
     },
     {
@@ -827,7 +887,7 @@
         "model": "gpt-5.6-sol",
         "effort": "low"
       },
-      "overall": 86.83333333333334,
+      "overall": 88.21666666666667,
       "categories": [
         {
           "category": "frontend",
@@ -886,7 +946,7 @@
             "model": "gpt-5.6-sol",
             "effort": "low"
           },
-          "score": null,
+          "score": 93.75,
           "tasks": 1
         },
         {
@@ -901,16 +961,16 @@
         }
       ],
       "usage": {
-        "input": 3236583,
-        "output": 52569,
-        "cacheRead": 3025152,
+        "input": 3881871,
+        "output": 74137,
+        "cacheRead": 3608064,
         "cacheWrite": null,
-        "turns": 6,
-        "toolCalls": 64,
-        "durationMs": 1278374,
-        "costUsdEquivalent": 15.207699999999999
+        "turns": 7,
+        "toolCalls": 75,
+        "durationMs": 1711332,
+        "costUsdEquivalent": 18.453400000000002
       },
-      "scorePerDollar": 5.7098268201853895,
+      "scorePerDollar": 4.780510186018113,
       "telemetry": "partial"
     }
   ],

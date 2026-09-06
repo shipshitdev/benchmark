@@ -31,6 +31,19 @@ export function combineScore(
 }
 
 export function buildUsageTotals(runs: RunResult[]): UsageTotals {
+  if (runs.length === 0) {
+    // Nothing executed: every total is unknown, not zero.
+    return {
+      input: null,
+      output: null,
+      cacheRead: null,
+      cacheWrite: null,
+      turns: null,
+      toolCalls: null,
+      durationMs: 0,
+      costUsdEquivalent: null,
+    };
+  }
   return {
     input: sumOrNull(runs.map((run) => run.usage.input)),
     output: sumOrNull(runs.map((run) => run.usage.output)),
