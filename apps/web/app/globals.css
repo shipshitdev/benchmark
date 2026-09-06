@@ -16,6 +16,12 @@
   --color-accent-dim: #b8632c;
   --color-good: #5ee6a0;
   --color-bad: #ff5c5c;
+
+  /* One color per CLI, used consistently for legends and chart series across the site. */
+  --color-vendor-claude: #c77dff;
+  --color-vendor-codex: #5ee6a0;
+  --color-vendor-grok: #ff5c5c;
+  --color-vendor-cursor: #4fb0ff;
 }
 
 html {
@@ -31,10 +37,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Faint scanline + grain so the near-black ground doesn't read as flat AI-gradient territory. */
+/* Two faint radial glows so the near-black ground doesn't read as flat AI-gradient territory.
+ * A repeating scanline used to sit under this too; it made body text on prose pages hard to
+ * read at normal size, so it's gone — the glows alone still keep the ground from looking flat. */
 .instrument-ground {
   background-image:
-    repeating-linear-gradient(180deg, rgb(255 255 255 / 1.5%) 0px, transparent 1px, transparent 3px),
     radial-gradient(ellipse 1200px 600px at 15% -10%, rgb(255 138 61 / 7%), transparent 60%),
     radial-gradient(ellipse 900px 500px at 100% 0%, rgb(94 230 160 / 5%), transparent 55%);
 }
@@ -56,7 +63,12 @@ a {
   text-underline-offset: 3px;
 }
 
-/* Rendered markdown from DESIGN.md on the methodology page. */
+/* Rendered markdown (methodology, task rubrics). Capped at ~70ch so a line of prose stays
+ * readable at reading distance instead of stretching the full column width. */
+.markdown-body {
+  max-width: 70ch;
+  font-size: 1rem;
+}
 .markdown-body h1,
 .markdown-body h2,
 .markdown-body h3 {

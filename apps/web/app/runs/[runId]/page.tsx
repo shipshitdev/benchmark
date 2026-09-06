@@ -189,7 +189,9 @@ export default async function RunPage({ params }: { params: Promise<Params> }) {
                     </span>
                   ))}
                 </div>
-                <p className="mt-2 text-text-dim">{j.rationale}</p>
+                <p className="mt-2 max-w-[70ch] text-[15px] leading-relaxed text-text-dim">
+                  {j.rationale}
+                </p>
               </li>
             ))}
           </ul>
@@ -199,7 +201,7 @@ export default async function RunPage({ params }: { params: Promise<Params> }) {
       {report && (
         <section className="mt-10">
           <h2 className="font-display text-lg italic text-text">Report</h2>
-          <pre className="mt-4 overflow-x-auto whitespace-pre-wrap rounded border border-border bg-bg-inset p-4 text-xs text-text-dim">
+          <pre className="mt-4 max-w-[70ch] overflow-x-auto whitespace-pre-wrap rounded border border-border bg-bg-inset p-4 text-[15px] leading-relaxed text-text-dim">
             {report}
           </pre>
         </section>

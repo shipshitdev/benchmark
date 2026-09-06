@@ -14,6 +14,9 @@ export function SiteHeader() {
           <Link href="/" className="hover:text-accent">
             Leaderboard
           </Link>
+          <Link href="/tests/" className="hover:text-accent">
+            Tests
+          </Link>
           <Link href="/methodology/" className="hover:text-accent">
             Methodology
           </Link>
