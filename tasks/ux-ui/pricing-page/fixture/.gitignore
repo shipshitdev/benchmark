@@ -1,0 +1,6 @@
+node_modules
+.next
+out
+bun.lock
+.DS_Store
+*.tsbuildinfo

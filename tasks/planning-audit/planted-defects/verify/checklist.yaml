@@ -1,0 +1,147 @@
+# Checklist for grading AUDIT.md against the 10 planted defects in fixture/.
+# Each entry names one defect. A judge should look for a finding in AUDIT.md that names
+# the same file and describes the same problem (paraphrase is fine; keywords are a hint,
+# not a required exact match).
+
+- id: sql-injection-event-type-filter
+  file: src/routes/events.ts
+  summary: >
+    listEvents builds its SQL query with the user-supplied `type` query parameter
+    interpolated directly into the string (line 24: `AND type = '${type}'`) instead of
+    passing it as a bound parameter like account_id, limit, and offset are, allowing SQL
+    injection through the `type` filter.
+  keywords:
+    - SQL injection
+    - string interpolation
+    - unparameterized query
+    - type filter
+    - events.ts
+
+- id: timing-unsafe-internal-token-compare
+  file: src/middleware/auth.ts
+  summary: >
+    requireInternalToken compares the caller-supplied X-Internal-Token header to the
+    configured secret with `!==` (line 38), a non-constant-time comparison vulnerable to
+    a timing attack, even though the codebase already exports a constant-time
+    `safeCompare` helper (src/lib/crypto.ts) that isn't used here.
+  keywords:
+    - timing attack
+    - timing-safe comparison
+    - constant-time compare
+    - token comparison
+    - auth.ts
+
+- id: webhooks-pagination-offset-off-by-one
+  file: src/routes/webhooks.ts
+  summary: >
+    listWebhooks computes `offset = page * PAGE_SIZE` (line 17) instead of
+    `(page - 1) * PAGE_SIZE`, so with 1-indexed pages the first PAGE_SIZE webhooks are
+    skipped on every request and are unreachable through this endpoint at any page
+    number.
+  keywords:
+    - pagination off-by-one
+    - offset calculation
+    - page * limit
+    - dropped results
+    - webhooks.ts
+
+- id: local-timezone-boundary-vs-utc-timestamps
+  file: src/routes/deliveries.ts
+  summary: >
+    deliveryStatsToday computes "today" with `new Date(); startOfDay.setHours(0,0,0,0)`
+    (lines 36-37), which resets to midnight in the server process's local timezone, then
+    compares that boundary against `created_at` values stored as UTC ISO timestamps
+    (see db.ts), so the stats window is wrong whenever the server's local offset isn't 0.
+  keywords:
+    - timezone bug
+    - UTC vs local time
+    - setHours boundary
+    - midnight comparison
+    - deliveries.ts stats
+
+- id: deliveries-list-n-plus-one-webhook-lookup
+  file: src/routes/deliveries.ts
+  summary: >
+    listDeliveries fetches a page of deliveries and then, in a `.map` (line 20), calls
+    getWebhookById once per delivery to attach the webhook's URL instead of joining
+    webhooks into the query in db.ts's listDeliveriesByAccount, issuing up to PAGE_SIZE
+    extra queries per request.
+  keywords:
+    - N+1 query
+    - per-row lookup
+    - missing join
+    - getWebhookById loop
+    - deliveries.ts list
+
+- id: unbounded-api-key-cache
+  file: src/middleware/auth.ts
+  summary: >
+    requireAuth caches every successfully authenticated API key in a module-level
+    `keyCache` Map (line 10) with no maximum size, no TTL, and no eviction, so the
+    process's memory grows without bound over its lifetime and a revoked or rotated key
+    keeps authenticating out of the stale cache entry.
+  keywords:
+    - unbounded cache
+    - no eviction
+    - memory growth
+    - Map cache
+    - stale API key
+
+- id: unawaited-dispatch-fire-and-forget
+  file: src/routes/events.ts
+  summary: >
+    ingestEvent calls `dispatchPendingDeliveries()` (line 58) without `await` or
+    `.catch()`; if the dispatch sweep throws, the rejection is unhandled and the failure
+    is silently swallowed instead of being surfaced to the caller or logged.
+  keywords:
+    - unhandled promise rejection
+    - fire and forget
+    - missing await
+    - missing catch
+    - silent failure
+
+- id: non-idempotent-retry-of-sending-deliveries
+  file: src/db.ts
+  summary: >
+    listRetryableDeliveries selects deliveries with status IN ('failed', 'sending')
+    (lines 276-278), but a delivery is marked 'sending' in jobs/dispatcher.ts before the
+    outbound fetch and only moves to 'delivered' after it succeeds; if the process
+    crashes or is restarted between those two steps, the row is stuck at 'sending' and
+    the retry sweep in jobs/retry.ts resends a payload the destination already received,
+    with no idempotency key to let the receiver deduplicate.
+  keywords:
+    - non-idempotent retry
+    - duplicate delivery
+    - stuck sending status
+    - retry after partial failure
+    - no idempotency key
+
+- id: webhook-create-validation-returns-200
+  file: src/routes/webhooks.ts
+  summary: >
+    createWebhookHandler returns `json({ error: ... }, 200)` (lines 41 and 48) when the
+    request body is missing a `url` or has an invalid one, so a client validation error
+    is reported with a 200 OK status instead of 400, and any caller that checks the
+    status code (or res.ok) instead of the body will treat the failed registration as a
+    success.
+  keywords:
+    - 200 with error body
+    - wrong status code
+    - misleading success status
+    - validation error masked
+    - webhooks.ts create
+
+- id: generic-500-for-validation-errors
+  file: src/server.ts
+  summary: >
+    The top-level fetch handler's catch block (lines 68-75) turns every thrown error,
+    including ValidationError from routes/events.ts (which extends HttpError and carries
+    status 400), into a flat `500 internal server error` response, discarding the
+    `err.status` the error already carries and making a client's bad request
+    indistinguishable from a server bug.
+  keywords:
+    - generic 500 error
+    - client error misreported
+    - ignored error status
+    - catch-all handler
+    - server.ts error mapping

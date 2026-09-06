@@ -1,0 +1,52 @@
+id: backend/inventory-api
+category: backend
+title: Inventory service
+summary: >
+  Implement a Bun inventory API to the provided OpenAPI contract: products, warehouses,
+  stock movements with idempotency keys, a low-stock report, pagination, and validation
+  errors in a fixed shape, backed by bun:sqlite.
+version: 1
+authored: 2026-09-06
+prompt: prompt.md
+fixture: fixture
+caps:
+  maxTurns: 80
+  maxBudgetUsd: 15
+  timeboxMinutes: 45
+gates:
+  - type: command
+    id: install
+    run: bun install
+    timeoutSeconds: 300
+  - type: command
+    id: migrate
+    run: bun run migrate && bun run migrate
+    timeoutSeconds: 120
+scoring:
+  objective:
+    type: http-contract-pass-rate
+    spec: verify/contract.test.ts
+    serve:
+      run: bun run start
+      port: 4175
+      readyPath: /health
+      readyTimeoutSeconds: 90
+    timeoutSeconds: 300
+  subjective:
+    rubric: rubric.md
+    dimensions:
+      - id: schema-soundness
+        label: Schema soundness
+        weight: 40
+      - id: boundaries-and-errors
+        label: Boundaries and error handling
+        weight: 30
+      - id: security
+        label: Security
+        weight: 30
+    pairwise: false
+    evidence:
+      - diff
+  weights:
+    objective: 0.6
+    subjective: 0.4
