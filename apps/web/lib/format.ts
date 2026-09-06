@@ -67,6 +67,7 @@ export function formatDateTime(iso: string): string {
 
 const CATEGORY_LABELS: Record<string, string> = {
   'ux-ui': 'UX/UI',
+  taste: 'Taste',
   frontend: 'Frontend',
   backend: 'Backend',
   'planning-audit': 'Planning Audit',

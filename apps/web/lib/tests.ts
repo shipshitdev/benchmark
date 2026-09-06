@@ -16,6 +16,7 @@ import { formatAgentLabel } from './format';
 /** The question each task is designed to answer, one line, in the suite's own words. */
 export const TASK_QUESTIONS: Record<string, string> = {
   'ux-ui/pricing-page': 'Can it design, not just code?',
+  'taste/startup-landing-themes': 'Left alone, what does it choose to build, and is it any good?',
   'frontend/issue-board-filters': 'Can it extend an existing app in its own conventions?',
   'backend/inventory-api': 'Can it build a service to a contract?',
   'planning-audit/planted-defects': 'Can it read a codebase critically and plan?',

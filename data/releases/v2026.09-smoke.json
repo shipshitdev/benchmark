@@ -2,7 +2,7 @@
   "release": "v2026.09-smoke",
   "title": "v2026.09-smoke",
   "suiteVersion": "v2026.09",
-  "generatedAt": "2026-09-06T14:02:47.398Z",
+  "generatedAt": "2026-09-06T15:08:05.020Z",
   "pricesAsOf": "2026-09-06",
   "categoryWeights": {
     "ux-ui": 1,
@@ -10,6 +10,7 @@
     "backend": 1,
     "planning-audit": 1,
     "bugfix": 1,
+    "taste": 1,
     "signature": 0
   },
   "agents": [
@@ -57,6 +58,12 @@
       "id": "ux-ui/pricing-page",
       "category": "ux-ui",
       "title": "Shipcut pricing page",
+      "version": 1
+    },
+    {
+      "id": "taste/landing-page-themes",
+      "category": "taste",
+      "title": "Landing page, five themes",
       "version": 1
     },
     {
@@ -691,6 +698,15 @@
           "tasks": 1
         },
         {
+          "category": "taste",
+          "agent": {
+            "cli": "grok",
+            "model": "grok-4.6"
+          },
+          "score": null,
+          "tasks": 1
+        },
+        {
           "category": "bugfix",
           "agent": {
             "cli": "grok",
@@ -763,6 +779,16 @@
         },
         {
           "category": "ux-ui",
+          "agent": {
+            "cli": "claude",
+            "model": "haiku",
+            "effort": "low"
+          },
+          "score": null,
+          "tasks": 1
+        },
+        {
+          "category": "taste",
           "agent": {
             "cli": "claude",
             "model": "haiku",
@@ -851,6 +877,16 @@
             "effort": "low"
           },
           "score": 100,
+          "tasks": 1
+        },
+        {
+          "category": "taste",
+          "agent": {
+            "cli": "codex",
+            "model": "gpt-5.6-sol",
+            "effort": "low"
+          },
+          "score": null,
           "tasks": 1
         },
         {

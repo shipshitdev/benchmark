@@ -6,6 +6,7 @@ export const CATEGORIES = [
   'backend',
   'planning-audit',
   'bugfix',
+  'taste',
   'signature',
 ] as const;
 export const Category = z.enum(CATEGORIES);

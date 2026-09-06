@@ -1,0 +1,88 @@
+id: taste/landing-page-themes
+category: taste
+title: Landing page, five themes
+summary: >
+  Left alone, the agent invents a small project (SaaS, developer tool, one-product store,
+  newsletter, service), builds five genuinely different landing pages for it that follow
+  conversion practice, and recommends one. Tests design judgment, divergence, copy and
+  self-assessment rather than execution of a given brief.
+version: 1
+authored: 2026-09-06
+prompt: prompt.md
+fixture: fixture
+caps:
+  maxTurns: 100
+  maxBudgetUsd: 15
+  timeboxMinutes: 45
+gates:
+  - type: command
+    id: install
+    run: bun install
+    timeoutSeconds: 300
+  - type: command
+    id: build
+    run: bun run build
+    timeoutSeconds: 300
+  - type: axe
+    id: axe-themes
+    paths:
+      - /themes/1
+      - /themes/2
+      - /themes/3
+      - /themes/4
+      - /themes/5
+    serve:
+      run: bun run start
+      port: 4176
+      readyPath: /
+      readyTimeoutSeconds: 90
+    failOn: serious
+scoring:
+  subjective:
+    rubric: rubric.md
+    dimensions:
+      - id: conversion-structure
+        label: Conversion structure
+        weight: 30
+      - id: distinctiveness
+        label: Distinctiveness
+        weight: 25
+      - id: craft
+        label: Craft
+        weight: 20
+      - id: copy
+        label: Copy
+        weight: 10
+      - id: judgment
+        label: Judgment
+        weight: 15
+    pairwise: true
+    evidence:
+      - screenshots
+      - report
+    report: THEMES.md
+  weights:
+    objective: 0
+    subjective: 1
+artifacts:
+  screenshots:
+    - path: /themes/1
+      viewports: [mobile, tablet, desktop]
+      serve: { run: bun run start, port: 4176, readyPath: /, readyTimeoutSeconds: 90 }
+      settleMs: 600
+    - path: /themes/2
+      viewports: [mobile, tablet, desktop]
+      serve: { run: bun run start, port: 4176, readyPath: /, readyTimeoutSeconds: 90 }
+      settleMs: 600
+    - path: /themes/3
+      viewports: [mobile, tablet, desktop]
+      serve: { run: bun run start, port: 4176, readyPath: /, readyTimeoutSeconds: 90 }
+      settleMs: 600
+    - path: /themes/4
+      viewports: [mobile, tablet, desktop]
+      serve: { run: bun run start, port: 4176, readyPath: /, readyTimeoutSeconds: 90 }
+      settleMs: 600
+    - path: /themes/5
+      viewports: [mobile, tablet, desktop]
+      serve: { run: bun run start, port: 4176, readyPath: /, readyTimeoutSeconds: 90 }
+      settleMs: 600
