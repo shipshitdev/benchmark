@@ -1,0 +1,732 @@
+diff --git a/.gitignore b/.gitignore
+index b47c62c..7b7bde9 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -4,3 +4,8 @@ node_modules
+ bun.lock
+ .DS_Store
+ dist
++.test-data/
++*.sqlite-shm
++*.sqlite-wal
++*.db-shm
++*.db-wal
+diff --git a/README.md b/README.md
+index ae3f127..6076431 100644
+--- a/README.md
++++ b/README.md
+@@ -25,3 +25,48 @@ storage is `bun:sqlite`, and the HTTP layer is `Bun.serve`.
+ response shapes, status codes, and pagination. Every validation failure,
+ on every endpoint, returns the same fixed error shape documented there as
+ `#/components/schemas/Error`.
++
++## Running locally
++
++```sh
++bun install
++DATABASE_PATH=./inventory.sqlite bun run migrate
++DATABASE_PATH=./inventory.sqlite PORT=4175 bun run start
++```
++
++Both environment variables are required by the server. Startup also runs the
++idempotent schema migration before opening the listening socket. The database's
++parent directory must already exist. `GET /health` returns `{"status":"ok"}`.
++
++```sh
++bun run test
++bun run typecheck
++```
++
++Tests cover the HTTP contract, malformed requests, pagination, concurrent stock
++updates, repeated migrations, and persistence through a server restart. Temporary
++test databases stay inside the ignored `.test-data/` directory and are cleaned up.
++
++## Storage and stock behavior
++
++The schema lives in `migrations/001_inventory.sql`. Products and warehouses have
++unique SKU/code constraints; movements reference both and have a unique
++idempotency key. All request values are passed as SQL parameters.
++
++Stock is the sum of movements across all warehouses: receipts add quantity,
++shipments subtract it, and adjustments apply a signed delta. Negative product
++totals are rejected. Low-stock results use a strict `stock < reorderThreshold`
++comparison and include products with no movements when their threshold is positive.
++
++An immediate SQLite transaction handles replay detection, the stock check, and
++movement insertion together. Replays compare all body fields regardless of JSON
++property order and return the original movement, including its original
++`resultingStock`. An omitted note differs from an empty note. Rejected movements
++do not consume their idempotency key. WAL mode and a busy timeout coordinate
++connections sharing the same database file.
++
++Lists have stable creation-time/ID ordering, default to page 1 with 20 rows, and
++allow at most 100 rows per page. Request integers must be exactly representable
++as JavaScript safe integers; stock changes that would exceed that range are
++rejected. Unknown body properties, unsupported query parameters, and duplicate
++pagination parameters return the contract's validation error envelope.
+diff --git a/migrations/001_inventory.sql b/migrations/001_inventory.sql
+new file mode 100644
+index 0000000..b8bfb7c
+--- /dev/null
++++ b/migrations/001_inventory.sql
+@@ -0,0 +1,42 @@
++CREATE TABLE IF NOT EXISTS products (
++  id TEXT PRIMARY KEY,
++  sku TEXT NOT NULL UNIQUE,
++  name TEXT NOT NULL,
++  reorderThreshold INTEGER NOT NULL CHECK (reorderThreshold >= 0),
++  createdAt TEXT NOT NULL,
++  updatedAt TEXT NOT NULL
++);
++
++CREATE TABLE IF NOT EXISTS warehouses (
++  id TEXT PRIMARY KEY,
++  code TEXT NOT NULL UNIQUE,
++  name TEXT NOT NULL,
++  createdAt TEXT NOT NULL
++);
++
++CREATE TABLE IF NOT EXISTS stock_movements (
++  id TEXT PRIMARY KEY,
++  productId TEXT NOT NULL REFERENCES products(id),
++  warehouseId TEXT NOT NULL REFERENCES warehouses(id),
++  type TEXT NOT NULL CHECK (type IN ('receipt', 'shipment', 'adjustment')),
++  quantity INTEGER NOT NULL CHECK (
++    (type IN ('receipt', 'shipment') AND quantity > 0)
++    OR (type = 'adjustment' AND quantity != 0)
++  ),
++  note TEXT,
++  idempotencyKey TEXT NOT NULL UNIQUE,
++  resultingStock INTEGER NOT NULL CHECK (resultingStock >= 0),
++  createdAt TEXT NOT NULL
++);
++
++CREATE INDEX IF NOT EXISTS stock_movements_product ON stock_movements(productId);
++CREATE INDEX IF NOT EXISTS stock_movements_warehouse ON stock_movements(warehouseId);
++
++CREATE VIEW IF NOT EXISTS product_stock AS
++SELECT p.*, COALESCE(s.stock, 0) AS stock
++FROM products p
++LEFT JOIN (
++  SELECT productId, SUM(CASE WHEN type = 'shipment' THEN -quantity ELSE quantity END) AS stock
++  FROM stock_movements
++  GROUP BY productId
++) s ON s.productId = p.id;
+diff --git a/package.json b/package.json
+index 87bcbbb..91c884f 100644
+--- a/package.json
++++ b/package.json
+@@ -1,6 +1,12 @@
+ {
+   "name": "inventory-api-fixture",
+   "private": true,
++  "scripts": {
++    "migrate": "bun run src/migrate.ts",
++    "start": "bun run src/server.ts",
++    "test": "bun test",
++    "typecheck": "tsc --noEmit"
++  },
+   "devDependencies": {
+     "typescript": "7.0.2",
+     "@types/bun": "1.4.1"
+diff --git a/src/app.ts b/src/app.ts
+new file mode 100644
+index 0000000..4c27563
+--- /dev/null
++++ b/src/app.ts
+@@ -0,0 +1,154 @@
++import { Database, SQLiteError } from "bun:sqlite";
++import { ApiError, movementCreate, pagination, productCreate, productUpdate, uuid, warehouseCreate } from "./validation";
++
++type Product = {
++  id: string; sku: string; name: string; reorderThreshold: number;
++  stock: number; createdAt: string; updatedAt: string;
++};
++type Movement = {
++  id: string; productId: string; warehouseId: string;
++  type: string; quantity: number; note: string | null;
++  idempotencyKey: string; resultingStock: number; createdAt: string;
++};
++
++function json(value: unknown, status = 200): Response {
++  return Response.json(value, { status });
++}
++
++function movementResponse(movement: Movement) {
++  const { note, ...required } = movement;
++  return note === null ? required : { ...required, note };
++}
++
++export function createHandler(db: Database): (request: Request) => Promise<Response> {
++  const getProduct = db.query<Product, [string]>("SELECT * FROM product_stock WHERE id = ?");
++  const getWarehouse = db.query("SELECT * FROM warehouses WHERE id = ?");
++  const getMovement = db.query<Movement, [string]>("SELECT * FROM stock_movements WHERE idempotencyKey = ?");
++
++  const recordMovement = db.transaction((input: Awaited<ReturnType<typeof movementCreate>>) => {
++    const previous = getMovement.get(input.idempotencyKey);
++    if (previous) {
++      if (previous.productId !== input.productId || previous.warehouseId !== input.warehouseId
++        || previous.type !== input.type || previous.quantity !== input.quantity || previous.note !== input.note) {
++        throw new ApiError(409, "Idempotency-Key was already used with a different request body");
++      }
++      return movementResponse(previous);
++    }
++    const product = getProduct.get(input.productId);
++    if (!product) throw new ApiError(404, "Product not found");
++    if (!getWarehouse.get(input.warehouseId)) throw new ApiError(404, "Warehouse not found");
++    const delta = input.type === "shipment" ? -input.quantity : input.quantity;
++    const resultingStock = product.stock + delta;
++    if (resultingStock < 0) throw new ApiError(409, "Movement would take stock below zero");
++    if (!Number.isSafeInteger(resultingStock)) throw new ApiError(409, "Resulting stock exceeds the supported integer range");
++    const movement: Movement = { ...input, id: crypto.randomUUID(), resultingStock, createdAt: new Date().toISOString() };
++    db.query(`INSERT INTO stock_movements
++      (id, productId, warehouseId, type, quantity, note, idempotencyKey, resultingStock, createdAt)
++      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`)
++      .run(movement.id, movement.productId, movement.warehouseId, movement.type,
++        movement.quantity, movement.note, movement.idempotencyKey, resultingStock, movement.createdAt);
++    db.query("UPDATE products SET updatedAt = ? WHERE id = ?").run(movement.createdAt, movement.productId);
++    return movementResponse(movement);
++  });
++
++  const listQueries = {
++    "/products": {
++      count: db.query<{ total: number }, []>("SELECT COUNT(*) AS total FROM products"),
++      rows: db.query("SELECT * FROM product_stock ORDER BY createdAt, id LIMIT ? OFFSET ?"),
++    },
++    "/warehouses": {
++      count: db.query<{ total: number }, []>("SELECT COUNT(*) AS total FROM warehouses"),
++      rows: db.query("SELECT * FROM warehouses ORDER BY createdAt, id LIMIT ? OFFSET ?"),
++    },
++    "/reports/low-stock": {
++      count: db.query<{ total: number }, []>("SELECT COUNT(*) AS total FROM product_stock WHERE stock < reorderThreshold"),
++      rows: db.query(`SELECT id AS productId, sku, name, reorderThreshold, stock
++        FROM product_stock WHERE stock < reorderThreshold ORDER BY createdAt, id LIMIT ? OFFSET ?`),
++    },
++  };
++
++  async function route(request: Request): Promise<Response> {
++    const url = new URL(request.url);
++    const path = url.pathname;
++    const method = request.method;
++    const list = method === "GET" && Object.hasOwn(listQueries, path);
++    const { page, pageSize, offset } = pagination(url.searchParams, list);
++
++    if (method === "GET" && path === "/health") return json({ status: "ok" });
++
++    if (list) {
++      const queries = listQueries[path as keyof typeof listQueries];
++      const result = db.transaction(() => {
++        const total = queries.count.get()!.total;
++        const data = offset >= BigInt(total) ? [] : queries.rows.all(pageSize, Number(offset));
++        return { data, pagination: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) } };
++      })();
++      return json(result);
++    }
++
++    if (path === "/products" && method === "POST") {
++      const input = await productCreate(request);
++      const now = new Date().toISOString();
++      const id = crypto.randomUUID();
++      db.query("INSERT INTO products (id, sku, name, reorderThreshold, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?)")
++        .run(id, input.sku, input.name, input.reorderThreshold, now, now);
++      return json(getProduct.get(id), 201);
++    }
++
++    const productPath = /^\/products\/([^/]+)$/.exec(path);
++    if (productPath && (method === "GET" || method === "PATCH")) {
++      let decoded: string;
++      try {
++        decoded = decodeURIComponent(productPath[1]!);
++      } catch {
++        throw new ApiError(400, "Request validation failed", [{ field: "productId", issue: "Must be a UUID" }]);
++      }
++      const id = uuid(decoded, "productId");
++      if (method === "GET") {
++        const product = getProduct.get(id);
++        if (!product) throw new ApiError(404, "Product not found");
++        return json(product);
++      }
++      const input = await productUpdate(request);
++      const updated = db.transaction(() => {
++        if (!getProduct.get(id)) throw new ApiError(404, "Product not found");
++        db.query(`UPDATE products SET name = COALESCE(?, name),
++          reorderThreshold = COALESCE(?, reorderThreshold), updatedAt = ? WHERE id = ?`)
++          .run(input.name ?? null, input.reorderThreshold ?? null, new Date().toISOString(), id);
++        return getProduct.get(id);
++      }).immediate();
++      return json(updated);
++    }
++
++    if (path === "/warehouses" && method === "POST") {
++      const input = await warehouseCreate(request);
++      const warehouse = { id: crypto.randomUUID(), ...input, createdAt: new Date().toISOString() };
++      db.query("INSERT INTO warehouses (id, code, name, createdAt) VALUES (?, ?, ?, ?)")
++        .run(warehouse.id, warehouse.code, warehouse.name, warehouse.createdAt);
++      return json(warehouse, 201);
++    }
++
++    if (path === "/stock-movements" && method === "POST") {
++      const input = await movementCreate(request);
++      return json(recordMovement.immediate(input), 201);
++    }
++
++    throw new ApiError(404, "Route not found");
++  }
++
++  return async (request) => {
++    try {
++      return await route(request);
++    } catch (error) {
++      if (error instanceof ApiError) {
++        const code = error.status === 400 ? "validation_error" : error.status === 404 ? "not_found" : "conflict";
++        return json({ error: { code, message: error.message, ...(error.details ? { details: error.details } : {}) } }, error.status);
++      }
++      if (error instanceof SQLiteError && error.code === "SQLITE_CONSTRAINT_UNIQUE") {
++        return json({ error: { code: "conflict", message: "A record with this sku or code already exists" } }, 409);
++      }
++      console.error(error);
++      return json({ error: { code: "internal_error", message: "An unexpected error occurred" } }, 500);
++    }
++  };
++}
+diff --git a/src/database.ts b/src/database.ts
+new file mode 100644
+index 0000000..f72d7cb
+--- /dev/null
++++ b/src/database.ts
+@@ -0,0 +1,14 @@
++import { Database } from "bun:sqlite";
++import { readFileSync } from "node:fs";
++
++export function openDatabase(path = process.env.DATABASE_PATH): Database {
++  if (!path) throw new Error("DATABASE_PATH is required");
++  const db = new Database(path, { create: true, strict: true });
++  db.exec("PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000; PRAGMA journal_mode = WAL;");
++  return db;
++}
++
++export function migrate(db: Database): void {
++  const sql = readFileSync(new URL("../migrations/001_inventory.sql", import.meta.url), "utf8");
++  db.transaction(() => db.exec(sql)).immediate();
++}
+diff --git a/src/migrate.ts b/src/migrate.ts
+new file mode 100644
+index 0000000..cfb80a9
+--- /dev/null
++++ b/src/migrate.ts
+@@ -0,0 +1,9 @@
++import { migrate, openDatabase } from "./database";
++
++const db = openDatabase();
++try {
++  migrate(db);
++  console.log("Inventory migrations complete");
++} finally {
++  db.close();
++}
+diff --git a/src/server.ts b/src/server.ts
+new file mode 100644
+index 0000000..88a0098
+--- /dev/null
++++ b/src/server.ts
+@@ -0,0 +1,23 @@
++import { createHandler } from "./app";
++import { migrate, openDatabase } from "./database";
++
++const value = process.env.PORT;
++const port = Number(value);
++if (!value || !/^\d+$/.test(value) || !Number.isInteger(port) || port < 1 || port > 65535) {
++  throw new Error("PORT must be an integer between 1 and 65535");
++}
++
++const db = openDatabase();
++migrate(db);
++const server = Bun.serve({ port, hostname: "0.0.0.0", fetch: createHandler(db) });
++console.log(`Inventory API listening on port ${server.port}`);
++
++let stopping = false;
++async function shutdown() {
++  if (stopping) return;
++  stopping = true;
++  await server.stop();
++  db.close();
++}
++process.on("SIGINT", shutdown);
++process.on("SIGTERM", shutdown);
+diff --git a/src/validation.ts b/src/validation.ts
+new file mode 100644
+index 0000000..45ec877
+--- /dev/null
++++ b/src/validation.ts
+@@ -0,0 +1,116 @@
++export type Detail = { field: string; issue: string };
++export class ApiError extends Error {
++  constructor(
++    public status: 400 | 404 | 409,
++    message: string,
++    public details?: Detail[],
++  ) {
++    super(message);
++  }
++}
++
++function invalid(field: string, issue: string): never {
++  throw new ApiError(400, "Request validation failed", [{ field, issue }]);
++}
++
++export function uuid(value: unknown, field: string): string {
++  if (typeof value !== "string" || !/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/i.test(value)) {
++    invalid(field, "Must be a UUID");
++  }
++  return value;
++}
++
++function string(value: unknown, field: string, min: number, max: number, pattern?: RegExp): string {
++  if (typeof value !== "string") invalid(field, "Must be a string");
++  const length = [...value].length;
++  if (length < min || length > max) invalid(field, `Must contain ${min} to ${max} characters`);
++  if (pattern && !pattern.test(value)) invalid(field, "Must contain only letters, digits, underscores, or hyphens");
++  return value;
++}
++
++function integer(value: unknown, field: string, min?: number): number {
++  if (typeof value !== "number" || !Number.isSafeInteger(value)) invalid(field, "Must be a safe integer");
++  if (min !== undefined && value < min) invalid(field, `Must be at least ${min}`);
++  return value;
++}
++
++async function body(request: Request, allowed: string[]): Promise<Record<string, unknown>> {
++  let value: unknown;
++  try {
++    value = await request.json();
++  } catch {
++    invalid("body", "Must contain valid JSON");
++  }
++  if (value === null || typeof value !== "object" || Array.isArray(value)) invalid("body", "Must be an object");
++  for (const key of Object.keys(value)) {
++    if (!allowed.includes(key)) invalid(key, "Unknown property");
++  }
++  return value as Record<string, unknown>;
++}
++
++export async function productCreate(request: Request) {
++  const value = await body(request, ["sku", "name", "reorderThreshold"]);
++  return {
++    sku: string(value.sku, "sku", 1, 64, /^[A-Za-z0-9_-]+$/),
++    name: string(value.name, "name", 1, 200),
++    reorderThreshold: integer(value.reorderThreshold, "reorderThreshold", 0),
++  };
++}
++
++export async function productUpdate(request: Request) {
++  const value = await body(request, ["name", "reorderThreshold"]);
++  if (Object.keys(value).length === 0) invalid("body", "At least one property is required");
++  return {
++    name: Object.hasOwn(value, "name") ? string(value.name, "name", 1, 200) : undefined,
++    reorderThreshold: Object.hasOwn(value, "reorderThreshold")
++      ? integer(value.reorderThreshold, "reorderThreshold", 0) : undefined,
++  };
++}
++
++export async function warehouseCreate(request: Request) {
++  const value = await body(request, ["code", "name"]);
++  return {
++    code: string(value.code, "code", 1, 32, /^[A-Za-z0-9_-]+$/),
++    name: string(value.name, "name", 1, 200),
++  };
++}
++
++export async function movementCreate(request: Request) {
++  const idempotencyKey = string(request.headers.get("Idempotency-Key"), "Idempotency-Key", 1, 200);
++  const value = await body(request, ["productId", "warehouseId", "type", "quantity", "note"]);
++  const productId = uuid(value.productId, "productId");
++  const warehouseId = uuid(value.warehouseId, "warehouseId");
++  if (value.type !== "receipt" && value.type !== "shipment" && value.type !== "adjustment") {
++    invalid("type", "Must be receipt, shipment, or adjustment");
++  }
++  const quantity = integer(value.quantity, "quantity", value.type === "adjustment" ? undefined : 1);
++  if (quantity === 0) invalid("quantity", "Must be nonzero");
++  return {
++    productId,
++    warehouseId,
++    type: value.type,
++    quantity,
++    note: Object.hasOwn(value, "note") ? string(value.note, "note", 0, 500) : null,
++    idempotencyKey,
++  };
++}
++
++export function pagination(params: URLSearchParams, list: boolean) {
++  for (const key of params.keys()) {
++    if (!list || (key !== "page" && key !== "pageSize")) invalid(key, "Unknown query parameter");
++  }
++  function read(key: string, fallback: number, max = Number.MAX_SAFE_INTEGER) {
++    const values = params.getAll(key);
++    if (!values.length) return fallback;
++    const value = values[0]!;
++    if (values.length !== 1 || !/^\d+$/.test(value)) invalid(key, "Must be a single positive integer");
++    const number = Number(value);
++    if (!Number.isSafeInteger(number) || number < 1 || number > max) invalid(key, `Must be between 1 and ${max}`);
++    return number;
++  }
++  const page = read("page", 1);
++  const pageSize = read("pageSize", 20, 100);
++  // Offsets beyond SQLite's integer range are necessarily past all stored rows.
++  const offset = BigInt(page - 1) * BigInt(pageSize);
++  return { page, pageSize, offset };
++}
+diff --git a/tests/inventory.test.ts b/tests/inventory.test.ts
+new file mode 100644
+index 0000000..ce1ecba
+--- /dev/null
++++ b/tests/inventory.test.ts
+@@ -0,0 +1,249 @@
++import { afterEach, beforeEach, expect, test } from "bun:test";
++import { Database } from "bun:sqlite";
++import { mkdirSync, mkdtempSync, rmSync } from "node:fs";
++import { createHandler } from "../src/app";
++import { migrate, openDatabase } from "../src/database";
++
++let db: Database;
++let handler: ReturnType<typeof createHandler>;
++
++beforeEach(() => {
++  db = openDatabase(":memory:");
++  migrate(db);
++  handler = createHandler(db);
++});
++afterEach(() => db.close());
++
++async function request(path: string, method = "GET", body?: unknown, key?: string) {
++  return handler(new Request(`http://localhost${path}`, {
++    method,
++    headers: { "Content-Type": "application/json", ...(key === undefined ? {} : { "Idempotency-Key": key }) },
++    body: body === undefined ? undefined : JSON.stringify(body),
++  }));
++}
++
++async function product(sku = "SKU-1", reorderThreshold = 5) {
++  const response = await request("/products", "POST", { sku, name: "Product", reorderThreshold });
++  expect(response.status).toBe(201);
++  return response.text().then(JSON.parse);
++}
++
++async function warehouse(code = "WH-1") {
++  const response = await request("/warehouses", "POST", { code, name: "Warehouse" });
++  expect(response.status).toBe(201);
++  return response.text().then(JSON.parse);
++}
++
++async function fixture() {
++  const p = await product();
++  const w = await warehouse();
++  return { productId: p.id, warehouseId: w.id, type: "receipt", quantity: 10 };
++}
++
++async function expectError(response: Response, status: number, code: string) {
++  expect(response.status).toBe(status);
++  const value = await response.text().then(JSON.parse);
++  expect(Object.keys(value)).toEqual(["error"]);
++  expect(value.error.code).toBe(code);
++  expect(typeof value.error.message).toBe("string");
++  expect(Object.keys(value.error).every((key) => ["code", "message", "details"].includes(key))).toBe(true);
++  if (value.error.details) {
++    expect(value.error.details.length).toBeGreaterThan(0);
++    for (const detail of value.error.details) {
++      expect(typeof detail.field).toBe("string");
++      expect(typeof detail.issue).toBe("string");
++    }
++  }
++}
++
++test("health and product create/get/patch with zero threshold and duplicate SKU", async () => {
++  expect((await request("/health")).status).toBe(200);
++  const p = await product();
++  expect(p.stock).toBe(0);
++  expect(p.id).toMatch(/^[a-f\d-]{36}$/);
++  expect(Number.isNaN(Date.parse(p.createdAt))).toBe(false);
++  expect(await (await request(`/products/${p.id}`)).text().then(JSON.parse)).toEqual(p);
++  const updated = await request(`/products/${p.id}`, "PATCH", { name: "Updated", reorderThreshold: 0 });
++  expect(updated.status).toBe(200);
++  expect(await updated.text().then(JSON.parse)).toMatchObject({ ...p, name: "Updated", reorderThreshold: 0, updatedAt: expect.any(String) });
++  await expectError(await request("/products", "POST", { sku: p.sku, name: "Duplicate", reorderThreshold: 1 }), 409, "conflict");
++  await expectError(await request(`/products/${crypto.randomUUID()}`), 404, "not_found");
++  await expectError(await request(`/products/${crypto.randomUUID()}`, "PATCH", { name: "Unknown" }), 404, "not_found");
++});
++
++test("warehouses are unique and all lists paginate, including empty and out-of-range pages", async () => {
++  for (const path of ["/products", "/warehouses", "/reports/low-stock"]) {
++    expect(await (await request(path)).text().then(JSON.parse)).toEqual({ data: [], pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 } });
++  }
++  for (let i = 0; i < 3; i++) {
++    await product(`SKU-${i}`);
++    await warehouse(`WH-${i}`);
++  }
++  for (const path of ["/products", "/warehouses", "/reports/low-stock"]) {
++    const first = await (await request(`${path}?pageSize=2`)).text().then(JSON.parse);
++    const second = await (await request(`${path}?page=2&pageSize=2`)).text().then(JSON.parse);
++    expect(first.data).toHaveLength(2);
++    expect(second.data).toHaveLength(1);
++    expect(second.pagination).toEqual({ page: 2, pageSize: 2, total: 3, totalPages: 2 });
++    expect(new Set([...first.data, ...second.data].map((row) => row.id ?? row.productId)).size).toBe(3);
++    expect((await (await request(`${path}?page=9007199254740991&pageSize=100`)).text().then(JSON.parse)).data).toEqual([]);
++  }
++  await expectError(await request("/warehouses", "POST", { code: "WH-0", name: "Duplicate" }), 409, "conflict");
++});
++
++test("movements sum across warehouses, keep original replay response, and roll back rejected changes", async () => {
++  const input = await fixture();
++  const first = await request("/stock-movements", "POST", input, "receipt-1");
++  expect(first.status).toBe(201);
++  const original = await first.text().then(JSON.parse);
++  expect(original.resultingStock).toBe(10);
++  expect(original).not.toHaveProperty("note");
++  const w2 = await warehouse("WH-2");
++  expect((await (await request("/stock-movements", "POST", { ...input, warehouseId: w2.id, quantity: 3 }, "receipt-2")).text().then(JSON.parse)).resultingStock).toBe(13);
++  expect((await (await request("/stock-movements", "POST", { ...input, type: "shipment", quantity: 8 }, "ship")).text().then(JSON.parse)).resultingStock).toBe(5);
++  expect((await (await request("/reports/low-stock")).text().then(JSON.parse)).data).toHaveLength(0);
++  expect((await (await request("/stock-movements", "POST", { ...input, type: "adjustment", quantity: -1, note: "Damaged" }, "adjust")).text().then(JSON.parse)).resultingStock).toBe(4);
++  const low = await (await request("/reports/low-stock")).text().then(JSON.parse);
++  expect(low.data).toEqual([{ productId: input.productId, sku: "SKU-1", name: "Product", reorderThreshold: 5, stock: 4 }]);
++  const reversedBody = Object.fromEntries(Object.entries(input).reverse());
++  const replay = await request("/stock-movements", "POST", reversedBody, "receipt-1");
++  expect(replay.status).toBe(201);
++  expect(await replay.text().then(JSON.parse)).toEqual(original);
++  for (const changed of [{ quantity: 11 }, { note: "" }, { type: "adjustment" }, { warehouseId: w2.id }]) {
++    await expectError(await request("/stock-movements", "POST", { ...input, ...changed }, "receipt-1"), 409, "conflict");
++  }
++  await expectError(await request("/stock-movements", "POST", { ...input, type: "shipment", quantity: 5 }, "retryable"), 409, "conflict");
++  expect((await (await request("/stock-movements", "POST", { ...input, type: "shipment", quantity: 4 }, "retryable")).text().then(JSON.parse)).resultingStock).toBe(0);
++  expect((await (await request(`/products/${input.productId}`)).text().then(JSON.parse)).stock).toBe(0);
++  expect(db.query("SELECT COUNT(*) AS count FROM stock_movements").get()).toEqual({ count: 5 });
++});
++
++test("concurrent HTTP requests apply a shared key once and cannot overspend", async () => {
++  const input = await fixture();
++  const server = Bun.serve({ port: 0, fetch: handler });
++  try {
++    async function post(body: unknown, key: string) {
++      return fetch(new URL("/stock-movements", server.url), {
++        method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": key }, body: JSON.stringify(body),
++      });
++    }
++    const receipts = await Promise.all(Array.from({ length: 12 }, () => post(input, "shared")));
++    const movements = await Promise.all(receipts.map((r) => { expect(r.status).toBe(201); return r.text().then(JSON.parse); }));
++    expect(new Set(movements.map((m) => m.id)).size).toBe(1);
++    const shipments = await Promise.all(Array.from({ length: 10 }, (_, i) => post({ ...input, type: "shipment", quantity: 3 }, `ship-${i}`)));
++    expect(shipments.filter((r) => r.status === 201)).toHaveLength(3);
++    expect(shipments.filter((r) => r.status === 409)).toHaveLength(7);
++    await Promise.all(shipments.map((r) => r.text()));
++    expect((await (await request(`/products/${input.productId}`)).text().then(JSON.parse)).stock).toBe(1);
++  } finally {
++    await server.stop(true);
++  }
++});
++
++test("missing movement references return the fixed 404 shape without consuming the key", async () => {
++  const input = await fixture();
++  for (const field of ["productId", "warehouseId"]) {
++    await expectError(await request("/stock-movements", "POST", { ...input, [field]: crypto.randomUUID() }, "key"), 404, "not_found");
++  }
++  expect((await request("/stock-movements", "POST", input, "key")).status).toBe(201);
++});
++
++test("all lists validate pagination without coercion or duplicate parameters", async () => {
++  for (const path of ["/products", "/warehouses", "/reports/low-stock"]) {
++    for (const query of ["page=0", "page=-1", "page=1.5", "page=no", "page=1abc", "page=", "page=1&page=2", "pageSize=0", "pageSize=101", "pageSize=1.1", "pageSize=null", "pageSize=", "pageSize=1&pageSize=2", "unexpected=1"]) {
++      await expectError(await request(`${path}?${query}`), 400, "validation_error");
++    }
++  }
++});
++
++test("body, path, and header validation consistently return contract errors", async () => {
++  const p = await product();
++  const input = { productId: p.id, warehouseId: (await warehouse()).id, type: "receipt", quantity: 1 };
++  const validProduct = { sku: "NEW", name: "Name", reorderThreshold: 0 };
++  const cases: [string, unknown][] = [
++    ...[null, [], "text", {}, { ...validProduct, extra: true }, { ...validProduct, sku: "a'b" }, { ...validProduct, sku: "x".repeat(65) }, { ...validProduct, name: "" }, { ...validProduct, name: "x".repeat(201) }, { ...validProduct, reorderThreshold: -1 }, { ...validProduct, reorderThreshold: 1.5 }, { ...validProduct, reorderThreshold: "1" }].map((b): [string, unknown] => ["/products", b]),
++    ...[{}, { code: "bad code", name: "Name" }, { code: "x".repeat(33), name: "Name" }, { code: "W", name: null }, { code: "W", name: "Name", extra: 1 }].map((b): [string, unknown] => ["/warehouses", b]),
++    ...[{}, { sku: "new" }, { name: null }, { reorderThreshold: false }, { reorderThreshold: -1 }].map((b): [string, unknown] => [`/products/${p.id}`, b]),
++    ...[{ quantity: 0 }, { quantity: -1 }, { quantity: 1.5 }, { quantity: "1" }, { type: "other" }, { type: "adjustment", quantity: 0 }, { productId: "bad" }, { warehouseId: "bad" }, { note: null }, { note: "x".repeat(501) }, { extra: true }].map((b): [string, unknown] => ["/stock-movements", { ...input, ...b }]),
++  ];
++  for (const [path, body] of cases) {
++    await expectError(await request(path, path.startsWith("/products/") ? "PATCH" : "POST", body, "key"), 400, "validation_error");
++  }
++  for (const key of [undefined, "", "x".repeat(201)]) {
++    await expectError(await request("/stock-movements", "POST", input, key), 400, "validation_error");
++  }
++  for (const path of ["/products", "/warehouses", "/stock-movements", `/products/${p.id}`]) {
++    await expectError(await handler(new Request(`http://localhost${path}`, {
++      method: path.startsWith("/products/") ? "PATCH" : "POST", body: "{", headers: { "Idempotency-Key": "key" },
++    })), 400, "validation_error");
++  }
++  await expectError(await request("/products/not-a-uuid"), 400, "validation_error");
++  await expectError(await request("/products/%ZZ"), 400, "validation_error");
++});
++
++test("SQL metacharacters remain data and schema survives repeated migrations", async () => {
++  const name = "Robert'); DROP TABLE products;--";
++  const response = await request("/products", "POST", { sku: "SQL", name, reorderThreshold: 1 });
++  expect(response.status).toBe(201);
++  expect((await response.text().then(JSON.parse)).name).toBe(name);
++  migrate(db);
++  migrate(db);
++  expect((await (await request("/products")).text().then(JSON.parse)).pagination.total).toBe(1);
++});
++
++test("migrate/start commands and idempotency survive a process restart", async () => {
++  mkdirSync(".test-data", { recursive: true });
++  const directory = mkdtempSync(`${process.cwd()}/.test-data/inventory-`);
++  const databasePath = `${directory}/inventory.sqlite`;
++  const probe = Bun.serve({ port: 0, fetch: () => new Response() });
++  const port = probe.port!;
++  await probe.stop(true);
++  const env = { ...process.env, DATABASE_PATH: databasePath, PORT: String(port) };
++  let processHandle: ReturnType<typeof Bun.spawn> | undefined;
++  async function start() {
++    processHandle = Bun.spawn(["bun", "run", "start"], { env, stdout: "ignore", stderr: "pipe" });
++    for (let attempt = 0; attempt < 100; attempt++) {
++      try {
++        const response = await fetch(`http://localhost:${port}/health`);
++        await response.text();
++        if (response.status === 200) return;
++      } catch { /* The process has not bound its port yet. */ }
++      if (processHandle.exitCode !== null) throw new Error(`Server exited with code ${processHandle.exitCode}`);
++      await Bun.sleep(20);
++    }
++    throw new Error("Server did not become ready");
++  }
++  async function stop() {
++    processHandle?.kill("SIGTERM");
++    if (processHandle) await processHandle.exited;
++    processHandle = undefined;
++  }
++  async function http(path: string, body?: unknown, key?: string) {
++    return fetch(`http://localhost:${port}${path}`, {
++      method: body === undefined ? "GET" : "POST",
++      headers: { "Content-Type": "application/json", ...(key ? { "Idempotency-Key": key } : {}) },
++      body: body === undefined ? undefined : JSON.stringify(body),
++    });
++  }
++  try {
++    for (let i = 0; i < 2; i++) {
++      const migration = Bun.spawn(["bun", "run", "migrate"], { env, stdout: "ignore", stderr: "pipe" });
++      expect(await migration.exited).toBe(0);
++    }
++    await start();
++    const p = await (await http("/products", { sku: "DURABLE", name: "Persistent", reorderThreshold: 2 })).text().then(JSON.parse);
++    const w = await (await http("/warehouses", { code: "MAIN", name: "Main" })).text().then(JSON.parse);
++    const input = { productId: p.id, warehouseId: w.id, type: "receipt", quantity: 7, note: "" };
++    const original = await (await http("/stock-movements", input, "durable-key")).text().then(JSON.parse);
++    expect(original.resultingStock).toBe(7);
++    await stop();
++    await start();
++    const replay = await http("/stock-movements", input, "durable-key");
++    expect(replay.status).toBe(201);
++    expect(await replay.text().then(JSON.parse)).toEqual(original);
++    expect((await (await http(`/products/${p.id}`)).text().then(JSON.parse)).stock).toBe(7);
++  } finally {
++    await stop();
++    rmSync(directory, { recursive: true, force: true });
++  }
++}, 15_000);

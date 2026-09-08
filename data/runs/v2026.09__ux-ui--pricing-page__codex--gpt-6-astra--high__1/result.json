@@ -1,0 +1,90 @@
+{
+  "id": "v2026.09__ux-ui--pricing-page__codex--gpt-6-astra--high__1",
+  "release": "v2026.09",
+  "suiteVersion": "v2026.09",
+  "task": "ux-ui/pricing-page",
+  "taskVersion": 1,
+  "agent": {
+    "cli": "codex",
+    "model": "gpt-6-astra",
+    "effort": "high",
+    "version": "codex-cli 0.153.4",
+    "permissionMode": "workspace-write+bypass-approvals-and-sandbox",
+    "caps": {
+      "maxTurns": 60,
+      "maxBudgetUsd": 10,
+      "timeboxMinutes": 30
+    },
+    "command": [
+      "codex",
+      "exec",
+      "--json",
+      "-m",
+      "gpt-6-astra",
+      "-c",
+      "model_reasoning_effort=high",
+      "-s",
+      "workspace-write",
+      "--dangerously-bypass-approvals-and-sandbox",
+      "-C",
+      "/Users/decod3rslabs/www/shipshitdev/benchmark/.runs/v2026.09__ux-ui--pricing-page__codex--gpt-6-astra--high__1/workspace",
+      "--skip-git-repo-check",
+      "-o",
+      "/Users/decod3rslabs/www/shipshitdev/benchmark/.runs/v2026.09__ux-ui--pricing-page__codex--gpt-6-astra--high__1/workspace/../codex-last-message.md",
+      "# Build the Shipcut pricing page\n\nYou are working inside a minimal Next.js app. Your job is to design and build the pricing\npage at `/pricing`.\n\n## Product\n\nShipcut is a CLI tool that turns a livestream recording into a long-form recap video and a\nbatch of short clips, ready to publish. Buyers are solo streamers and small content teams.\n\n## Requirements\n\nBuild out `app/pricing/page.tsx` (and any components you add under `components/` or\n`app/pricing/`) into a complete pricing page with all of the following:\n\n- Three pricing tiers aimed at different buyers (for example a solo streamer, a small team,\n  and a studio or agency). Invent realistic tier names, prices, and feature lists that fit\n  the product.\n- A working annual/monthly billing toggle that updates the displayed price for every tier\n  without a page reload.\n- A feature comparison table below the tier cards that lists specific features as rows and\n  the three tiers as columns, showing which tier includes which feature.\n- An FAQ section with at least five realistic questions and answers (billing, cancellation,\n  usage limits, supported platforms, refunds, etc).\n- A clear call to action on each tier.\n\n## Constraints\n\n- The page must be fully responsive: usable and well laid out on a phone-width viewport, a\n  tablet-width viewport, and a desktop-width viewport, with no horizontal scrolling and no\n  overlapping content at any width.\n- The page must be accessible: correct heading structure, sufficient color contrast,\n  keyboard-operable toggle and buttons, visible focus states, and no reliance on color alone\n  to convey which tier is recommended.\n- The page must support both light and dark mode, following the system color scheme. Every\n  piece of text must stay readable in both modes.\n- Do not introduce a component library or CSS framework beyond what is already in the\n  fixture (Next.js and Tailwind CSS). Do not add a backend, database, or payment\n  integration; this is a static marketing page.\n- Update `app/page.tsx` only if needed to keep its existing link to `/pricing` working.\n- Keep `bun run build` and `bun run start` working exactly as documented in the fixture's\n  README.\n\nWork only within this fixture directory. When you are done, the page should look and feel\nlike something a real dev tool would ship, not a rough draft.\n"
+    ]
+  },
+  "attempt": 1,
+  "startedAt": "2026-09-08T06:13:58.709Z",
+  "finishedAt": "2026-09-08T06:33:33.215Z",
+  "host": "unknown-host",
+  "status": "gate_failed",
+  "usage": {
+    "input": 1494683,
+    "output": 34874,
+    "cacheRead": 1422720,
+    "cacheWrite": null,
+    "turns": 1,
+    "toolCalls": 32,
+    "durationMs": 1170617,
+    "costUsdEquivalent": 18.1133,
+    "priceKey": "gpt-6-astra"
+  },
+  "gates": [
+    {
+      "id": "install",
+      "pass": true,
+      "mode": "block",
+      "penalty": 0,
+      "durationMs": 32,
+      "detail": "bun install v1.4.2 (744846f84)\n\nChecked 50 installs across 127 packages (no changes) [22.00ms]"
+    },
+    {
+      "id": "build",
+      "pass": true,
+      "mode": "block",
+      "penalty": 0,
+      "durationMs": 2609,
+      "detail": "▲ Next.js 16.3.4 (Turbopack)\n✓ Running next.config.ts took 18ms\n\n  Creating an optimized production build ...\n✓ Compiled successfully in 286ms\n  Running TypeScript ...\n  Finished TypeScript in 192ms ...\n  Collecting page data using 5 workers ...\n  Generating static pages using 5 workers (0/4) ...\n  Generating static pages using 5 workers (1/4) \r\n  Generating static pages using 5 workers (2/4) \r\n  Generating static pages using 5 workers (3/4) \r\n✓ Generating static pages using 5 workers (4/4) in 267ms\n  Finalizing page optimization ...\n\nRoute (app)\n┌ ○ /\n├ ○ /_not-found\n└ ○ /pricing\n\n\n○  (Static)  prerendered as static content\n\n\n$ next build\n⚠ Warning: Next.js ignored package.json in /Users/decod3rslabs/www/shipshitdev/benchmark because it is outside the current Git repository (/Users/decod3rslabs/www/shipshitdev/benchmark/.runs/v2026.09__ux-ui--pricing-page__codex--gpt-6-astra--high__1/workspace).\n To use this directory, set `turbopack.root` in your Next.js config."
+    },
+    {
+      "id": "axe-pricing",
+      "pass": false,
+      "mode": "block",
+      "penalty": 0,
+      "durationMs": 1042,
+      "detail": "1 violation(s) at or above serious"
+    }
+  ],
+  "objective": null,
+  "judgments": [],
+  "artifacts": {
+    "transcript": "transcript.jsonl.gz",
+    "diff": "diff.patch",
+    "screenshots": [],
+    "report": null
+  },
+  "notes": [
+    "codex: no turn cap flag; enforced only by the timebox"
+  ]
+}

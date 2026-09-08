@@ -1,0 +1,82 @@
+{
+  "id": "v2026.09__bugfix--date-range-overlap__codex--gpt-6-astra--high__1",
+  "release": "v2026.09",
+  "suiteVersion": "v2026.09",
+  "task": "bugfix/date-range-overlap",
+  "taskVersion": 1,
+  "agent": {
+    "cli": "codex",
+    "model": "gpt-6-astra",
+    "effort": "high",
+    "version": "codex-cli 0.153.4",
+    "permissionMode": "workspace-write+bypass-approvals-and-sandbox",
+    "caps": {
+      "maxTurns": 40,
+      "maxBudgetUsd": 5,
+      "timeboxMinutes": 20
+    },
+    "command": [
+      "codex",
+      "exec",
+      "--json",
+      "-m",
+      "gpt-6-astra",
+      "-c",
+      "model_reasoning_effort=high",
+      "-s",
+      "workspace-write",
+      "--dangerously-bypass-approvals-and-sandbox",
+      "-C",
+      "/Users/decod3rslabs/www/shipshitdev/benchmark/.runs/v2026.09__bugfix--date-range-overlap__codex--gpt-6-astra--high__1/workspace",
+      "--skip-git-repo-check",
+      "-o",
+      "/Users/decod3rslabs/www/shipshitdev/benchmark/.runs/v2026.09__bugfix--date-range-overlap__codex--gpt-6-astra--high__1/workspace/../codex-last-message.md",
+      "# Fix the reported date range bug\n\n`ISSUE.md` in this directory describes a bug reported against this library, with a symptom,\na minimal repro, and the expected behavior. Read it, then fix the bug.\n\n## Requirements\n\n- Fix the root cause of the behavior described in `ISSUE.md`. Do not special-case the exact\n  repro; fix the underlying logic so every equivalent input behaves correctly.\n- Keep every existing test in `test/` passing.\n- Add at least one new test that reproduces the reported bug and would fail against the old\n  code, alongside the existing tests.\n\n## Constraints\n\n- Do not change the public API of `src/index.ts` (function names, parameter order, or\n  return shapes) unless the bug cannot be fixed without it; if you do, update every caller\n  in this fixture.\n- Do not add a third-party date library; this project has none as a dependency and should\n  keep it that way.\n\nWork only within this fixture directory.\n"
+    ]
+  },
+  "attempt": 1,
+  "startedAt": "2026-09-08T06:52:40.895Z",
+  "finishedAt": "2026-09-08T06:54:36.414Z",
+  "host": "unknown-host",
+  "status": "ok",
+  "usage": {
+    "input": 267908,
+    "output": 2766,
+    "cacheRead": 217728,
+    "cacheWrite": null,
+    "turns": 1,
+    "toolCalls": 11,
+    "durationMs": 114996,
+    "costUsdEquivalent": 3.0351,
+    "priceKey": "gpt-6-astra"
+  },
+  "gates": [
+    {
+      "id": "install",
+      "pass": true,
+      "mode": "block",
+      "penalty": 0,
+      "durationMs": 262,
+      "detail": "bun install v1.4.2 (744846f84)\n\n+ @types/bun@1.4.1\n+ typescript@7.0.2\n\n6 packages installed [252.00ms]\n\nResolving dependencies\nResolved, downloaded and extracted [2]\nSaved lockfile"
+    },
+    {
+      "id": "existing-tests",
+      "pass": true,
+      "mode": "block",
+      "penalty": 0,
+      "durationMs": 18,
+      "detail": "bun test v1.4.2 (744846f84)\n\n\ntest/recurrence.test.ts:\n(pass) expandDailyRecurrence > preserves local booking times across the clock change after Sat Mar 07 2026 [0.17ms]\n(pass) expandDailyRecurrence > preserves local booking times across the clock change after Sat Oct 31 2026 [0.01ms]\n(pass) expandDailyRecurrence > reapplies the requested time after a nonexistent start time on the first day [0.03ms]\n(pass) expandDailyRecurrence > returns one range per day with the requested start and end time [0.04ms]\n(pass) expandDailyRecurrence > advances the calendar date by one day per entry [0.17ms]\n(pass) expandDailyRecurrence > returns an empty array when days is zero [0.03ms]\n\ntest/dateRange.test.ts:\n(pass) createRange > throws when start is after end [0.09ms]\n(pass) createRange > stores independent copies of the given dates [0.02ms]\n(pass) overlaps > includes shared endpoints in either argument order [0.03ms]\n(pass) overlaps > includes zero-duration ranges at either endpoint and themselves [0.03ms]\n(pass) overlaps > is true when two ranges genuinely overlap [0.01ms]\n(pass) overlaps > is false when two ranges have a real gap between them\n(pass) mergeRanges > combines back-to-back bookings [0.11ms]\n(pass) mergeRanges > merges an unsorted touching chain including an endpoint point range [0.02ms]\n(pass) mergeRanges > combines two overlapping ranges into one [0.02ms]\n(pass) mergeRanges > keeps ranges with a real gap separate [0.01ms]\n(pass) mergeRanges > sorts unsorted input before merging [0.02ms]\n(pass) mergeRanges > returns an empty array for an empty input\n(pass) rangeDurationMs > computes the millisecond span between start and end [0.02ms]\n\n 19 pass\n 0 fail\n 80 expect() calls\nRan 19 tests across 2 files. [8.00ms]"
+    }
+  ],
+  "objective": 100,
+  "judgments": [],
+  "artifacts": {
+    "transcript": "transcript.jsonl.gz",
+    "diff": "diff.patch",
+    "screenshots": [],
+    "report": null
+  },
+  "notes": [
+    "codex: no turn cap flag; enforced only by the timebox"
+  ]
+}

@@ -1,0 +1,146 @@
+diff --git a/src/dateRange.ts b/src/dateRange.ts
+index 11c410a..406efd6 100644
+--- a/src/dateRange.ts
++++ b/src/dateRange.ts
+@@ -20,7 +20,7 @@ export function rangeDurationMs(range: DateRange): number {
+ }
+ 
+ export function overlaps(a: DateRange, b: DateRange): boolean {
+-  return a.start.getTime() < b.end.getTime() && b.start.getTime() < a.end.getTime();
++  return a.start.getTime() <= b.end.getTime() && b.start.getTime() <= a.end.getTime();
+ }
+ 
+ /**
+diff --git a/src/recurrence.ts b/src/recurrence.ts
+index 7428d51..977e910 100644
+--- a/src/recurrence.ts
++++ b/src/recurrence.ts
+@@ -13,19 +13,16 @@ export interface DailyRecurrenceRule {
+   readonly days: number;
+ }
+ 
+-const MS_PER_DAY = 24 * 60 * 60 * 1000;
+-
+ export function expandDailyRecurrence(rule: DailyRecurrenceRule): DateRange[] {
+   if (rule.days <= 0) {
+     return [];
+   }
+ 
+-  const firstStart = new Date(rule.startDate);
+-  firstStart.setHours(rule.startHour, rule.startMinute, 0, 0);
+-
+   const ranges: DateRange[] = [];
+   for (let day = 0; day < rule.days; day++) {
+-    const dayStart = new Date(firstStart.getTime() + day * MS_PER_DAY);
++    const dayStart = new Date(rule.startDate);
++    dayStart.setDate(rule.startDate.getDate() + day);
++    dayStart.setHours(rule.startHour, rule.startMinute, 0, 0);
+     const dayEnd = new Date(dayStart);
+     dayEnd.setHours(rule.endHour, rule.endMinute, 0, 0);
+     ranges.push(createRange(dayStart, dayEnd));
+diff --git a/test/dateRange.test.ts b/test/dateRange.test.ts
+index 1274f73..4c33319 100644
+--- a/test/dateRange.test.ts
++++ b/test/dateRange.test.ts
+@@ -20,6 +20,23 @@ describe("createRange", () => {
+ });
+ 
+ describe("overlaps", () => {
++  test("includes shared endpoints in either argument order", () => {
++    const a = createRange(new Date(2026, 2, 8, 9), new Date(2026, 2, 8, 13));
++    const b = createRange(new Date(2026, 2, 8, 13), new Date(2026, 2, 8, 17));
++    expect(overlaps(a, b)).toBe(true);
++    expect(overlaps(b, a)).toBe(true);
++  });
++
++  test("includes zero-duration ranges at either endpoint and themselves", () => {
++    const range = createRange(new Date(2026, 2, 8, 9), new Date(2026, 2, 8, 17));
++    for (const endpoint of [range.start, range.end]) {
++      const point = createRange(endpoint, endpoint);
++      expect(overlaps(range, point)).toBe(true);
++      expect(overlaps(point, range)).toBe(true);
++      expect(overlaps(point, point)).toBe(true);
++    }
++  });
++
+   test("is true when two ranges genuinely overlap", () => {
+     const a = createRange(new Date(2026, 0, 1, 10, 0, 0), new Date(2026, 0, 1, 12, 0, 0));
+     const b = createRange(new Date(2026, 0, 1, 11, 0, 0), new Date(2026, 0, 1, 13, 0, 0));
+@@ -34,6 +51,22 @@ describe("overlaps", () => {
+ });
+ 
+ describe("mergeRanges", () => {
++  test("combines back-to-back bookings", () => {
++    const morning = createRange(new Date(2026, 2, 8, 9), new Date(2026, 2, 8, 13));
++    const afternoon = createRange(new Date(2026, 2, 8, 13), new Date(2026, 2, 8, 17));
++    expect(mergeRanges([morning, afternoon])).toEqual([
++      createRange(morning.start, afternoon.end),
++    ]);
++  });
++
++  test("merges an unsorted touching chain including an endpoint point range", () => {
++    const a = createRange(new Date(2026, 0, 1, 9), new Date(2026, 0, 1, 11));
++    const b = createRange(new Date(2026, 0, 1, 11), new Date(2026, 0, 1, 13));
++    const c = createRange(new Date(2026, 0, 1, 13), new Date(2026, 0, 1, 17));
++    const point = createRange(c.end, c.end);
++    expect(mergeRanges([c, point, b, a])).toEqual([createRange(a.start, c.end)]);
++  });
++
+   test("combines two overlapping ranges into one", () => {
+     const a = createRange(new Date(2026, 0, 1, 8, 0, 0), new Date(2026, 0, 1, 12, 0, 0));
+     const b = createRange(new Date(2026, 0, 1, 10, 0, 0), new Date(2026, 0, 1, 14, 0, 0));
+diff --git a/test/recurrence.test.ts b/test/recurrence.test.ts
+index bdf22ef..45afd2a 100644
+--- a/test/recurrence.test.ts
++++ b/test/recurrence.test.ts
+@@ -1,9 +1,49 @@
+ import { describe, expect, test } from "bun:test";
+-import { expandDailyRecurrence } from "../src";
++import { expandDailyRecurrence, rangeDurationMs } from "../src";
+ 
+ process.env.TZ = "America/New_York";
+ 
+ describe("expandDailyRecurrence", () => {
++  for (const startDate of [new Date(2026, 2, 7), new Date(2026, 9, 31)]) {
++    test(`preserves local booking times across the clock change after ${startDate.toDateString()}`, () => {
++      const originalTime = startDate.getTime();
++      const days = expandDailyRecurrence({
++        startDate,
++        startHour: 9,
++        startMinute: 15,
++        endHour: 17,
++        endMinute: 15,
++        days: 5,
++      });
++
++      expect(days).toHaveLength(5);
++      for (let day = 0; day < days.length; day++) {
++        const expectedStart = new Date(2026, startDate.getMonth(), startDate.getDate() + day, 9, 15);
++        const expectedEnd = new Date(2026, startDate.getMonth(), startDate.getDate() + day, 17, 15);
++        expect(days[day].start.getTime()).toBe(expectedStart.getTime());
++        expect(days[day].end.getTime()).toBe(expectedEnd.getTime());
++        expect(rangeDurationMs(days[day])).toBe(8 * 60 * 60 * 1000);
++      }
++      expect(startDate.getTime()).toBe(originalTime);
++    });
++  }
++
++  test("reapplies the requested time after a nonexistent start time on the first day", () => {
++    const days = expandDailyRecurrence({
++      startDate: new Date(2026, 2, 8),
++      startHour: 2,
++      startMinute: 30,
++      endHour: 17,
++      endMinute: 0,
++      days: 3,
++    });
++
++    expect(days).toHaveLength(3);
++    for (let day = 0; day < days.length; day++) {
++      expect(days[day].start.getTime()).toBe(new Date(2026, 2, 8 + day, 2, 30).getTime());
++    }
++  });
++
+   test("returns one range per day with the requested start and end time", () => {
+     const days = expandDailyRecurrence({
+       startDate: new Date(2026, 5, 1), // Mon Jun 1, 2026 - no clock change nearby
