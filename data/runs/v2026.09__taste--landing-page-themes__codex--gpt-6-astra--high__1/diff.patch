@@ -1,0 +1,5010 @@
+diff --git a/.gitignore b/.gitignore
+index b1443c0..f3be785 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -11,3 +11,8 @@ bun.lock
+ # misc
+ .DS_Store
+ *.tsbuildinfo
++
++# local visual verification
++/.qa
++/test-results
++/playwright-report
+diff --git a/THEMES.md b/THEMES.md
+new file mode 100644
+index 0000000..ec9c25c
+--- /dev/null
++++ b/THEMES.md
+@@ -0,0 +1,43 @@
++# Offhour — five ways to make time
++
++**Kind:** Single-product direct-to-consumer ecommerce brand.
++
++**Name:** Offhour.
++
++**Positioning:** A mechanical desk timer that gives your next hour a clear boundary, without another screen.
++
++**Customer:** People who work or create at a desk and reach for their phone more often than they want to: independent designers, writers, remote workers, students, and thoughtful gift buyers.
++
++**Pricing:** $48 once, with US shipping included. Applicable tax would be shown at a future live checkout. Three proposed anodized aluminum finishes: warm sand, burnt orange, and slate blue. Planned first shipment November 2026, cancellation before shipment, and 30-day returns after delivery. A two-person team could develop the enclosure around an existing mechanical movement and launch a small manufactured batch within a year.
++
++**Product:** A wind-up visual countdown timer, adjustable from 1–60 minutes, with an end bell and a soft mechanical tick. Target dimensions: 80 mm diameter × 45 mm depth. No batteries, apps, subscriptions, or accounts. These are concept specifications, not certified production claims.
++
++## 01 — The everyday ritual
++
++`/themes/1` uses warm paper, olive, and sand; large literary serif headlines; an asymmetric split hero; and a custom SVG product still life on a book under simulated window light. The voice is personal and unhurried. Benefits unfold as a three-part ritual before the hardware details and FAQs. This direction is aimed at design-conscious remote workers and gift buyers who want a useful object that belongs in their home. Its credibility comes from transparent first-edition language and concrete specifications, rather than invented endorsements.
++
++## 02 — The attention rebellion
++
++`/themes/2` is a graphic campaign in acid yellow, off-white, and black. Oversized heavy sans-serif typography, outlined lettering, hard rules, square buttons, and a semicircular product stage make it feel like a poster that happens to sell a timer. The copy is direct: reclaim your attention, start a task, and actually stop. A manifesto, benefit columns, a four-part specification strip, and a blunt FAQ replace the gentler storytelling of the first direction. It targets younger creatives and people already frustrated with their screen habits. The graphite product illustration is a design study; the available preorder-preview finishes remain sand, orange, and blue.
++
++## 03 — The quiet object
++
++`/themes/3` treats Offhour as a gallery object. Cool slate blue, restrained system sans-serif labels, delicate italic serif headlines, a centered composition, and an original product render on an architectural pedestal establish a contemplative pace. A philosophical opening is followed by an asymmetric object study, a clearly attributed fictional founder statement, and a compact FAQ. The copy makes room for reading, thinking, and rest alongside work. It is aimed at minimalists and considered-design buyers who respond to restraint and materiality. The founder quotation belongs to this invented brand; it is not a customer testimonial.
++
++## 04 — The good-time club
++
++`/themes/4` is cheerful retro retail: butter yellow, terracotta, muted green, chunky italic serif type, an arched grid backdrop, smiling SVG flowers, stickers, and hand-drawn underlines. The layout alternates an illustrated hero, a full-width slogan ribbon, rounded benefit cards, numbered instructions, and a candid small-team introduction. The tone gives visitors permission to make time for hobbies and breaks, without turning every hour into a productivity exercise. It targets students, hobbyists, and gift shoppers who want personality and an accessible price.
++
++## 05 — The focus instrument
++
++`/themes/5` uses graphite, sage, monospace annotations, measured spacing, a drafting grid, product callouts, and a specification table. Its asymmetrical hero presents the timer as a physical tool for deep work. A three-stage workflow leads into detailed hardware specifications, an explicit prelaunch status panel, field notes, and a substantial final CTA. It is aimed at developers, makers, and people who prefer to understand exactly how a tool fits into their working system. The dark finish is explicitly identified as a design study, while the preview offers the three planned finishes.
++
++## Recommendation
++
++Ship **01 — The everyday ritual**. It communicates the practical benefit immediately while making a modest $48 object feel desirable and at home on a real desk. The restrained palette and editorial product imagery support both self-purchase and gifting, giving it a broader audience than the campaign-like second direction or technical fifth direction. The concept still needs real manufacturing samples, photography, and operational shipping and return policies before commercial launch.
++
++## Implementation and conversion
++
++All routes include an above-the-fold primary CTA, repeated at the end, benefits before detailed features, visible pricing, honest prelaunch credibility, and expandable FAQs. `/` is a visual index linking to all five routes. All visuals use inline SVG and CSS, and all fonts use local system stacks; no external images, fonts, or UI libraries are requested.
++
++The primary CTA opens an accessible native dialog with finish selection, price, shipping context, and an explicit concept-store explanation. “Save my selection” stores only the selected finish and price in this browser’s local storage. It collects no email or payment information, and clearly states that saving is not an order or reservation. The dialog supports Escape, focus containment, backdrop dismissal, and a visible close button. No checkout backend or real orders are represented as working.
+diff --git a/app/components/preorder.tsx b/app/components/preorder.tsx
+new file mode 100644
+index 0000000..9eafd2b
+--- /dev/null
++++ b/app/components/preorder.tsx
+@@ -0,0 +1,139 @@
++"use client";
++
++import { useRef, useState, useEffect, useId } from "react";
++import { Timer } from "./product";
++
++export default function Preorder({
++  children = "Preorder — $48",
++  className = "",
++}: {
++  children?: React.ReactNode;
++  className?: string;
++}) {
++  const instanceId = useId();
++  const dialog = useRef<HTMLDialogElement>(null);
++  const [color, setColor] = useState<"sand" | "orange" | "blue">("sand");
++  const [saved, setSaved] = useState(false);
++  const [storageError, setStorageError] = useState(false);
++  useEffect(() => {
++    const element = dialog.current;
++    const unlock = () => {
++      document.body.style.overflow = "";
++    };
++    element?.addEventListener("close", unlock);
++    return () => {
++      element?.removeEventListener("close", unlock);
++      unlock();
++    };
++  }, []);
++  function open() {
++    setSaved(false);
++    setStorageError(false);
++    try {
++      const stored = JSON.parse(
++        localStorage.getItem("offhour-selection") ?? "null",
++      );
++      if (stored && ["sand", "orange", "blue"].includes(stored.color))
++        setColor(stored.color);
++    } catch {
++      /* A blocked or invalid saved preference does not prevent browsing. */
++    }
++    dialog.current?.showModal();
++    document.body.style.overflow = "hidden";
++  }
++  function save() {
++    try {
++      localStorage.setItem(
++        "offhour-selection",
++        JSON.stringify({ color, price: 48 }),
++      );
++      setSaved(true);
++    } catch {
++      setStorageError(true);
++    }
++  }
++  return (
++    <>
++      <button className={`cta ${className}`} onClick={open}>
++        {children}
++        <span aria-hidden="true">↗</span>
++      </button>
++      <dialog
++        ref={dialog}
++        className="order-dialog"
++        onClick={(event) => {
++          if (event.target === dialog.current) dialog.current.close();
++        }}
++        aria-labelledby={`${instanceId}-title`}
++      >
++        <button
++          className="dialog-close"
++          onClick={() => dialog.current?.close()}
++          aria-label="Close preorder preview"
++        >
++          ×
++        </button>
++        <div className="order-visual">
++          <Timer color={color} />
++          <span>FIRST EDITION / 60 MINUTES</span>
++        </div>
++        <div className="order-content">
++          <span className="eyebrow">PREORDER PREVIEW</span>
++          <h2 id={`${instanceId}-title`}>
++            An hour of
++            <br />
++            your own.
++          </h2>
++          <p>Offhour mechanical desk timer</p>
++          <div className="order-price">
++            $48 <small>US shipping included</small>
++          </div>
++          <fieldset>
++            <legend>
++              Choose your finish:{" "}
++              <strong>
++                {color === "sand"
++                  ? "Warm sand"
++                  : color === "orange"
++                    ? "Burnt orange"
++                    : "Slate blue"}
++              </strong>
++            </legend>
++            <div className="swatches">
++              {(["sand", "orange", "blue"] as const).map((c) => (
++                <label key={c} className={`swatch ${c}`}>
++                  <input
++                    type="radio"
++                    name={`${instanceId}-finish`}
++                    value={c}
++                    checked={color === c}
++                    onChange={() => {
++                      setColor(c);
++                      setSaved(false);
++                    }}
++                  />
++                  <span className="sr-only">{c}</span>
++                </label>
++              ))}
++            </div>
++          </fieldset>
++          <p className="preview-note">
++            A product concept, coming to life. Orders aren’t open yet. Save your
++            choice on this device to revisit it. No payment or personal details
++            needed.
++          </p>
++          <button className="save-selection" onClick={save}>
++            {saved ? "Selection saved ✓" : "Save my selection"}
++          </button>
++          <p className="save-status" role="status">
++            {saved
++              ? `Your ${color} Offhour is saved on this device. This is not a reservation or an order.`
++              : storageError
++                ? "Your browser couldn’t save this choice. Please allow local storage and try again."
++                : "Planned first shipment: November 2026"}
++          </p>
++        </div>
++      </dialog>
++    </>
++  );
++}
+diff --git a/app/components/product.tsx b/app/components/product.tsx
+new file mode 100644
+index 0000000..d99b2ed
+--- /dev/null
++++ b/app/components/product.tsx
+@@ -0,0 +1,153 @@
++import { useId } from "react";
++
++export function Timer({
++  color = "sand",
++  className = "",
++  minutes = 25,
++}: {
++  color?: "sand" | "orange" | "blue" | "black";
++  className?: string;
++  minutes?: number;
++}) {
++  const id = useId().replaceAll(":", "");
++  const colors = {
++    sand: ["#e9e0cf", "#b5aa95", "#f8f4e9", "#ec754b"],
++    orange: ["#f17a42", "#a53d1c", "#f8e9c6", "#ed673a"],
++    blue: ["#8094b9", "#3d5478", "#f0f0e6", "#667fae"],
++    black: ["#454847", "#161a19", "#dddcc8", "#cbea6b"],
++  }[color];
++  return (
++    <svg
++      className={`timer ${className}`}
++      viewBox="0 0 520 520"
++      role="img"
++      aria-label={`Offhour ${color} aluminum timer set to ${minutes} minutes`}
++    >
++      <defs>
++        <linearGradient id={`${id}body`} x1="0" y1="0" x2="1" y2="1">
++          <stop stopColor={colors[0]} />
++          <stop offset=".5" stopColor={colors[1]} />
++          <stop offset="1" stopColor={colors[0]} />
++        </linearGradient>
++        <linearGradient id={`${id}rim`} x1="0" y1="0" x2=".7" y2="1">
++          <stop stopColor="#fff" stopOpacity=".8" />
++          <stop offset=".48" stopColor={colors[0]} />
++          <stop offset="1" stopColor={colors[1]} />
++        </linearGradient>
++        <radialGradient id={`${id}face`} cx=".35" cy=".2" r=".9">
++          <stop stopColor="#fffdf4" />
++          <stop offset="1" stopColor={colors[2]} />
++        </radialGradient>
++        <filter id={`${id}shadow`} x="-40%" y="-40%" width="190%" height="200%">
++          <feDropShadow
++            dx="12"
++            dy="26"
++            stdDeviation="20"
++            floodColor="#151710"
++            floodOpacity=".25"
++          />
++        </filter>
++      </defs>
++      <g filter={`url(#${id}shadow)`}>
++        <circle cx="260" cy="269" r="200" fill={`url(#${id}body)`} />
++        <circle cx="260" cy="252" r="199" fill={`url(#${id}rim)`} />
++        <circle cx="260" cy="252" r="186" fill={colors[1]} />
++        <circle cx="260" cy="249" r="181" fill={`url(#${id}face)`} />
++        <path
++          d={`M260 249 L260 85 A164 164 0 ${minutes > 30 ? 1 : 0} 1 ${260 + 164 * Math.sin((minutes / 60) * Math.PI * 2)} ${249 - 164 * Math.cos((minutes / 60) * Math.PI * 2)} Z`}
++          fill={colors[3]}
++        />
++        {Array.from({ length: 60 }, (_, i) => (
++          <line
++            key={i}
++            x1="260"
++            x2="260"
++            y1="88"
++            y2={i % 5 === 0 ? "108" : "96"}
++            stroke="#393a32"
++            strokeWidth={i % 5 === 0 ? 2 : 1}
++            transform={`rotate(${i * 6} 260 249)`}
++          />
++        ))}
++        {[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map((n) => (
++          <text
++            key={n}
++            x={260 + 128 * Math.sin((n / 60) * Math.PI * 2)}
++            y={254 - 128 * Math.cos((n / 60) * Math.PI * 2)}
++            fill="#34382f"
++            textAnchor="middle"
++            fontSize="14"
++            fontFamily="monospace"
++          >
++            {n === 0 ? "60" : n}
++          </text>
++        ))}
++        <circle
++          cx="260"
++          cy="249"
++          r="48"
++          fill={colors[2]}
++          stroke="#77766a"
++          strokeOpacity=".2"
++        />
++        <circle cx="260" cy="246" r="41" fill={`url(#${id}rim)`} />
++        <path
++          d="M260 216v-8"
++          stroke="#55574e"
++          strokeWidth="3"
++          strokeLinecap="round"
++        />
++        <text
++          x="260"
++          y="332"
++          fill="#46493e"
++          textAnchor="middle"
++          fontSize="10"
++          fontFamily="sans-serif"
++          letterSpacing="2.5"
++        >
++          OFFHOUR
++        </text>
++      </g>
++    </svg>
++  );
++}
++
++export function Logo({ star = false }: { star?: boolean }) {
++  return (
++    <a className="logo" href="/" aria-label="Offhour theme collection">
++      {star && <span aria-hidden="true">✳ </span>}offhour
++      <span className="logo-dot">®</span>
++    </a>
++  );
++}
++
++export function Faq({ items }: { items?: [string, string][] }) {
++  const questions: [string, string][] = items ?? [
++    [
++      "Does it need batteries or an app?",
++      "Neither. Offhour uses a wind-up mechanical movement. Turn the dial to set up to 60 minutes; the colored area gets smaller as time passes. Expect a soft mechanical tick.",
++    ],
++    [
++      "When will my Offhour arrive?",
++      "Our first small production run is planned for November 2026. This is a concept storefront; live preorders and payments are not open yet.",
++    ],
++    [
++      "What if it’s not for me?",
++      "Our planned policy is simple: cancel any time before shipping, or return it within 30 days of delivery. US shipping is included in the $48 price; any applicable tax will be shown at checkout when ordering opens.",
++    ],
++  ];
++  return (
++    <div className="faq-list">
++      {questions.map(([q, a]) => (
++        <details key={q}>
++          <summary>
++            {q}
++            <span aria-hidden="true">+</span>
++          </summary>
++          <p>{a}</p>
++        </details>
++      ))}
++    </div>
++  );
++}
+diff --git a/app/components/themes.tsx b/app/components/themes.tsx
+new file mode 100644
+index 0000000..359db32
+--- /dev/null
++++ b/app/components/themes.tsx
+@@ -0,0 +1,872 @@
++import { Faq, Logo, Timer } from "./product";
++import Preorder from "./preorder";
++
++function Footer({ number }: { number: number }) {
++  return (
++    <footer className="page-footer">
++      <Logo />
++      <span>A little less online. A little more here.</span>
++      <a href="/">
++        All five directions <span aria-hidden="true">↗</span>
++      </a>
++      <small>© 2026 Offhour · Product concept · Direction 0{number}</small>
++    </footer>
++  );
++}
++function MiniSpec({
++  number,
++  title,
++  text,
++}: {
++  number: string;
++  title: string;
++  text: string;
++}) {
++  return (
++    <div className="mini-spec">
++      <span>{number}</span>
++      <h3>{title}</h3>
++      <p>{text}</p>
++    </div>
++  );
++}
++
++export function ThemeOne() {
++  return (
++    <main className="theme theme-one">
++      <div className="announcement">
++        A small object. A little more headspace.{" "}
++        <span>Meet the first edition ↗</span>
++      </div>
++      <header className="site-nav">
++        <Logo />
++        <nav aria-label="Main navigation">
++          <a href="#ritual">The ritual</a>
++          <a href="#details">The details</a>
++        </nav>
++        <Preorder>Make time — $48</Preorder>
++      </header>
++      <section className="one-hero">
++        <div className="one-hero-copy">
++          <div className="eyebrow">
++            <span className="tiny-sun">✳</span> LESS SCROLLING. MORE LIVING.
++          </div>
++          <h1>
++            A little room
++            <br />
++            for <em>focus.</em>
++          </h1>
++          <p>
++            Meet Offhour. A beautifully simple, mechanical timer that helps you
++            put your phone down and your mind to one thing.
++          </p>
++          <Preorder>Make time — $48</Preorder>
++          <div className="hero-note">
++            No apps. No batteries. Just you, for a while.
++          </div>
++          <div className="one-edition">
++            <span className="edition-mark">01</span>
++            <div>
++              Made for your everyday.
++              <br />
++              <strong>Our first small-batch edition.</strong>
++            </div>
++          </div>
++        </div>
++        <div className="one-scene">
++          <div className="scene-window" />
++          <div className="scene-shadow" />
++          <div className="scene-label">
++            THE OFFHOUR TIMER
++            <br />
++            <span>Warm sand / 60 minutes</span>
++          </div>
++          <div className="book">
++            <span>
++              THE ART OF
++              <br />
++              PAYING ATTENTION
++            </span>
++            <small>FIELD NOTES — VOL. 01</small>
++          </div>
++          <Timer />
++          <div className="scene-caption">
++            <span>Less on your mind.</span>
++            <span>More in your moment. ↗</span>
++          </div>
++          <div className="round-stamp">
++            SET IT.
++            <br />
++            FORGET YOUR
++            <br />
++            PHONE.<span>↗</span>
++          </div>
++        </div>
++      </section>
++      <div className="one-promise">
++        <span>Thoughtfully analog.</span>
++        <span>↳ 60 minutes, all yours</span>
++        <span>↳ Wind up. Slow down.</span>
++        <span>↳ Built to stay on your desk</span>
++      </div>
++      <section className="one-ritual section-wrap" id="ritual">
++        <div className="section-intro">
++          <span className="eyebrow">01 / A SMALLER KIND OF RESET</span>
++          <h2>
++            Your attention deserves
++            <br />a place to <em>land.</em>
++          </h2>
++          <p>
++            Opening your phone to set a timer shouldn’t turn into twenty minutes
++            on your phone. Leave it in the other room. Start here.
++          </p>
++        </div>
++        <div className="ritual-cards">
++          <MiniSpec
++            number="01 — TURN"
++            title="Give one thing your time."
++            text="A chapter. A sketch. The work you’ve been putting off. Turn the dial for up to an hour."
++          />
++          <MiniSpec
++            number="02 — SETTLE"
++            title="See time, without checking."
++            text="The colored wedge slowly disappears. A gentle visual boundary, always in the corner of your eye."
++          />
++          <MiniSpec
++            number="03 — EXHALE"
++            title="Let enough be enough."
++            text="A bell marks the end. Step away, stretch, or make a cup of something. Your time is yours again."
++          />
++        </div>
++      </section>
++      <section className="one-detail" id="details">
++        <div className="detail-art">
++          <Timer color="orange" minutes={40} />
++          <span>A GOOD WEIGHT. A SIMPLE PURPOSE.</span>
++        </div>
++        <div>
++          <span className="eyebrow">FEWER THINGS. BETTER THINGS.</span>
++          <h2>
++            Nothing to charge.
++            <br />
++            Something to keep.
++          </h2>
++          <p>
++            A satisfyingly solid aluminum body. A tactile dial. Honest clockwork
++            inside. Offhour is a small daily ritual that doesn’t ask for your
++            password.
++          </p>
++          <dl className="spec-dl">
++            <div>
++              <dt>Movement</dt>
++              <dd>Wind-up mechanical</dd>
++            </div>
++            <div>
++              <dt>Timer range</dt>
++              <dd>1–60 minutes</dd>
++            </div>
++            <div>
++              <dt>Size</dt>
++              <dd>80 × 45 mm</dd>
++            </div>
++            <div>
++              <dt>Finishes</dt>
++              <dd>Sand, orange, blue</dd>
++            </div>
++          </dl>
++          <p className="small-print">
++            First-edition design specifications. Production planned for November
++            2026.
++          </p>
++        </div>
++      </section>
++      <section className="one-faq section-wrap">
++        <div>
++          <span className="eyebrow">A FEW THINGS TO KNOW</span>
++          <h2>No loose ends.</h2>
++        </div>
++        <Faq />
++      </section>
++      <section className="one-close">
++        <span className="tiny-sun">✳</span>
++        <h2>
++          Make room for
++          <br />
++          what matters.
++        </h2>
++        <p>Your Offhour. $48. US shipping included.</p>
++        <Preorder>Make time — $48</Preorder>
++        <small>Planned 30-day returns. No subscription. Ever.</small>
++      </section>
++      <Footer number={1} />
++    </main>
++  );
++}
++
++export function ThemeTwo() {
++  return (
++    <main className="theme theme-two">
++      <header className="site-nav">
++        <Logo />
++        <span className="nav-tag">LESS SCREEN. MORE YOU.</span>
++        <Preorder>Get an Offhour — $48</Preorder>
++      </header>
++      <section className="two-hero">
++        <div className="two-hero-top">
++          <span>THE ANALOG ANTIDOTE TO “JUST ONE MORE SCROLL.”</span>
++          <span>EST. 2026 / EDITION 001</span>
++        </div>
++        <h1>
++          TAKE YOUR
++          <br />
++          <span>TIME BACK.</span>
++        </h1>
++        <div className="two-hero-bottom">
++          <div>
++            <p>
++              Your phone wants your attention.
++              <br />
++              This timer gives it back.
++            </p>
++            <p className="two-description">
++              Meet Offhour. Up to 60 minutes of single-tasking, powered by
++              clockwork. No screen required.
++            </p>
++            <Preorder>Get an Offhour — $48</Preorder>
++            <span className="hero-note">ONE PAYMENT. ZERO NOTIFICATIONS.</span>
++          </div>
++          <div className="two-product">
++            <div className="orbit-type">100% OFFLINE ↗</div>
++            <Timer color="black" minutes={45} />
++            <span className="two-product-label">
++              THE OFFHOUR / GRAPHITE DESIGN STUDY
++            </span>
++          </div>
++        </div>
++      </section>
++      <div className="ticker">
++        <span>DO LESS. BETTER.</span>
++        <span aria-hidden="true">✳</span>
++        <span>DO LESS. BETTER.</span>
++        <span aria-hidden="true">✳</span>
++        <span>DO LESS. BETTER.</span>
++      </div>
++      <section className="two-manifesto" id="why">
++        <span className="eyebrow">[ THE PROBLEM ISN’T YOU. ]</span>
++        <h2>
++          YOU DON’T NEED
++          <br />
++          MORE WILLPOWER.
++          <br />
++          <span>YOU NEED A BOUNDARY.</span>
++        </h2>
++        <div className="two-benefits">
++          <MiniSpec
++            number="↗ 01"
++            title="Put the phone away."
++            text="Your timer shouldn’t come with an infinite feed. Set Offhour and leave the distractions elsewhere."
++          />
++          <MiniSpec
++            number="↗ 02"
++            title="Make a dent."
++            text="One task. One visible block of time. Make starting feel smaller and finishing feel possible."
++          />
++          <MiniSpec
++            number="↗ 03"
++            title="Actually stop."
++            text="The bell rings. The block ends. Take your break without negotiating with another notification."
++          />
++        </div>
++      </section>
++      <section className="two-specs">
++        <div className="two-spec-title">
++          <span>
++            SMALL OBJECT.
++            <br />
++            BIG BOUNDARY.
++          </span>
++          <p>
++            Our first product. No borrowed logos. No made-up testimonials. Just
++            a clear design and an honest starting point.
++          </p>
++        </div>
++        <div className="two-stat">
++          <strong>60</strong>
++          <span>
++            MINUTES MAX.
++            <br />
++            YOU PICK THE PACE.
++          </span>
++        </div>
++        <div className="two-stat">
++          <strong>0</strong>
++          <span>
++            APPS. BATTERIES.
++            <br />
++            SUBSCRIPTIONS.
++          </span>
++        </div>
++        <div className="two-stat">
++          <strong>$48</strong>
++          <span>
++            ONE TIMER.
++            <br />
++            US SHIPPING INCLUDED.
++          </span>
++        </div>
++      </section>
++      <section className="two-faq">
++        <h2>YES, BUT.</h2>
++        <Faq />
++      </section>
++      <section className="two-close">
++        <div>
++          <span className="eyebrow">YOUR NEXT HOUR IS CALLING.</span>
++          <h2>
++            DON’T
++            <br />
++            SCROLL PAST IT.
++          </h2>
++        </div>
++        <div>
++          <Preorder>Get an Offhour — $48</Preorder>
++          <p>
++            Three finishes. One less excuse.
++            <br />
++            Planned November 2026 first shipment.
++          </p>
++        </div>
++      </section>
++      <Footer number={2} />
++    </main>
++  );
++}
++
++export function ThemeThree() {
++  return (
++    <main className="theme theme-three">
++      <header className="site-nav">
++        <Logo />
++        <nav aria-label="Main navigation">
++          <a href="#philosophy">Philosophy</a>
++          <a href="#object">The object</a>
++          <a href="#questions">Questions</a>
++        </nav>
++        <Preorder>Find your Offhour</Preorder>
++      </header>
++      <section className="three-hero">
++        <div className="three-side">AN OBJECT FOR THE PRESENT MOMENT</div>
++        <span className="eyebrow">OFFHOUR — THE MECHANICAL DESK TIMER</span>
++        <h1>
++          An hour,
++          <br />
++          <em>uninterrupted.</em>
++        </h1>
++        <p>
++          A quiet invitation to do one thing at a time.
++          <br />
++          Turn the dial. Put down your phone. Be here.
++        </p>
++        <Preorder>Find your Offhour — $48</Preorder>
++        <div className="three-art">
++          <div className="blue-orb" />
++          <div className="three-pedestal" />
++          <Timer color="blue" minutes={20} />
++          <span className="three-art-label">01 / SLATE BLUE</span>
++          <span className="three-dimension">
++            80 mm
++            <br />↔
++          </span>
++        </div>
++        <div className="three-hero-foot">
++          <span>DESIGNED TO ASK LESS OF YOU.</span>
++          <span>SCROLL TO SLOW DOWN ↓</span>
++        </div>
++      </section>
++      <section className="three-philosophy" id="philosophy">
++        <span className="eyebrow">I. A DIFFERENT RELATIONSHIP WITH TIME</span>
++        <h2>
++          Not every minute
++          <br />
++          needs to be <em>optimized.</em>
++        </h2>
++        <div className="three-prose">
++          <p>
++            Some need to be spent reading. Thinking. Making something with your
++            hands. Offhour creates a little space between you and everything
++            asking for your attention.
++          </p>
++          <p>
++            Set a gentle limit for work, or protect a moment for yourself. Watch
++            the colored face grow smaller. When the bell sounds, come back to
++            the room.
++          </p>
++        </div>
++      </section>
++      <section className="three-object" id="object">
++        <div className="three-object-art">
++          <Timer minutes={15} />
++          <span>WARM SAND / FIRST EDITION</span>
++        </div>
++        <div className="three-object-copy">
++          <span className="eyebrow">II. PURPOSE, IN EVERY DETAIL</span>
++          <h2>
++            Only what
++            <br />
++            you <em>need.</em>
++          </h2>
++          <div className="three-feature">
++            <span>01</span>
++            <div>
++              <h3>A clear sense of time</h3>
++              <p>
++                A disappearing colored wedge tells you where you are, without
++                pulling you out of what you’re doing.
++              </p>
++            </div>
++          </div>
++          <div className="three-feature">
++            <span>02</span>
++            <div>
++              <h3>A small, tactile ritual</h3>
++              <p>
++                Turn the dial. Feel the aluminum. A physical beginning to a
++                moment of intention.
++              </p>
++            </div>
++          </div>
++          <div className="three-feature">
++            <span>03</span>
++            <div>
++              <h3>An uncomplicated companion</h3>
++              <p>
++                Mechanical movement. Up to 60 minutes. No charging, pairing, or
++                updates. A soft tick, and a bell at the end.
++              </p>
++            </div>
++          </div>
++        </div>
++      </section>
++      <section className="three-note">
++        <span className="eyebrow">A NOTE FROM THE FOUNDERS</span>
++        <blockquote>
++          “We wanted to make something that helped us spend a little less of our
++          lives looking at a screen. So we started with an hour.”
++        </blockquote>
++        <span>THE TWO PEOPLE BEHIND OFFHOUR · PRELAUNCH, 2026</span>
++      </section>
++      <section className="three-faq" id="questions">
++        <span className="eyebrow">III. BEFORE YOU BEGIN</span>
++        <h2>A little clarity.</h2>
++        <Faq />
++      </section>
++      <section className="three-close">
++        <span className="eyebrow">A PLACE FOR YOUR ATTENTION</span>
++        <h2>
++          Time, on <em>your terms.</em>
++        </h2>
++        <p>Offhour · Three considered finishes · $48</p>
++        <Preorder>Find your Offhour — $48</Preorder>
++        <small>US shipping included. Planned 30-day returns.</small>
++      </section>
++      <Footer number={3} />
++    </main>
++  );
++}
++
++function Flower({ className = "" }: { className?: string }) {
++  return (
++    <svg
++      className={`flower ${className}`}
++      viewBox="0 0 160 160"
++      aria-hidden="true"
++    >
++      {Array.from({ length: 8 }, (_, i) => (
++        <ellipse
++          key={i}
++          cx="80"
++          cy="40"
++          rx="22"
++          ry="38"
++          fill="currentColor"
++          transform={`rotate(${i * 45} 80 80)`}
++        />
++      ))}
++      <circle cx="80" cy="80" r="27" fill="#f9e8b9" />
++      <path
++        d="M68 83q12 15 24 0"
++        fill="none"
++        stroke="#543627"
++        strokeWidth="3"
++        strokeLinecap="round"
++      />
++      <circle cx="70" cy="73" r="3" fill="#543627" />
++      <circle cx="90" cy="73" r="3" fill="#543627" />
++    </svg>
++  );
++}
++export function ThemeFour() {
++  return (
++    <main className="theme theme-four">
++      <div className="four-banner">
++        GOOD THINGS TAKE A LITTLE OFFHOUR. <span aria-hidden="true">✳</span>{" "}
++        FIRST EDITION COMING NOVEMBER 2026
++      </div>
++      <header className="site-nav">
++        <Logo star />
++        <nav aria-label="Main navigation">
++          <a href="#good-stuff">The good stuff</a>
++          <a href="#how">How it works</a>
++        </nav>
++        <Preorder>Pick your timer — $48</Preorder>
++      </header>
++      <section className="four-hero">
++        <div className="four-hero-copy">
++          <span className="eyebrow">HEY, YOU. TAKE A BREATHER.</span>
++          <h1>
++            Go make
++            <br />
++            some <span>time.</span>
++            <svg viewBox="0 0 300 25" aria-hidden="true">
++              <path
++                d="M4 16Q140 -5 293 13M23 23Q140 6 270 20"
++                stroke="currentColor"
++                strokeWidth="4"
++                fill="none"
++                strokeLinecap="round"
++              />
++            </svg>
++          </h1>
++          <p>
++            For the book. The big idea. The absolutely-nothing-at-all. Offhour
++            is the little wind-up timer that gets you off your phone and into
++            your day.
++          </p>
++          <Preorder>Pick your timer — $48</Preorder>
++          <span className="hero-note">
++            60 minutes of whatever makes you, you.
++          </span>
++        </div>
++        <div className="four-art">
++          <div className="four-arch" />
++          <Flower />
++          <div className="four-product">
++            <Timer color="orange" minutes={35} />
++          </div>
++          <div className="four-sticker">
++            NO APPS.
++            <br />
++            JUST GOOD
++            <br />
++            <em>times.</em>
++          </div>
++          <div className="four-spark">✧</div>
++          <div className="four-caption">YOUR NEW DESK BUDDY. ↑</div>
++          <div className="four-daisy">✳</div>
++        </div>
++      </section>
++      <div className="four-ribbon">
++        <span>✳ A LITTLE LESS DOOMSCROLL</span>
++        <span>✳ A LITTLE MORE DAYDREAM</span>
++        <span>✳ A LITTLE TIME FOR YOU</span>
++      </div>
++      <section className="four-good" id="good-stuff">
++        <span className="eyebrow">SMALL TIMER. GOOD COMPANY.</span>
++        <h2>
++          More of the
++          <br />
++          <em>good stuff.</em>
++        </h2>
++        <div className="four-cards">
++          <article>
++            <span className="hand-art">↗</span>
++            <h3>Get that thing started.</h3>
++            <p>
++              Big projects feel smaller in little blocks. Set 25 minutes. Take
++              the first tiny, imperfect step.
++            </p>
++            <span className="card-foot">FOR YOUR “ONE DAY” LIST</span>
++          </article>
++          <article>
++            <span className="cup-art">☕︎</span>
++            <h3>Take a proper pause.</h3>
++            <p>
++              Tea tastes better without a feed. Give yourself ten minutes to do
++              delightfully little.
++            </p>
++            <span className="card-foot">FOR THE IN-BETWEEN BITS</span>
++          </article>
++          <article>
++            <Flower />
++            <h3>Make room for fun.</h3>
++            <p>
++              Draw something weird. Read another chapter. Your attention is
++              allowed to have a good time.
++            </p>
++            <span className="card-foot">FOR NO REASON AT ALL</span>
++          </article>
++        </div>
++      </section>
++      <section className="four-how" id="how">
++        <div className="four-how-heading">
++          <span className="eyebrow">NO MANUAL ENERGY REQUIRED</span>
++          <h2>
++            Ready.
++            <br />
++            Set.
++            <br />
++            <em>Unplug.</em>
++          </h2>
++        </div>
++        <div className="four-steps">
++          <MiniSpec
++            number="1"
++            title="Pick your little pocket of time."
++            text="Turn the dial to wind the mechanical movement, then set anywhere from 1 to 60 minutes."
++          />
++          <MiniSpec
++            number="2"
++            title="Put your phone somewhere else."
++            text="Watch the color disappear as the minutes pass. No tempting screen. No ‘while I’m here…’"
++          />
++          <MiniSpec
++            number="3"
++            title="Hear the bell? That’s your cue."
++            text="Wrap up. Stretch out. Check in with yourself. Offhour is a boundary, not your boss."
++          />
++        </div>
++      </section>
++      <section className="four-honest">
++        <Flower />
++        <div>
++          <h2>Fresh out of the workshop.</h2>
++          <p>
++            We’re a two-person team making our first small batch. No thousands
++            of happy customers (yet). Just one thoughtful object, three cheerful
++            finishes, and a very big belief in being a little less online.
++          </p>
++        </div>
++        <span className="four-honest-stamp">
++          SMALL
++          <br />
++          BATCH
++          <br />
++          BIG HEART
++        </span>
++      </section>
++      <section className="four-faq">
++        <h2>Good questions!</h2>
++        <Faq />
++      </section>
++      <section className="four-close">
++        <Flower />
++        <span className="eyebrow">YOUR DAY HAS ROOM FOR YOU.</span>
++        <h2>
++          Let the good
++          <br />
++          <em>times begin.</em>
++        </h2>
++        <Preorder>Pick your timer — $48</Preorder>
++        <p>
++          US shipping included · Planned 30-day returns
++          <br />
++          No batteries. No monthly anything.
++        </p>
++      </section>
++      <Footer number={4} />
++    </main>
++  );
++}
++
++export function ThemeFive() {
++  return (
++    <main className="theme theme-five">
++      <header className="site-nav">
++        <Logo />
++        <nav aria-label="Main navigation">
++          <a href="#system">System</a>
++          <a href="#specifications">Specifications</a>
++        </nav>
++        <Preorder>Reserve unit — $48</Preorder>
++      </header>
++      <section className="five-hero">
++        <div className="five-hero-copy">
++          <span className="eyebrow">
++            <i /> OFFHOUR / ANALOG FOCUS INSTRUMENT
++          </span>
++          <h1>
++            Distraction off.
++            <br />
++            <span>Deep work on.</span>
++          </h1>
++          <p>
++            A mechanical boundary for your attention. Set up to 60 minutes, move
++            your phone out of reach, and give the work your full attention.
++          </p>
++          <Preorder>Reserve unit — $48</Preorder>
++          <div className="five-hero-data">
++            <div>
++              <strong>
++                60<span>min</span>
++              </strong>
++              <small>MAXIMUM INTERVAL</small>
++            </div>
++            <div>
++              <strong>
++                0<span>apps</span>
++              </strong>
++              <small>REQUIRED TO OPERATE</small>
++            </div>
++            <div>
++              <strong>
++                100<span>%</span>
++              </strong>
++              <small>MECHANICAL</small>
++            </div>
++          </div>
++        </div>
++        <div className="five-art">
++          <div className="crosshair ch-one">+</div>
++          <div className="crosshair ch-two">+</div>
++          <span className="five-art-top">FIG. 01 — FRONT ELEVATION</span>
++          <div className="tech-orbit" />
++          <Timer color="black" minutes={25} />
++          <div className="callout callout-one">
++            01<span>ANODIZED ALUMINUM</span>
++          </div>
++          <div className="callout callout-two">
++            02<span>VISUAL TIME REMAINING</span>
++          </div>
++          <div className="five-art-bottom">
++            <span>Ø 80 MM</span>
++            <span>SCALE 1:1 / DESIGN RENDER</span>
++          </div>
++        </div>
++      </section>
++      <div className="five-strip">
++        <span>DESIGNED FOR THE WORK THAT MATTERS.</span>
++        <span>NO WIFI</span>
++        <span>NO BATTERIES</span>
++        <span>NO SUBSCRIPTION</span>
++        <span>JUST CLOCKWORK ↗</span>
++      </div>
++      <section className="five-system" id="system">
++        <div className="five-section-head">
++          <span className="eyebrow">01 / THE SYSTEM</span>
++          <h2>
++            Protect the interval.
++            <br />
++            <span>Make the work happen.</span>
++          </h2>
++        </div>
++        <div className="five-process">
++          <MiniSpec
++            number="01 / INITIALIZE"
++            title="Lower the starting friction."
++            text="Choose one task. Turn the dial. A physical action marks the shift from thinking about work to beginning it."
++          />
++          <MiniSpec
++            number="02 / EXECUTE"
++            title="Stay inside the task."
++            text="A shrinking color field makes time visible at a glance. You don’t need to open another device to check it."
++          />
++          <MiniSpec
++            number="03 / RELEASE"
++            title="Build in an ending."
++            text="The mechanical bell closes the interval. Review your progress, take a break, then decide what comes next."
++          />
++        </div>
++      </section>
++      <section className="five-specifications" id="specifications">
++        <div>
++          <span className="eyebrow">02 / THE HARDWARE</span>
++          <h2>
++            Purpose-built.
++            <br />
++            Nothing extra.
++          </h2>
++          <p>
++            One function, expressed in aluminum and clockwork. A tool that
++            belongs beside your keyboard, without becoming another part of your
++            tech stack.
++          </p>
++          <div className="five-small-timer">
++            <Timer color="blue" />
++            <span>
++              SLATE BLUE
++              <br />
++              ONE OF THREE FINISHES
++            </span>
++          </div>
++        </div>
++        <div className="five-table">
++          <div>
++            <span>PARAMETER</span>
++            <span>FIRST-EDITION TARGET</span>
++          </div>
++          {[
++            ["Timing range", "1–60 minutes"],
++            ["Power source", "Manual wind-up"],
++            ["Body", "Anodized aluminum"],
++            ["Dimensions", "Ø 80 × 45 mm"],
++            ["Feedback", "Visual countdown + end bell"],
++            ["Sound profile", "Soft mechanical tick"],
++            ["Finishes", "Warm sand / Orange / Slate blue"],
++            ["Unit price", "$48 / US shipping included"],
++          ].map(([label, value]) => (
++            <div key={label}>
++              <span>{label}</span>
++              <span>{value}</span>
++            </div>
++          ))}
++          <p>
++            Preproduction specifications. First run planned for November 2026.
++            Dark finish shown as a design study; available finishes listed
++            above.
++          </p>
++        </div>
++      </section>
++      <section className="five-status">
++        <span className="status-dot" />
++        <div>
++          <span className="eyebrow">PROJECT STATUS / PRELAUNCH</span>
++          <h3>Small team. Transparent start.</h3>
++          <p>
++            Offhour is a two-person product concept preparing its first
++            production run. Specifications are design targets, not independent
++            test results. No invented performance statistics.
++          </p>
++        </div>
++        <span className="status-tag">EDITION_001</span>
++      </section>
++      <section className="five-faq">
++        <div>
++          <span className="eyebrow">03 / FIELD NOTES</span>
++          <h2>
++            Before you
++            <br />
++            commit.
++          </h2>
++        </div>
++        <Faq />
++      </section>
++      <section className="five-close">
++        <span className="eyebrow">THE NEXT INTERVAL IS YOURS.</span>
++        <h2>
++          Begin with
++          <br />
++          <span>one good hour.</span>
++        </h2>
++        <div>
++          <Preorder>Reserve unit — $48</Preorder>
++          <p>
++            Planned 30-day returns.
++            <br />
++            Cancel any time before shipping.
++          </p>
++        </div>
++      </section>
++      <Footer number={5} />
++    </main>
++  );
++}
+diff --git a/app/globals.css b/app/globals.css
+index bcfc617..98f0910 100644
+--- a/app/globals.css
++++ b/app/globals.css
+@@ -1,18 +1,3315 @@
+ @import "tailwindcss";
+ 
+ :root {
+-  --background: #ffffff;
+-  --foreground: #111111;
++  --ink: #282d25;
++  --cream: #f5f3e9;
++  --serif: Georgia, "Times New Roman", serif;
++  --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
++  --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+ }
+-
+-@media (prefers-color-scheme: dark) {
+-  :root {
+-    --background: #0a0a0a;
+-    --foreground: #ededed;
++* {
++  box-sizing: border-box;
++}
++html {
++  scroll-behavior: smooth;
++  scroll-padding-top: 32px;
++}
++body {
++  margin: 0;
++  color: var(--ink);
++  font-family: var(--sans);
++  -webkit-font-smoothing: antialiased;
++}
++button,
++a,
++input,
++summary {
++  -webkit-tap-highlight-color: transparent;
++}
++button,
++a {
++  touch-action: manipulation;
++}
++button {
++  font: inherit;
++  cursor: pointer;
++}
++a {
++  color: inherit;
++  text-decoration: none;
++}
++button:focus-visible,
++a:focus-visible,
++summary:focus-visible {
++  outline: 3px solid #bd622d;
++  outline-offset: 6px;
++}
++button {
++  border: 0;
++}
++h1,
++h2,
++h3,
++p {
++  margin: 0;
++}
++button,
++a,
++summary {
++  transition:
++    background 0.2s,
++    color 0.2s,
++    transform 0.2s;
++}
++::selection {
++  background: #e1ed8f;
++  color: #252922;
++}
++.eyebrow {
++  font-family: var(--mono);
++  font-size: 10px;
++  font-weight: 500;
++  letter-spacing: 1.5px;
++  line-height: 1.6;
++}
++.logo {
++  font-size: 30px;
++  letter-spacing: -1.7px;
++  font-weight: 650;
++  display: inline-flex;
++  align-items: flex-start;
++  width: max-content;
++}
++.logo-dot {
++  font-size: 10px;
++  letter-spacing: 0;
++  margin: 7px 0 0 3px;
++}
++.site-nav {
++  display: flex;
++  align-items: center;
++  justify-content: space-between;
++  padding: 25px 5.5%;
++  gap: 24px;
++}
++.site-nav nav {
++  display: flex;
++  gap: 36px;
++  font-size: 12px;
++}
++.site-nav nav a:hover {
++  opacity: 0.6;
++}
++.cta {
++  display: inline-flex;
++  align-items: center;
++  justify-content: space-between;
++  gap: 38px;
++  min-height: 50px;
++  padding: 16px 24px;
++  font-size: 12px;
++  font-weight: 550;
++  background: var(--ink);
++  color: var(--cream);
++  white-space: nowrap;
++}
++.cta > span {
++  font-size: 20px;
++  line-height: 14px;
++}
++.cta:hover {
++  transform: translateY(-3px);
++  filter: brightness(1.12);
++}
++.site-nav .cta {
++  min-height: 42px;
++  padding: 12px 18px;
++  font-size: 11px;
++  gap: 25px;
++}
++.hero-note {
++  display: block;
++  font-size: 11px;
++  margin-top: 17px;
++  line-height: 1.6;
++}
++.timer {
++  display: block;
++  width: 100%;
++  height: auto;
++}
++.section-wrap {
++  padding: 100px 7%;
++}
++.section-intro h2 {
++  font: 48px/1.13 var(--serif);
++  letter-spacing: -1.7px;
++  margin: 20px 0;
++}
++.section-intro > p {
++  font-size: 14px;
++  line-height: 1.8;
++  max-width: 410px;
++}
++.mini-spec > span {
++  font: 10px/1.5 var(--mono);
++  letter-spacing: 1px;
++}
++.mini-spec h3 {
++  font-size: 19px;
++  letter-spacing: -0.4px;
++  line-height: 1.3;
++  margin: 22px 0 12px;
++}
++.mini-spec p {
++  font-size: 13px;
++  line-height: 1.85;
++  max-width: 340px;
++}
++.faq-list {
++  width: 100%;
++}
++.faq-list details {
++  border-bottom: 1px solid #85877a55;
++}
++.faq-list summary {
++  list-style: none;
++  cursor: pointer;
++  display: flex;
++  align-items: center;
++  justify-content: space-between;
++  gap: 25px;
++  padding: 25px 0;
++  font-size: 14px;
++  line-height: 1.5;
++}
++.faq-list summary::-webkit-details-marker {
++  display: none;
++}
++.faq-list summary > span {
++  font-size: 23px;
++  font-weight: 300;
++}
++.faq-list details[open] summary > span {
++  transform: rotate(45deg);
++}
++.faq-list details p {
++  font-size: 13px;
++  line-height: 1.9;
++  padding: 0 35px 25px 0;
++  max-width: 670px;
++}
++.page-footer {
++  display: flex;
++  align-items: center;
++  flex-wrap: wrap;
++  justify-content: space-between;
++  gap: 30px;
++  padding: 45px 5.5% 25px;
++  border-top: 1px solid #80807040;
++}
++.page-footer > span,
++.page-footer > a:not(.logo) {
++  font-size: 11px;
++}
++.page-footer > small {
++  flex-basis: 100%;
++  font: 9px var(--mono);
++  letter-spacing: 1px;
++  opacity: 0.7;
++  margin-top: 20px;
++}
++.small-print {
++  font-size: 10px !important;
++  line-height: 1.7 !important;
++  opacity: 0.75;
++}
++section[id] {
++  scroll-margin-top: 25px;
++}
++/* 01 — the everyday ritual */
++.theme-one {
++  background: #f6f4ec;
++  color: #333c2e;
++}
++.announcement {
++  background: #39432f;
++  color: #f5f2e4;
++  text-align: center;
++  font-size: 10px;
++  padding: 10px 20px;
++  letter-spacing: 0.3px;
++}
++.announcement span {
++  margin-left: 25px;
++  opacity: 0.75;
++}
++.theme-one .logo {
++  font-family: var(--serif);
++  font-weight: bold;
++}
++.theme-one .cta {
++  background: #3c4935;
++  border-radius: 3px;
++}
++.theme-one .site-nav {
++  border-bottom: 1px solid #dcded0;
++}
++.one-hero {
++  display: grid;
++  grid-template-columns: 1fr 1fr;
++  min-height: 640px;
++}
++.one-hero-copy {
++  padding: 65px 10% 40px 11%;
++}
++.one-hero .eyebrow {
++  display: flex;
++  align-items: center;
++  gap: 10px;
++  font-size: 9px;
++}
++.tiny-sun {
++  font-size: 25px;
++  color: #818b54;
++}
++.one-hero h1 {
++  font: clamp(64px, 6.9vw, 108px)/0.98 var(--serif);
++  letter-spacing: -5px;
++  margin: 28px 0;
++}
++.one-hero h1 em {
++  color: #77824e;
++  font-weight: normal;
++}
++.one-hero-copy > p {
++  font-size: 14px;
++  line-height: 1.85;
++  max-width: 360px;
++  margin-bottom: 29px;
++}
++.one-hero .hero-note {
++  font-size: 10px;
++  color: #636957;
++}
++.one-edition {
++  display: flex;
++  align-items: center;
++  gap: 13px;
++  font-size: 10px;
++  line-height: 1.7;
++  margin-top: 38px;
++}
++.edition-mark {
++  border: 1px solid #a3a98c;
++  border-radius: 50%;
++  padding: 9px 12px;
++  font: 16px var(--serif);
++}
++.one-edition strong {
++  font-weight: 500;
++  color: #747865;
++}
++.one-scene {
++  position: relative;
++  isolation: isolate;
++  background: #e6e1d1;
++  overflow: hidden;
++  min-height: 620px;
++}
++.scene-window {
++  position: absolute;
++  inset: 0;
++  background: linear-gradient(115deg, #c8c5b366, transparent 65%);
++  z-index: -1;
++}
++.scene-window:after {
++  content: "";
++  position: absolute;
++  top: -50px;
++  left: 10%;
++  width: 650px;
++  height: 700px;
++  background:
++    linear-gradient(
++      90deg,
++      transparent 48%,
++      #a6a18a2b 48%,
++      #a6a18a2b 51%,
++      transparent 51%
++    ),
++    linear-gradient(
++      0deg,
++      transparent 45%,
++      #a6a18a2b 45%,
++      #a6a18a2b 49%,
++      transparent 49%
++    );
++  transform: rotate(-26deg) skewY(20deg);
++}
++.scene-shadow {
++  position: absolute;
++  right: -15%;
++  top: -30%;
++  width: 90%;
++  height: 120%;
++  background: linear-gradient(100deg, transparent, #fff9df66);
++  transform: rotate(20deg);
++  z-index: -1;
++}
++.scene-label {
++  position: absolute;
++  top: 36px;
++  left: 36px;
++  font: 9px/1.8 var(--mono);
++  letter-spacing: 1.5px;
++}
++.scene-label span {
++  letter-spacing: 0.5px;
++  color: #6e7162;
++}
++.one-scene > .timer {
++  position: absolute;
++  width: 83%;
++  max-width: 550px;
++  left: 10%;
++  top: 14%;
++  transform: rotate(-13deg);
++  z-index: 2;
++}
++.book {
++  position: absolute;
++  bottom: 65px;
++  left: 14%;
++  width: 65%;
++  height: 32%;
++  background: #9fa886;
++  transform: rotate(-12deg) skewX(7deg);
++  box-shadow:
++    4px 7px 0 #d6d2b5,
++    7px 13px 0 #efead7,
++    14px 23px 24px #636c4850;
++  border-left: 8px solid #7b8565;
++  padding: 27px 25px;
++}
++.book > span {
++  font: 22px/1.1 var(--serif);
++  letter-spacing: -0.5px;
++  display: block;
++  max-width: 210px;
++}
++.book small {
++  position: absolute;
++  bottom: 18px;
++  font: 7px var(--mono);
++  letter-spacing: 1px;
++}
++.scene-caption {
++  position: absolute;
++  bottom: 28px;
++  left: 30px;
++  right: 30px;
++  display: flex;
++  justify-content: space-between;
++  font: italic 12px var(--serif);
++}
++.round-stamp {
++  position: absolute;
++  z-index: 3;
++  right: 5%;
++  bottom: 19%;
++  width: 97px;
++  height: 97px;
++  border-radius: 50%;
++  background: #f5f1d9;
++  display: flex;
++  flex-direction: column;
++  align-items: center;
++  justify-content: center;
++  font: 9px/1.3 var(--mono);
++  text-align: center;
++  transform: rotate(13deg);
++  box-shadow: 0 3px 10px #4442;
++}
++.round-stamp > span {
++  font-size: 25px;
++}
++.one-promise {
++  padding: 25px 6%;
++  display: flex;
++  justify-content: space-between;
++  gap: 20px;
++  border-top: 1px solid #d8dbcb;
++  border-bottom: 1px solid #d8dbcb;
++  font-size: 11px;
++}
++.one-promise > span:first-child {
++  font: italic 18px var(--serif);
++}
++.one-ritual .section-intro {
++  display: grid;
++  grid-template-columns: 1.5fr 1fr;
++  align-items: end;
++  column-gap: 50px;
++}
++.one-ritual .section-intro > .eyebrow {
++  grid-column: 1/-1;
++}
++.ritual-cards {
++  display: grid;
++  grid-template-columns: repeat(3, 1fr);
++  gap: 45px;
++  margin-top: 60px;
++}
++.ritual-cards .mini-spec {
++  padding-top: 24px;
++  border-top: 1px solid #bfc3ac;
++}
++.ritual-cards .mini-spec h3 {
++  font: 23px var(--serif);
++}
++.one-detail {
++  display: grid;
++  grid-template-columns: 1fr 1fr;
++  background: #e7e9dd;
++}
++.detail-art {
++  position: relative;
++  background: #daddcd;
++  display: flex;
++  flex-direction: column;
++  align-items: center;
++  justify-content: center;
++  padding: 35px;
++}
++.detail-art .timer {
++  max-width: 380px;
++  transform: rotate(12deg);
++}
++.detail-art > span {
++  font: 9px var(--mono);
++  letter-spacing: 1px;
++  padding: 10px 0 20px;
++}
++.one-detail > div:last-child {
++  padding: 65px 13%;
++}
++.one-detail h2 {
++  font: 39px/1.15 var(--serif);
++  letter-spacing: -1px;
++  margin: 20px 0;
++}
++.one-detail p {
++  font-size: 13px;
++  line-height: 1.9;
++}
++.spec-dl {
++  margin: 25px 0;
++}
++.spec-dl > div {
++  display: flex;
++  justify-content: space-between;
++  border-bottom: 1px solid #9a9e8744;
++  padding: 13px 0;
++  font-size: 11px;
++  gap: 15px;
++}
++.spec-dl dt {
++  color: #6e7460;
++}
++.one-faq {
++  display: grid;
++  grid-template-columns: 1fr 1.3fr;
++  gap: 50px;
++}
++.one-faq h2 {
++  font: 45px var(--serif);
++  margin: 18px 0;
++}
++.one-close {
++  text-align: center;
++  padding: 65px 25px 75px;
++  background: #e9e9da;
++}
++.one-close h2 {
++  font: 65px/0.99 var(--serif);
++  letter-spacing: -3px;
++  margin: 22px 0;
++}
++.one-close p {
++  font-size: 12px;
++  margin-bottom: 25px;
++}
++.one-close small {
++  display: block;
++  font-size: 10px;
++  margin-top: 20px;
++}
++/* 02 — the attention rebellion */
++.theme-two {
++  background: #f0f0e7;
++  color: #171914;
++  font-family: var(--sans);
++}
++.theme-two .site-nav {
++  border-bottom: 2px solid #171914;
++  padding: 23px 4%;
++}
++.theme-two .logo {
++  font-weight: 900;
++  font-size: 32px;
++}
++.nav-tag {
++  font: 10px var(--mono);
++  letter-spacing: 1px;
++}
++.theme-two .cta {
++  background: #d5f442;
++  color: #151914;
++  border: 1px solid #151914;
++  box-shadow: 4px 4px 0 #171914;
++  font-weight: 750;
++}
++.two-hero {
++  padding: 28px 4% 0;
++  overflow: hidden;
++}
++.two-hero-top {
++  display: flex;
++  justify-content: space-between;
++  font: 9px var(--mono);
++  letter-spacing: 1px;
++}
++.two-hero h1 {
++  font-size: clamp(80px, 13.25vw, 210px);
++  font-weight: 950;
++  line-height: 0.85;
++  letter-spacing: -0.082em;
++  margin: 39px 0 0;
++  position: relative;
++  z-index: 2;
++}
++.two-hero h1 > span {
++  -webkit-text-stroke: 1.6px #171914;
++  color: transparent;
++}
++.two-hero-bottom {
++  display: grid;
++  grid-template-columns: 1fr 1fr;
++  min-height: 400px;
++}
++.two-hero-bottom > div:first-child {
++  padding-top: 30px;
++  padding-bottom: 48px;
++  max-width: 410px;
++}
++.two-hero-bottom p {
++  font-size: 24px;
++  line-height: 1.3;
++  font-weight: 600;
++  letter-spacing: -0.6px;
++}
++.two-hero-bottom .two-description {
++  font-size: 13px;
++  line-height: 1.7;
++  font-weight: 400;
++  letter-spacing: 0;
++  margin: 19px 0 24px;
++  max-width: 320px;
++}
++.theme-two .hero-note {
++  font: 9px var(--mono);
++  margin-top: 22px;
++}
++.two-product {
++  position: relative;
++  background: #d5f442;
++  border-radius: 50% 50% 0 0;
++  margin: -15% 4% 0 0;
++  min-height: 420px;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++}
++.two-product .timer {
++  max-width: 500px;
++  width: 95%;
++  transform: rotate(16deg);
++  position: relative;
++}
++.orbit-type {
++  position: absolute;
++  right: -10px;
++  top: 17%;
++  border: 2px solid #171914;
++  background: #f0f0e7;
++  padding: 14px 20px;
++  transform: rotate(14deg);
++  font: 12px var(--mono);
++  z-index: 3;
++}
++.two-product-label {
++  position: absolute;
++  bottom: 17px;
++  font: 9px var(--mono);
++  letter-spacing: 1px;
++}
++.ticker {
++  display: flex;
++  align-items: center;
++  justify-content: space-around;
++  gap: 30px;
++  background: #171914;
++  color: #d5f442;
++  padding: 25px 20px;
++  font-size: 24px;
++  font-weight: 800;
++  overflow: hidden;
++  white-space: nowrap;
++}
++.ticker > span:nth-child(2n) {
++  font-size: 38px;
++  line-height: 1;
++}
++.two-manifesto {
++  padding: 100px 6%;
++}
++.two-manifesto h2 {
++  font-size: clamp(38px, 5.2vw, 80px);
++  font-weight: 850;
++  line-height: 1.08;
++  letter-spacing: -3px;
++  margin: 25px 0 50px;
++}
++.two-manifesto h2 > span {
++  background: #d5f442;
++}
++.two-benefits {
++  display: grid;
++  grid-template-columns: repeat(3, 1fr);
++  gap: 45px;
++}
++.two-benefits .mini-spec {
++  border-top: 2px solid #171914;
++  padding-top: 22px;
++}
++.two-benefits h3 {
++  font-weight: 750;
++}
++.two-specs {
++  display: grid;
++  grid-template-columns: 1.4fr 1fr 1fr 1fr;
++  border-top: 2px solid #171914;
++  border-bottom: 2px solid #171914;
++}
++.two-specs > div {
++  padding: 35px 24px;
++  border-right: 1px solid #171914;
++}
++.two-spec-title {
++  background: #d5f442;
++}
++.two-spec-title > span {
++  font-size: 27px;
++  line-height: 1.05;
++  font-weight: 850;
++  letter-spacing: -1px;
++}
++.two-spec-title p {
++  font-size: 11px;
++  line-height: 1.8;
++  margin-top: 18px;
++}
++.two-stat {
++  display: flex;
++  flex-direction: column;
++  justify-content: space-between;
++  gap: 25px;
++}
++.two-stat strong {
++  font-size: 70px;
++  letter-spacing: -5px;
++  line-height: 1;
++}
++.two-stat > span {
++  font: 10px/1.6 var(--mono);
++}
++.two-faq {
++  padding: 95px 6%;
++  display: grid;
++  grid-template-columns: 1fr 1.4fr;
++  gap: 40px;
++}
++.two-faq h2 {
++  font-size: 60px;
++  letter-spacing: -4px;
++  font-weight: 850;
++}
++.theme-two .faq-list details {
++  border-color: #171914;
++}
++.two-close {
++  background: #d5f442;
++  padding: 70px 6%;
++  display: flex;
++  justify-content: space-between;
++  align-items: flex-end;
++  gap: 40px;
++}
++.two-close h2 {
++  font-size: clamp(45px, 6vw, 85px);
++  letter-spacing: -4px;
++  line-height: 0.98;
++  font-weight: 900;
++  margin-top: 25px;
++}
++.two-close .cta {
++  background: #171914;
++  color: #d5f442;
++  box-shadow: none;
++}
++.two-close p {
++  font: 10px/1.7 var(--mono);
++  margin-top: 23px;
++}
++.theme-two .page-footer {
++  border-top: 2px solid #171914;
++}
++/* 03 — the quiet object */
++.theme-three {
++  background: #f4f5f6;
++  color: #304663;
++}
++.theme-three .site-nav {
++  padding: 30px 6%;
++  border-bottom: 1px solid #30466320;
++}
++.theme-three .logo {
++  font-weight: 450;
++  letter-spacing: -1.5px;
++}
++.theme-three .cta {
++  background: #304663;
++  color: #f5f6f6;
++  border-radius: 1px;
++  font-weight: 400;
++}
++.theme-three .site-nav .cta {
++  background: transparent;
++  color: #304663;
++  border-bottom: 1px solid #304663;
++  padding-left: 0;
++  padding-right: 0;
++}
++.three-hero {
++  position: relative;
++  text-align: center;
++  padding: 56px 6% 0;
++  overflow: hidden;
++}
++.three-hero h1 {
++  font: clamp(70px, 7.8vw, 116px)/0.95 var(--serif);
++  font-weight: 400;
++  letter-spacing: -5px;
++  margin: 27px 0 22px;
++}
++.three-hero h1 em {
++  font-weight: 400;
++  color: #6e829e;
++}
++.three-hero > p {
++  font-size: 12px;
++  line-height: 1.9;
++  color: #5f7086;
++}
++.three-hero > .cta {
++  margin-top: 24px;
++}
++.three-side {
++  position: absolute;
++  left: 28px;
++  top: 130px;
++  writing-mode: vertical-rl;
++  transform: rotate(180deg);
++  font: 8px var(--mono);
++  letter-spacing: 2px;
++}
++.three-art {
++  position: relative;
++  margin: 5px auto 0;
++  height: 380px;
++  max-width: 650px;
++}
++.three-art > .timer {
++  position: absolute;
++  width: 340px;
++  top: 4px;
++  left: calc(50% - 170px);
++  z-index: 2;
++  transform: rotate(-6deg);
++}
++.blue-orb {
++  position: absolute;
++  width: 510px;
++  height: 510px;
++  left: calc(50% - 255px);
++  top: 40px;
++  border-radius: 50%;
++  background: radial-gradient(
++    ellipse at top,
++    #dbe3f0,
++    #e6ebf0 65%,
++    #e9edf200 72%
++  );
++}
++.three-pedestal {
++  position: absolute;
++  width: 430px;
++  height: 100px;
++  background: linear-gradient(90deg, #d5dce6, #edf0f5 45%, #d4dce8);
++  bottom: 0;
++  left: calc(50% - 215px);
++  border-radius: 50% 50% 0 0/25% 25% 0 0;
++}
++.three-pedestal:before {
++  content: "";
++  position: absolute;
++  width: 100%;
++  height: 50px;
++  border-radius: 50%;
++  background: #e6eaf0;
++  top: 0;
++  box-shadow: 0 -1px 1px #fff8;
++}
++.three-art-label {
++  position: absolute;
++  bottom: 40px;
++  left: -50px;
++  font: 8px var(--mono);
++  letter-spacing: 1px;
++}
++.three-dimension {
++  position: absolute;
++  right: 15px;
++  top: 170px;
++  font: 9px/1.8 var(--mono);
++  letter-spacing: 1px;
++}
++.three-hero-foot {
++  display: flex;
++  justify-content: space-between;
++  padding: 22px 0;
++  border-top: 1px solid #30466330;
++  font: 8px var(--mono);
++  letter-spacing: 1px;
++  position: relative;
++}
++.three-philosophy {
++  padding: 110px 15%;
++  text-align: center;
++  background: #eaedf1;
++}
++.three-philosophy h2 {
++  font: 54px/1.12 var(--serif);
++  letter-spacing: -2px;
++  margin: 30px 0 35px;
++}
++.three-philosophy h2 em {
++  color: #73839a;
++}
++.three-prose {
++  display: grid;
++  grid-template-columns: 1fr 1fr;
++  gap: 50px;
++  text-align: left;
++  max-width: 760px;
++  margin: 0 auto;
++}
++.three-prose p {
++  font-size: 13px;
++  line-height: 1.95;
++}
++.three-object {
++  display: grid;
++  grid-template-columns: 1fr 1fr;
++  min-height: 600px;
++}
++.three-object-art {
++  background: #e1e2dc;
++  display: flex;
++  flex-direction: column;
++  justify-content: center;
++  align-items: center;
++  padding: 50px;
++}
++.three-object-art > .timer {
++  max-width: 420px;
++  transform: rotate(16deg);
++}
++.three-object-art > span {
++  font: 8px var(--mono);
++  letter-spacing: 1.5px;
++  margin-top: 25px;
++}
++.three-object-copy {
++  padding: 65px 13%;
++}
++.three-object-copy h2 {
++  font: 54px/1.02 var(--serif);
++  letter-spacing: -2px;
++  margin: 24px 0 40px;
++}
++.three-feature {
++  display: flex;
++  gap: 25px;
++  margin: 25px 0;
++}
++.three-feature > span {
++  font: 9px var(--mono);
++  margin-top: 5px;
++  color: #7f8d9f;
++}
++.three-feature h3 {
++  font: 19px var(--serif);
++  margin-bottom: 10px;
++}
++.three-feature p {
++  font-size: 12px;
++  line-height: 1.85;
++  color: #617087;
++}
++.three-note {
++  padding: 90px 22%;
++  text-align: center;
++  border-bottom: 1px solid #30466325;
++}
++.three-note blockquote {
++  font: 28px/1.5 var(--serif);
++  letter-spacing: -0.6px;
++  margin: 30px 0;
++}
++.three-note > span:last-child {
++  font: 8px var(--mono);
++  letter-spacing: 1px;
++}
++.three-faq {
++  max-width: 740px;
++  margin: auto;
++  padding: 90px 25px;
++}
++.three-faq > h2 {
++  font: 46px var(--serif);
++  letter-spacing: -1.5px;
++  margin: 20px 0 35px;
++}
++.three-close {
++  text-align: center;
++  background: #dfe5ee;
++  padding: 80px 25px;
++}
++.three-close h2 {
++  font: 60px var(--serif);
++  letter-spacing: -2px;
++  margin: 25px 0;
++}
++.three-close p {
++  font-size: 11px;
++  margin-bottom: 25px;
++}
++.three-close small {
++  display: block;
++  font-size: 9px;
++  margin-top: 20px;
++}
++.theme-three .page-footer {
++  background: #dfe5ee;
++}
++/* 04 — the good-time club */
++.theme-four {
++  background: #fbefcf;
++  color: #563728;
++}
++.four-banner {
++  font: 9px var(--mono);
++  letter-spacing: 1px;
++  background: #583827;
++  color: #fbefcf;
++  padding: 11px 20px;
++  text-align: center;
++}
++.four-banner > span {
++  margin: 0 20px;
++  color: #f19762;
++}
++.theme-four .site-nav {
++  padding: 25px 6%;
++}
++.theme-four .logo {
++  font-family: var(--serif);
++  font-style: italic;
++  font-weight: bold;
++  font-size: 34px;
++}
++.theme-four .logo > span:first-child {
++  font-style: normal;
++  color: #c5542b;
++  font-size: 32px;
++  margin-right: 6px;
++  line-height: 1.2;
++}
++.theme-four .cta {
++  background: #aa4325;
++  color: #fff2d4;
++  border-radius: 40px;
++  box-shadow: 0 4px 0 #733823;
++  padding: 16px 26px;
++}
++.four-hero {
++  display: grid;
++  grid-template-columns: 1fr 1fr;
++  padding: 30px 6% 65px;
++  min-height: 610px;
++  gap: 25px;
++}
++.four-hero-copy {
++  padding-top: 35px;
++}
++.four-hero h1 {
++  position: relative;
++  font: bold 104px/0.88 var(--serif);
++  letter-spacing: -6px;
++  margin: 28px 0 35px;
++  max-width: 510px;
++}
++.four-hero h1 > span {
++  color: #bd512d;
++  font-style: italic;
++}
++.four-hero h1 > svg {
++  position: absolute;
++  bottom: -25px;
++  left: 95px;
++  width: 250px;
++  height: 25px;
++  color: #cc5a30;
++}
++.four-hero-copy > p {
++  font-size: 14px;
++  line-height: 1.85;
++  max-width: 350px;
++  margin-bottom: 25px;
++}
++.four-hero .hero-note {
++  font: italic 12px var(--serif);
++  margin-top: 20px;
++}
++.four-art {
++  position: relative;
++  min-height: 510px;
++}
++.four-arch {
++  position: absolute;
++  inset: 4% 4% 0 8%;
++  border-radius: 48% 48% 2px 2px;
++  background: #d9dba9;
++  background-image:
++    repeating-linear-gradient(
++      90deg,
++      transparent,
++      transparent 47px,
++      #bbc18a3b 47px,
++      #bbc18a3b 48px
++    ),
++    repeating-linear-gradient(
++      0deg,
++      transparent,
++      transparent 47px,
++      #bbc18a3b 47px,
++      #bbc18a3b 48px
++    );
++  border: 1px solid #8b926f33;
++}
++.four-product {
++  position: absolute;
++  inset: 20% 0 5% 0;
++  transform: rotate(-15deg);
++}
++.four-product .timer {
++  position: relative;
++  z-index: 2;
++}
++.flower {
++  color: #c35b32;
++  width: 130px;
++}
++.four-art > .flower {
++  position: absolute;
++  width: 130px;
++  left: 0;
++  top: 8%;
++  transform: rotate(-14deg);
++  z-index: 3;
++}
++.four-sticker {
++  position: absolute;
++  right: -3%;
++  bottom: 15%;
++  background: #f5cb69;
++  border: 1px solid #9d692f;
++  box-shadow: 4px 4px 0 #79543430;
++  transform: rotate(12deg);
++  padding: 17px 22px;
++  z-index: 3;
++  font: 12px/1.2 var(--mono);
++  text-align: center;
++}
++.four-sticker em {
++  font: bold italic 29px var(--serif);
++}
++.four-spark {
++  position: absolute;
++  right: 6%;
++  top: 9%;
++  font-size: 100px;
++  line-height: 1;
++  color: #a34629;
++}
++.four-daisy {
++  position: absolute;
++  bottom: 2%;
++  left: 5%;
++  font-size: 85px;
++  line-height: 1;
++  color: #ca6437;
++}
++.four-caption {
++  position: absolute;
++  bottom: 18px;
++  right: 15%;
++  font: 9px var(--mono);
++  letter-spacing: 1px;
++  transform: rotate(-6deg);
++}
++.four-ribbon {
++  display: flex;
++  justify-content: space-around;
++  gap: 30px;
++  overflow: hidden;
++  background: #cc5e35;
++  color: #fff1cf;
++  padding: 22px 25px;
++  font: 11px var(--mono);
++  letter-spacing: 1px;
++  border-top: 1px solid #8e4328;
++  border-bottom: 1px solid #8e4328;
++  white-space: nowrap;
++}
++.four-good {
++  padding: 85px 6% 95px;
++  text-align: center;
++}
++.four-good > h2 {
++  font: bold 65px/0.98 var(--serif);
++  letter-spacing: -3px;
++  margin: 25px 0 45px;
++}
++.four-good > h2 em {
++  color: #b94d2a;
++}
++.four-cards {
++  display: grid;
++  grid-template-columns: repeat(3, 1fr);
++  gap: 22px;
++  text-align: left;
++}
++.four-cards > article {
++  border: 1px solid #947052;
++  border-radius: 80px 80px 8px 8px;
++  padding: 38px 28px 25px;
++  background: #f6d994;
++  display: flex;
++  flex-direction: column;
++  align-items: flex-start;
++}
++.four-cards > article:nth-child(2) {
++  background: #e1e2b7;
++}
++.four-cards > article:nth-child(3) {
++  background: #f2ccac;
++}
++.four-cards .flower {
++  width: 90px;
++  height: 90px;
++  align-self: center;
++  margin-bottom: 25px;
++}
++.hand-art,
++.cup-art {
++  display: block;
++  height: 90px;
++  font: 90px/0.9 var(--serif);
++  align-self: center;
++  color: #9c4729;
++  margin-bottom: 25px;
++}
++.hand-art {
++  transform: rotate(-15deg);
++  font-size: 115px;
++  line-height: 0.6;
++}
++.four-cards h3 {
++  font: bold 25px/1.1 var(--serif);
++  letter-spacing: -0.8px;
++  margin: 15px 0;
++}
++.four-cards p {
++  font-size: 12px;
++  line-height: 1.9;
++  flex: 1;
++}
++.card-foot {
++  font: 8px var(--mono);
++  letter-spacing: 1px;
++  border-top: 1px solid #94705266;
++  width: 100%;
++  padding-top: 18px;
++  margin-top: 30px;
++}
++.four-how {
++  display: grid;
++  grid-template-columns: 1fr 1.2fr;
++  background: #e3e3b9;
++  padding: 75px 9%;
++  gap: 60px;
++}
++.four-how h2 {
++  font: bold 83px/0.93 var(--serif);
++  letter-spacing: -4px;
++  margin-top: 25px;
++}
++.four-how h2 em {
++  color: #a84a2a;
++}
++.four-steps .mini-spec {
++  position: relative;
++  padding: 0 0 30px 65px;
++  margin: 0 0 25px;
++  border-bottom: 1px solid #69734a40;
++}
++.four-steps .mini-spec:last-child {
++  border: 0;
++  margin: 0;
++  padding-bottom: 0;
++}
++.four-steps .mini-spec > span {
++  position: absolute;
++  left: 0;
++  top: 0;
++  width: 38px;
++  height: 38px;
++  border: 1px solid #617046;
++  border-radius: 50%;
++  text-align: center;
++  font: 22px/38px var(--serif);
++}
++.four-steps h3 {
++  font: bold 22px var(--serif);
++  margin: 0 0 12px;
++}
++.four-honest {
++  display: flex;
++  gap: 35px;
++  align-items: center;
++  padding: 50px 8%;
++  border-bottom: 1px solid #94705266;
++}
++.four-honest > .flower {
++  width: 80px;
++  flex-shrink: 0;
++}
++.four-honest > div {
++  max-width: 640px;
++}
++.four-honest h2 {
++  font: bold 27px var(--serif);
++  margin-bottom: 14px;
++}
++.four-honest p {
++  font-size: 12px;
++  line-height: 1.9;
++}
++.four-honest-stamp {
++  margin-left: auto;
++  flex-shrink: 0;
++  width: 110px;
++  height: 110px;
++  border: 2px dashed #a3502d;
++  border-radius: 50%;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  text-align: center;
++  font: 11px/1.5 var(--mono);
++  transform: rotate(14deg);
++  color: #a3502d;
++}
++.four-faq {
++  max-width: 800px;
++  padding: 85px 30px;
++  margin: auto;
++}
++.four-faq h2 {
++  font: bold 50px var(--serif);
++  letter-spacing: -2px;
++  margin-bottom: 25px;
++}
++.four-close {
++  position: relative;
++  overflow: hidden;
++  background: #edb986;
++  text-align: center;
++  padding: 75px 25px;
++}
++.four-close > .flower {
++  position: absolute;
++  width: 240px;
++  left: -50px;
++  top: 80px;
++  color: #b94d2a;
++}
++.four-close h2 {
++  font: bold 80px/0.95 var(--serif);
++  letter-spacing: -4px;
++  margin: 30px 0;
++}
++.four-close h2 em {
++  color: #aa4325;
++}
++.four-close p {
++  font-size: 10px;
++  line-height: 1.8;
++  margin-top: 25px;
++}
++.theme-four .page-footer {
++  background: #fbefcf;
++}
++/* 05 — the focus instrument */
++.theme-five {
++  background: #181c1b;
++  color: #e5e8df;
++}
++.theme-five .site-nav {
++  border-bottom: 1px solid #ffffff20;
++  padding: 26px 5%;
++}
++.theme-five .logo {
++  font-family: var(--mono);
++  font-weight: 500;
++  font-size: 28px;
++  letter-spacing: -2px;
++}
++.theme-five .site-nav nav {
++  font: 10px var(--mono);
++}
++.theme-five .cta {
++  background: #d3e99a;
++  color: #192218;
++  font: 11px var(--mono);
++  border-radius: 1px;
++}
++.five-hero {
++  display: grid;
++  grid-template-columns: 1.05fr 1fr;
++  min-height: 620px;
++  padding-left: 5%;
++}
++.five-hero-copy {
++  padding: 80px 15px 45px 0;
++}
++.five-hero .eyebrow {
++  font-size: 9px;
++  display: flex;
++  align-items: center;
++  gap: 10px;
++  color: #b8c2af;
++}
++.five-hero .eyebrow > i {
++  width: 6px;
++  height: 6px;
++  background: #d3e99a;
++  border-radius: 50%;
++  box-shadow: 0 0 12px #d3e99a66;
++}
++.five-hero h1 {
++  font-size: clamp(42px, 5.35vw, 83px);
++  font-weight: 450;
++  letter-spacing: -4px;
++  line-height: 1.08;
++  margin: 28px 0;
++}
++.five-hero h1 > span {
++  color: #b6c79e;
++}
++.five-hero-copy > p {
++  font-size: 13px;
++  line-height: 1.9;
++  color: #aeb6ae;
++  max-width: 360px;
++  margin-bottom: 30px;
++}
++.five-hero-data {
++  display: flex;
++  gap: 35px;
++  margin-top: 55px;
++  padding-top: 25px;
++  border-top: 1px solid #ffffff20;
++  max-width: 440px;
++}
++.five-hero-data strong {
++  font: 32px/1 var(--mono);
++  font-weight: 400;
++}
++.five-hero-data strong > span {
++  font-size: 11px;
++  margin-left: 4px;
++  color: #acb7a7;
++}
++.five-hero-data small {
++  display: block;
++  font: 7px/1.5 var(--mono);
++  letter-spacing: 0.5px;
++  margin-top: 13px;
++  color: #a0ab9f;
++}
++.five-art {
++  position: relative;
++  overflow: hidden;
++  background-color: #202623;
++  background-image:
++    linear-gradient(#a4b59609 1px, transparent 1px),
++    linear-gradient(90deg, #a4b59609 1px, transparent 1px);
++  background-size: 35px 35px;
++  border-left: 1px solid #ffffff15;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++}
++.five-art > .timer {
++  position: relative;
++  z-index: 2;
++  width: 97%;
++  max-width: 570px;
++  transform: rotate(-10deg);
++  filter: drop-shadow(0 25px 30px #0007);
++}
++.tech-orbit {
++  position: absolute;
++  width: 83%;
++  aspect-ratio: 1;
++  border: 1px dashed #abc18e44;
++  border-radius: 50%;
++}
++.tech-orbit:after {
++  content: "";
++  position: absolute;
++  inset: 12%;
++  border: 1px solid #abc18e22;
++  border-radius: 50%;
++}
++.crosshair {
++  position: absolute;
++  color: #859779;
++  font: 20px var(--mono);
++}
++.ch-one {
++  top: 65px;
++  left: 27px;
++}
++.ch-two {
++  bottom: 65px;
++  right: 27px;
++}
++.five-art-top {
++  position: absolute;
++  left: 25px;
++  top: 26px;
++  font: 8px var(--mono);
++  letter-spacing: 1px;
++  color: #a8b39e;
++}
++.five-art-bottom {
++  position: absolute;
++  bottom: 27px;
++  left: 25px;
++  right: 25px;
++  display: flex;
++  justify-content: space-between;
++  font: 8px var(--mono);
++  letter-spacing: 0.6px;
++  color: #a8b39e;
++}
++.callout {
++  position: absolute;
++  z-index: 3;
++  font: 8px var(--mono);
++  color: #d8e7c3;
++  display: flex;
++  align-items: center;
++  gap: 8px;
++}
++.callout > span {
++  border: 1px solid #75896366;
++  background: #202821dd;
++  padding: 8px;
++  font-size: 7px;
++}
++.callout-one {
++  top: 18%;
++  right: 5%;
++}
++.callout-two {
++  bottom: 19%;
++  left: 6%;
++}
++.five-strip {
++  display: flex;
++  justify-content: space-between;
++  padding: 24px 5%;
++  border-top: 1px solid #ffffff20;
++  border-bottom: 1px solid #ffffff20;
++  gap: 20px;
++  font: 8px var(--mono);
++  letter-spacing: 0.5px;
++  color: #c3c9bf;
++}
++.five-strip > span:first-child {
++  color: #8f9d88;
++}
++.five-system {
++  padding: 95px 6%;
++}
++.five-section-head {
++  display: flex;
++  justify-content: space-between;
++  gap: 35px;
++}
++.five-section-head h2 {
++  font-size: 40px;
++  line-height: 1.2;
++  letter-spacing: -1.5px;
++}
++.five-section-head h2 > span {
++  color: #8b9884;
++}
++.five-process {
++  display: grid;
++  grid-template-columns: repeat(3, 1fr);
++  margin-top: 65px;
++  gap: 40px;
++}
++.five-process .mini-spec {
++  padding-top: 25px;
++  border-top: 1px solid #71815b66;
++}
++.five-process .mini-spec > span {
++  color: #b8ce98;
++  font-size: 9px;
++}
++.five-process h3 {
++  font-size: 20px;
++  font-weight: 450;
++}
++.five-process p {
++  color: #a6b09f;
++  font-size: 12px;
++}
++.five-specifications {
++  display: grid;
++  grid-template-columns: 1fr 1.1fr;
++  gap: 80px;
++  padding: 70px 6%;
++  background: #212722;
++  border-top: 1px solid #ffffff15;
++  border-bottom: 1px solid #ffffff15;
++}
++.five-specifications h2 {
++  font-size: 45px;
++  line-height: 1.1;
++  letter-spacing: -2px;
++  margin: 22px 0;
++}
++.five-specifications > div > p {
++  font-size: 12px;
++  line-height: 1.9;
++  color: #b2bcac;
++  max-width: 355px;
++}
++.five-small-timer {
++  display: flex;
++  align-items: center;
++  gap: 25px;
++  margin-top: 20px;
++}
++.five-small-timer > .timer {
++  width: 150px;
++  margin-left: -15px;
++}
++.five-small-timer > span {
++  font: 8px/1.8 var(--mono);
++  color: #a9bba0;
++}
++.five-table > div {
++  display: flex;
++  justify-content: space-between;
++  gap: 20px;
++  border-bottom: 1px solid #a3b39830;
++  padding: 18px 0;
++  font: 10px/1.6 var(--mono);
++}
++.five-table > div:first-child {
++  color: #b1c89b;
++  font-size: 8px;
++  padding-top: 0;
++}
++.five-table > div > span:first-child {
++  color: #97a68e;
++}
++.five-table > div > span:last-child {
++  text-align: right;
++}
++.five-table > p {
++  font: 9px/1.9 var(--mono) !important;
++  margin-top: 20px;
++}
++.five-status {
++  display: flex;
++  align-items: flex-start;
++  gap: 23px;
++  margin: 65px 6% 0;
++  padding: 30px;
++  border: 1px solid #82956740;
++}
++.status-dot {
++  width: 8px;
++  height: 8px;
++  border-radius: 50%;
++  background: #d3e99a;
++  margin-top: 4px;
++  flex-shrink: 0;
++}
++.five-status h3 {
++  font-size: 19px;
++  font-weight: 450;
++  margin: 15px 0 10px;
++}
++.five-status p {
++  font-size: 11px;
++  line-height: 1.8;
++  max-width: 670px;
++  color: #a7b19f;
++}
++.status-tag {
++  font: 9px var(--mono);
++  color: #a6bb94;
++  margin-left: auto;
++}
++.five-faq {
++  display: grid;
++  grid-template-columns: 1fr 1.3fr;
++  gap: 70px;
++  padding: 85px 6%;
++}
++.five-faq h2 {
++  font-size: 43px;
++  letter-spacing: -2px;
++  line-height: 1.1;
++  margin-top: 23px;
++}
++.theme-five .faq-list details {
++  border-color: #a0b38c33;
++}
++.theme-five .faq-list p {
++  color: #acb6a5;
++}
++.five-close {
++  background: #2b3529;
++  padding: 70px 6%;
++  position: relative;
++}
++.five-close h2 {
++  font-size: 75px;
++  font-weight: 450;
++  letter-spacing: -4px;
++  line-height: 1.02;
++  margin: 27px 0 35px;
++}
++.five-close h2 > span {
++  color: #cce49e;
++}
++.five-close > div {
++  display: flex;
++  align-items: center;
++  gap: 30px;
++}
++.five-close p {
++  font: 9px/1.7 var(--mono);
++  color: #c0ccaf;
++}
++.theme-five .page-footer {
++  border-color: #a0b38c33;
++}
++.theme-five .page-footer > span {
++  color: #9ba693;
++}
++/* The collection */
++.index-page {
++  background: #f4f2eb;
++  min-height: 100vh;
++  color: #30362d;
++  padding: 0 5%;
++}
++.index-header {
++  display: flex;
++  justify-content: space-between;
++  align-items: center;
++  padding: 30px 0;
++  border-bottom: 1px solid #b1b6a650;
++  gap: 20px;
++}
++.index-header .logo {
++  font-family: var(--serif);
++  font-weight: bold;
++}
++.index-header > span {
++  font: 9px var(--mono);
++  letter-spacing: 1px;
++}
++.index-intro {
++  padding: 70px 0 60px;
++  display: flex;
++  justify-content: space-between;
++  align-items: flex-end;
++  gap: 40px;
++}
++.index-intro h1 {
++  font: clamp(39px, 4.8vw, 72px)/1.04 var(--serif);
++  letter-spacing: -2.5px;
++  margin-top: 23px;
++}
++.index-intro h1 em {
++  color: #7c8764;
++}
++.index-about {
++  max-width: 315px;
++  padding-bottom: 5px;
++}
++.index-about > p {
++  font-size: 13px;
++  line-height: 1.85;
++  margin-bottom: 15px;
++}
++.index-about > span {
++  font-size: 10px;
++  line-height: 1.8;
++  color: #747968;
++  display: block;
++}
++.theme-grid {
++  display: grid;
++  grid-template-columns: 1fr 1fr;
++  gap: 42px 28px;
++}
++.theme-card {
++  display: block;
++  min-width: 0;
++}
++.theme-preview {
++  position: relative;
++  overflow: hidden;
++  aspect-ratio: 1.46;
++  background: #e9e5d6;
++  padding: 25px;
++  isolation: isolate;
++  transition:
++    box-shadow 0.25s,
++    transform 0.3s;
++}
++.theme-card:hover .theme-preview {
++  transform: translateY(-5px);
++  box-shadow: 0 14px 30px #343e2918;
++}
++.theme-card:focus-visible {
++  outline-offset: 9px;
++}
++.preview-nav {
++  display: flex;
++  justify-content: space-between;
++  align-items: center;
++  position: relative;
++  z-index: 2;
++}
++.preview-nav > strong {
++  font: 18px var(--serif);
++  font-weight: bold;
++  letter-spacing: -1px;
++}
++.preview-nav > span {
++  font: 6px var(--mono);
++  letter-spacing: 1px;
++}
++.preview-heading {
++  position: relative;
++  z-index: 2;
++  font: clamp(28px, 3.5vw, 60px)/0.99 var(--serif);
++  letter-spacing: -1.8px;
++  margin-top: 45px;
++}
++.preview-heading em {
++  color: #788257;
++}
++.theme-preview .timer {
++  position: absolute;
++  width: 60%;
++  right: -6%;
++  bottom: 0;
++  transform: rotate(-15deg);
++  z-index: 1;
++}
++.preview-bottom {
++  position: absolute;
++  bottom: 21px;
++  left: 25px;
++  right: 25px;
++  display: flex;
++  justify-content: space-between;
++  font: 6px var(--mono);
++  letter-spacing: 0.5px;
++  z-index: 2;
++}
++.card-info {
++  display: flex;
++  gap: 18px;
++  padding: 22px 0 0;
++  align-items: flex-start;
++}
++.card-number {
++  font: 11px var(--mono);
++  padding: 4px 0;
++  color: #818975;
++}
++.card-info .eyebrow {
++  font-size: 8px;
++  letter-spacing: 1px;
++}
++.card-info h2 {
++  font: 24px var(--serif);
++  letter-spacing: -0.6px;
++  margin: 9px 0;
++}
++.card-info p {
++  font-size: 11px;
++  line-height: 1.7;
++  color: #737c68;
++  max-width: 330px;
++}
++.card-arrow {
++  margin-left: auto;
++  font-size: 25px;
++}
++.card-1 .theme-preview:after {
++  content: "";
++  position: absolute;
++  width: 50%;
++  height: 200%;
++  background: #c0c1a533;
++  transform: rotate(30deg);
++  right: 0;
++  top: -50%;
++  z-index: -1;
++}
++.card-2 .theme-preview {
++  background: #d5f442;
++  color: #171914;
++}
++.card-2 .preview-heading {
++  font-family: var(--sans);
++  font-weight: 950;
++  letter-spacing: -3px;
++  font-size: 4.2vw;
++  line-height: 0.9;
++}
++.card-2 .theme-preview .timer {
++  width: 54%;
++  bottom: -14%;
++  right: -6%;
++  transform: rotate(13deg);
++}
++.card-2 .preview-nav > strong {
++  font-family: var(--sans);
++  font-weight: 900;
++}
++.card-3 .theme-preview {
++  background: #e6ebf2;
++  color: #304663;
++  text-align: center;
++}
++.card-3 .preview-heading {
++  font-size: 3.7vw;
++  margin-top: 20px;
++}
++.card-3 .preview-heading em {
++  color: #788ba7;
++}
++.card-3 .theme-preview .timer {
++  width: 41%;
++  right: 29.5%;
++  bottom: -8%;
++  transform: rotate(-5deg);
++}
++.card-3 .preview-nav strong {
++  font-family: var(--sans);
++  font-weight: 400;
++}
++.card-4 .theme-preview {
++  background: #f7e8bc;
++  color: #633c27;
++}
++.card-4 .preview-heading {
++  font-weight: bold;
++  font-size: 4.3vw;
++  line-height: 0.9;
++  margin-top: 35px;
++}
++.card-4 .preview-heading em {
++  color: #b44a27;
++}
++.card-4 .theme-preview .timer {
++  right: -1%;
++  bottom: -4%;
++  width: 57%;
++}
++.preview-flower {
++  position: absolute;
++  right: 14%;
++  top: 14%;
++  color: #b44a27;
++  font-size: 65px;
++  line-height: 1;
++  z-index: -1;
++}
++.card-4 .preview-nav strong {
++  font-style: italic;
++}
++.card-5 .theme-preview {
++  background-color: #202722;
++  background-image:
++    linear-gradient(#a4b5960c 1px, transparent 1px),
++    linear-gradient(90deg, #a4b5960c 1px, transparent 1px);
++  background-size: 24px 24px;
++  color: #e4e8de;
++}
++.card-5 .preview-heading {
++  font-family: var(--sans);
++  font-size: 3vw;
++  font-weight: 400;
++  line-height: 1.12;
++  margin-top: 50px;
++}
++.card-5 .preview-heading em {
++  color: #becfa8;
++  font-style: normal;
++}
++.card-5 .theme-preview .timer {
++  right: -7%;
++  bottom: -10%;
++  width: 53%;
++}
++.card-5 .preview-nav strong {
++  font-family: var(--mono);
++  font-weight: 400;
++}
++.index-end-card {
++  padding: 50px;
++  display: flex;
++  flex-direction: column;
++  align-items: center;
++  justify-content: center;
++  text-align: center;
++  border: 1px solid #b1b6a650;
++  min-height: 390px;
++}
++.index-end-card > span:first-child {
++  font-size: 43px;
++  color: #838c59;
++}
++.index-end-card h2 {
++  font: 40px/1.1 var(--serif);
++  letter-spacing: -1px;
++  margin: 20px 0;
++}
++.index-end-card p {
++  font-size: 12px;
++  line-height: 1.8;
++  color: #747d68;
++}
++.index-end-card .eyebrow {
++  font-size: 8px;
++  margin-top: 35px;
++}
++.index-footer {
++  display: flex;
++  justify-content: space-between;
++  gap: 25px;
++  padding: 32px 0;
++  margin-top: 65px;
++  border-top: 1px solid #b1b6a650;
++  font: 8px var(--mono);
++  letter-spacing: 0.5px;
++}
++.index-footer > span:nth-child(2) {
++  font: italic 12px var(--serif);
++  letter-spacing: 0;
++}
++/* Local concept preorder */
++.order-dialog {
++  padding: 0;
++  border: 0;
++  border-radius: 8px;
++  width: min(780px, calc(100% - 32px));
++  max-height: 90svh;
++  overflow: auto;
++  background: #faf8f0;
++  color: #343a2f;
++  position: fixed;
++  margin: auto;
++  box-shadow: 0 30px 100px #0004;
++  font-family: var(--sans);
++}
++.order-dialog[open] {
++  display: grid;
++  grid-template-columns: 0.9fr 1.1fr;
++  animation: dialog-in 0.2s ease-out;
++}
++.order-dialog::backdrop {
++  background: #131a14aa;
++  backdrop-filter: blur(5px);
++}
++.dialog-close {
++  position: absolute;
++  z-index: 3;
++  top: 14px;
++  right: 14px;
++  width: 38px;
++  height: 38px;
++  border: 1px solid #59634933;
++  border-radius: 50%;
++  background: #faf8f0;
++  color: #343a2f;
++  font-size: 27px;
++  line-height: 1;
++}
++.dialog-close:hover {
++  background: #e4e6d9;
++}
++.order-visual {
++  background: #e3e5d6;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  flex-direction: column;
++  padding: 15px;
++  min-width: 0;
++}
++.order-visual .timer {
++  max-width: 350px;
++}
++.order-visual > span {
++  font: 8px var(--mono);
++  letter-spacing: 1px;
++  margin-top: 10px;
++}
++.order-content {
++  padding: 45px 35px 25px;
++}
++.order-content h2 {
++  font: 45px/1.04 var(--serif);
++  letter-spacing: -1.5px;
++  margin: 20px 0 15px;
++}
++.order-content > p {
++  font-size: 12px;
++  line-height: 1.7;
++}
++.order-price {
++  font: 30px var(--serif);
++  margin: 22px 0;
++}
++.order-price small {
++  font: 9px var(--sans);
++  display: inline-block;
++  margin-left: 8px;
++  color: #667159;
++}
++.order-content fieldset {
++  border: 0;
++  padding: 0;
++  margin: 25px 0;
++}
++.order-content legend {
++  font-size: 10px;
++}
++.order-content legend strong {
++  font-weight: 500;
++}
++.swatches {
++  display: flex;
++  gap: 13px;
++  margin-top: 16px;
++}
++.swatch {
++  width: 36px;
++  height: 36px;
++  border-radius: 50%;
++  border: 3px solid #faf8f0;
++  outline: 1px solid #92997f;
++  position: relative;
++  cursor: pointer;
++}
++.swatch:has(input:checked) {
++  outline: 2px solid #303d26;
++}
++.swatch:has(input:focus-visible) {
++  outline: 3px solid #ab5027;
++  outline-offset: 4px;
++}
++.swatch input {
++  opacity: 0;
++  position: absolute;
++  inset: 0;
++  width: 100%;
++  height: 100%;
++  cursor: pointer;
++  margin: 0;
++}
++.swatch.sand {
++  background: #d4c8b0;
++}
++.swatch.orange {
++  background: #d36939;
++}
++.swatch.blue {
++  background: #7c91b2;
++}
++.order-content .preview-note {
++  font-size: 11px;
++  border-top: 1px solid #92997f44;
++  padding-top: 20px;
++  color: #67705e;
++}
++.save-selection {
++  width: 100%;
++  background: #3c4935;
++  color: #fff9eb;
++  padding: 15px;
++  font-size: 12px;
++  margin: 20px 0 10px;
++  border-radius: 3px;
++}
++.save-selection:hover {
++  background: #536247;
++}
++.order-content .save-status {
++  font-size: 9px;
++  line-height: 1.7;
++  min-height: 31px;
++  color: #68725e;
++}
++.sr-only {
++  position: absolute;
++  width: 1px;
++  height: 1px;
++  padding: 0;
++  margin: -1px;
++  overflow: hidden;
++  clip: rect(0, 0, 0, 0);
++  white-space: nowrap;
++  border-width: 0;
++}
++@keyframes dialog-in {
++  from {
++    opacity: 0;
++    transform: translateY(12px);
++  }
++  to {
++    opacity: 1;
++    transform: translateY(0);
++  }
++}
++/* Compact screens */
++@media (min-width: 1600px) {
++  .theme {
++    max-width: 1800px;
++    margin: auto;
++  }
++  .index-page {
++    padding-left: max(5%, calc((100% - 1600px) / 2));
++    padding-right: max(5%, calc((100% - 1600px) / 2));
++  }
++  .one-hero-copy {
++    padding-top: 90px;
++    padding-bottom: 70px;
++  }
++  .one-scene {
++    min-height: 750px;
++  }
++  .four-hero {
++    min-height: 700px;
++  }
++  .four-art {
++    min-height: 620px;
++  }
++  .four-hero h1 {
++    font-size: 130px;
++  }
++  .preview-heading {
++    font-size: 60px;
++  }
++  .card-2 .preview-heading {
++    font-size: 68px;
++  }
++  .card-3 .preview-heading {
++    font-size: 60px;
++  }
++  .card-4 .preview-heading {
++    font-size: 70px;
++  }
++  .card-5 .preview-heading {
++    font-size: 48px;
++  }
++}
++@media (max-width: 1000px) {
++  .site-nav nav {
++    gap: 22px;
++  }
++  .one-hero-copy {
++    padding: 55px 8%;
++  }
++  .one-hero h1 {
++    font-size: 76px;
++  }
++  .one-scene {
++    min-height: 590px;
++  }
++  .one-scene > .timer {
++    top: 22%;
++    width: 95%;
++    left: 2%;
++  }
++  .one-promise {
++    font-size: 9px;
++    gap: 12px;
++  }
++  .section-wrap {
++    padding: 75px 6%;
++  }
++  .section-intro h2 {
++    font-size: 40px;
++  }
++  .one-detail > div:last-child {
++    padding: 50px 9%;
++  }
++  .ritual-cards {
++    gap: 25px;
++  }
++  .two-product {
++    min-height: 360px;
++  }
++  .two-hero-bottom p {
++    font-size: 20px;
++  }
++  .two-stat strong {
++    font-size: 55px;
++  }
++  .three-object-copy {
++    padding: 50px 9%;
++  }
++  .three-note {
++    padding: 75px 15%;
++  }
++  .four-hero h1 {
++    font-size: 82px;
++  }
++  .four-art {
++    min-height: 470px;
++  }
++  .four-hero {
++    padding-left: 5%;
++    padding-right: 5%;
++  }
++  .four-sticker {
++    right: 0;
++  }
++  .four-art > .flower {
++    width: 100px;
++  }
++  .four-hero-copy > p {
++    max-width: 310px;
++    font-size: 13px;
++  }
++  .four-cards {
++    gap: 15px;
++  }
++  .four-cards > article {
++    padding: 32px 22px 22px;
++  }
++  .four-cards h3 {
++    font-size: 22px;
++  }
++  .four-how {
++    padding: 65px 6%;
++    gap: 35px;
++  }
++  .five-hero-copy {
++    padding-top: 65px;
++  }
++  .five-hero h1 {
++    letter-spacing: -2.5px;
++  }
++  .five-hero-data {
++    gap: 24px;
++  }
++  .five-hero-data strong {
++    font-size: 25px;
++  }
++  .five-hero-data small {
++    font-size: 6px;
++  }
++  .five-specifications {
++    gap: 40px;
++  }
++  .five-section-head h2 {
++    font-size: 33px;
++  }
++  .index-intro {
++    gap: 30px;
++  }
++  .index-about {
++    max-width: 260px;
++  }
++  .preview-heading {
++    margin-top: 30px;
++  }
++  .card-5 .preview-heading {
++    margin-top: 35px;
++  }
++  .card-info {
++    gap: 12px;
++  }
++  .card-info h2 {
++    font-size: 21px;
++  }
++  .index-end-card {
++    padding: 30px;
++    min-height: 330px;
+   }
+ }
+-
+-body {
+-  background: var(--background);
+-  color: var(--foreground);
++@media (max-width: 700px) {
++  html {
++    scroll-padding-top: 12px;
++  }
++  .site-nav {
++    padding: 20px 6%;
++    gap: 12px;
++  }
++  .site-nav nav {
++    display: none;
++  }
++  .site-nav .cta {
++    font-size: 10px;
++    gap: 17px;
++    padding: 12px 15px;
++    min-height: 40px;
++  }
++  .logo {
++    font-size: 27px;
++  }
++  .eyebrow {
++    font-size: 9px;
++    letter-spacing: 1px;
++  }
++  .announcement {
++    font-size: 9px;
++  }
++  .announcement > span {
++    display: none;
++  }
++  .one-hero {
++    grid-template-columns: 1fr;
++  }
++  .one-hero-copy {
++    padding: 42px 7% 34px;
++  }
++  .one-hero h1 {
++    font-size: 76px;
++    letter-spacing: -4px;
++    margin: 25px 0;
++  }
++  .one-hero-copy > p {
++    max-width: 360px;
++    font-size: 14px;
++    margin-bottom: 24px;
++  }
++  .one-edition {
++    margin-top: 26px;
++  }
++  .one-scene {
++    min-height: 480px;
++  }
++  .one-scene > .timer {
++    width: 80%;
++    max-width: 420px;
++    left: 10%;
++    top: 7%;
++  }
++  .scene-label {
++    top: 25px;
++    left: 25px;
++    font-size: 8px;
++  }
++  .book {
++    bottom: 68px;
++    height: 30%;
++    width: 63%;
++    left: 16%;
++  }
++  .book > span {
++    font-size: 18px;
++  }
++  .round-stamp {
++    bottom: 21%;
++    right: 9%;
++    width: 80px;
++    height: 80px;
++    font-size: 8px;
++  }
++  .scene-caption {
++    font-size: 11px;
++  }
++  .one-promise {
++    display: grid;
++    grid-template-columns: 1fr 1fr;
++    padding: 22px 7%;
++    gap: 18px 14px;
++    font-size: 9px;
++  }
++  .one-promise > span:first-child {
++    font-size: 16px;
++  }
++  .section-wrap {
++    padding: 60px 7%;
++  }
++  .one-ritual .section-intro {
++    display: block;
++  }
++  .section-intro h2 {
++    font-size: 38px;
++    letter-spacing: -1.2px;
++  }
++  .section-intro > p {
++    font-size: 13px;
++  }
++  .ritual-cards {
++    grid-template-columns: 1fr;
++    gap: 28px;
++    margin-top: 35px;
++  }
++  .ritual-cards .mini-spec {
++    padding-top: 18px;
++  }
++  .mini-spec h3 {
++    margin-top: 16px;
++  }
++  .mini-spec p {
++    max-width: none;
++  }
++  .one-detail {
++    grid-template-columns: 1fr;
++  }
++  .detail-art {
++    padding: 25px;
++  }
++  .detail-art .timer {
++    max-width: 300px;
++  }
++  .one-detail > div:last-child {
++    padding: 45px 7%;
++  }
++  .one-detail h2 {
++    font-size: 36px;
++  }
++  .one-faq {
++    grid-template-columns: 1fr;
++    gap: 10px;
++  }
++  .one-faq h2 {
++    font-size: 39px;
++  }
++  .faq-list summary {
++    font-size: 13px;
++    padding: 20px 0;
++  }
++  .faq-list details p {
++    font-size: 12px;
++  }
++  .one-close {
++    padding: 55px 25px;
++  }
++  .one-close h2 {
++    font-size: 58px;
++  }
++  .page-footer {
++    padding: 30px 7% 23px;
++    gap: 24px;
++  }
++  .page-footer > .logo {
++    flex-basis: 100%;
++  }
++  .page-footer > span {
++    font-size: 10px;
++  }
++  .page-footer > a:not(.logo) {
++    font-size: 10px;
++  }
++  .page-footer > small {
++    font-size: 8px;
++    line-height: 1.7;
++    margin-top: 8px;
++  }
++  .theme-two .site-nav {
++    padding: 19px 5%;
++  }
++  .theme-two .logo {
++    font-size: 29px;
++  }
++  .nav-tag {
++    display: none;
++  }
++  .two-hero {
++    padding: 25px 5% 0;
++  }
++  .two-hero-top {
++    font-size: 7px;
++    line-height: 1.7;
++    gap: 25px;
++  }
++  .two-hero-top > span:last-child {
++    max-width: 85px;
++    text-align: right;
++  }
++  .two-hero h1 {
++    font-size: 16.1vw;
++    line-height: 0.94;
++    letter-spacing: -0.085em;
++    margin: 28px 0 0;
++  }
++  .two-hero-bottom {
++    grid-template-columns: 1fr;
++    min-height: 0;
++  }
++  .two-hero-bottom > div:first-child {
++    padding: 25px 0 35px;
++    max-width: 100%;
++  }
++  .two-hero-bottom p {
++    font-size: 22px;
++  }
++  .two-hero-bottom .two-description {
++    font-size: 12px;
++    max-width: 310px;
++    margin: 15px 0 22px;
++  }
++  .two-product {
++    margin: 0 5%;
++    min-height: 360px;
++    max-height: 450px;
++  }
++  .two-product .timer {
++    max-width: 370px;
++  }
++  .orbit-type {
++    right: -10px;
++    top: 12%;
++    padding: 10px 13px;
++    font-size: 10px;
++  }
++  .ticker {
++    font-size: 18px;
++    padding: 20px;
++    justify-content: flex-start;
++    gap: 25px;
++  }
++  .ticker > span:nth-child(n + 4) {
++    display: none;
++  }
++  .two-manifesto {
++    padding: 60px 6%;
++  }
++  .two-manifesto h2 {
++    font-size: 36px;
++    letter-spacing: -1.7px;
++    margin: 25px 0 35px;
++  }
++  .two-benefits {
++    grid-template-columns: 1fr;
++    gap: 30px;
++  }
++  .two-benefits .mini-spec {
++    padding-top: 15px;
++  }
++  .two-specs {
++    grid-template-columns: 1fr 1fr;
++  }
++  .two-specs > div {
++    padding: 27px 20px;
++  }
++  .two-spec-title,
++  .two-stat:nth-child(2) {
++    border-bottom: 1px solid #171914;
++  }
++  .two-spec-title > span {
++    font-size: 23px;
++  }
++  .two-stat strong {
++    font-size: 60px;
++  }
++  .two-faq {
++    padding: 55px 6%;
++    grid-template-columns: 1fr;
++    gap: 15px;
++  }
++  .two-faq h2 {
++    font-size: 50px;
++    letter-spacing: -3px;
++  }
++  .two-close {
++    padding: 50px 6%;
++    flex-direction: column;
++    align-items: flex-start;
++    gap: 30px;
++  }
++  .two-close h2 {
++    font-size: 46px;
++    letter-spacing: -2.5px;
++  }
++  .theme-three .site-nav {
++    padding: 20px 6%;
++  }
++  .three-hero {
++    padding-top: 40px;
++  }
++  .three-hero h1 {
++    font-size: 62px;
++    letter-spacing: -3px;
++    line-height: 1.02;
++  }
++  .three-side {
++    display: none;
++  }
++  .three-hero > p {
++    font-size: 11px;
++  }
++  .three-art {
++    height: 335px;
++    margin-top: 15px;
++  }
++  .three-art > .timer {
++    width: 300px;
++    left: calc(50% - 150px);
++    top: 0;
++  }
++  .blue-orb {
++    width: 370px;
++    height: 370px;
++    left: calc(50% - 185px);
++  }
++  .three-pedestal {
++    width: 320px;
++    left: calc(50% - 160px);
++    height: 85px;
++  }
++  .three-art-label {
++    left: 0;
++    bottom: 14px;
++    font-size: 7px;
++    z-index: 2;
++  }
++  .three-dimension {
++    right: -3px;
++    top: 155px;
++    font-size: 7px;
++  }
++  .three-hero-foot {
++    font-size: 6px;
++    letter-spacing: 0.4px;
++  }
++  .three-philosophy {
++    padding: 65px 8%;
++  }
++  .three-philosophy h2 {
++    font-size: 39px;
++    letter-spacing: -1.6px;
++    margin: 25px 0 30px;
++  }
++  .three-prose {
++    grid-template-columns: 1fr;
++    gap: 20px;
++  }
++  .three-prose p {
++    font-size: 13px;
++  }
++  .three-object {
++    grid-template-columns: 1fr;
++  }
++  .three-object-art {
++    padding: 35px 30px;
++  }
++  .three-object-art > .timer {
++    max-width: 290px;
++  }
++  .three-object-copy {
++    padding: 50px 8%;
++  }
++  .three-object-copy h2 {
++    font-size: 48px;
++    margin-bottom: 30px;
++  }
++  .three-feature {
++    gap: 20px;
++  }
++  .three-note {
++    padding: 60px 9%;
++  }
++  .three-note blockquote {
++    font-size: 25px;
++    letter-spacing: -0.5px;
++  }
++  .three-note > span:last-child {
++    font-size: 7px;
++  }
++  .three-faq {
++    padding: 60px 8%;
++  }
++  .three-faq h2 {
++    font-size: 41px;
++  }
++  .three-close {
++    padding: 60px 7%;
++  }
++  .three-close h2 {
++    font-size: 46px;
++    line-height: 1.12;
++  }
++  .four-banner {
++    font-size: 7px;
++    padding: 10px 15px;
++    letter-spacing: 0.3px;
++  }
++  .four-banner > span {
++    margin: 0 8px;
++  }
++  .theme-four .site-nav {
++    padding: 20px 6%;
++  }
++  .theme-four .logo {
++    font-size: 30px;
++  }
++  .theme-four .logo > span:first-child {
++    font-size: 26px;
++  }
++  .theme-four .site-nav .cta {
++    font-size: 9px;
++    padding: 12px;
++    gap: 13px;
++  }
++  .four-hero {
++    grid-template-columns: 1fr;
++    padding: 20px 7% 45px;
++    gap: 10px;
++  }
++  .four-hero-copy {
++    padding-top: 15px;
++  }
++  .four-hero h1 {
++    font-size: 84px;
++    letter-spacing: -5px;
++    margin: 25px 0 36px;
++  }
++  .four-hero h1 > svg {
++    left: 80px;
++    width: 220px;
++  }
++  .four-hero-copy > p {
++    max-width: 340px;
++    font-size: 14px;
++  }
++  .four-art {
++    min-height: 440px;
++    margin-top: 25px;
++  }
++  .four-product {
++    inset: 17% -3% 5%;
++  }
++  .four-art > .flower {
++    top: 7%;
++    left: -3%;
++    width: 105px;
++  }
++  .four-arch {
++    inset: 0 3% 0 3%;
++  }
++  .four-spark {
++    font-size: 85px;
++    top: 4%;
++  }
++  .four-sticker {
++    right: -2%;
++    bottom: 16%;
++    padding: 14px 17px;
++    font-size: 10px;
++  }
++  .four-caption {
++    right: 10%;
++    font-size: 8px;
++  }
++  .four-ribbon {
++    justify-content: flex-start;
++    padding: 20px;
++    font-size: 9px;
++  }
++  .four-good {
++    padding: 60px 7%;
++  }
++  .four-good > h2 {
++    font-size: 56px;
++  }
++  .four-cards {
++    grid-template-columns: 1fr;
++    gap: 25px;
++  }
++  .four-cards > article {
++    border-radius: 60px 60px 7px 7px;
++    padding: 30px;
++  }
++  .four-cards h3 {
++    font-size: 28px;
++  }
++  .four-cards p {
++    font-size: 13px;
++  }
++  .four-cards .flower,
++  .hand-art,
++  .cup-art {
++    margin-bottom: 10px;
++  }
++  .four-how {
++    grid-template-columns: 1fr;
++    gap: 40px;
++    padding: 55px 7%;
++  }
++  .four-how h2 {
++    font-size: 68px;
++  }
++  .four-steps .mini-spec {
++    padding-left: 53px;
++  }
++  .four-steps h3 {
++    font-size: 22px;
++    line-height: 1.2;
++  }
++  .four-honest {
++    padding: 40px 7%;
++    gap: 20px;
++    align-items: flex-start;
++  }
++  .four-honest > .flower {
++    width: 50px;
++    margin-top: 5px;
++  }
++  .four-honest h2 {
++    font-size: 25px;
++  }
++  .four-honest-stamp {
++    display: none;
++  }
++  .four-faq {
++    padding: 60px 7%;
++  }
++  .four-faq h2 {
++    font-size: 42px;
++  }
++  .four-close {
++    padding: 60px 7%;
++  }
++  .four-close h2 {
++    font-size: 64px;
++    position: relative;
++    z-index: 1;
++  }
++  .four-close > .flower {
++    width: 140px;
++    left: -60px;
++    top: 125px;
++    opacity: 0.45;
++  }
++  .five-hero {
++    grid-template-columns: 1fr;
++    padding: 0;
++  }
++  .theme-five .site-nav {
++    padding: 20px 6%;
++  }
++  .theme-five .logo {
++    font-size: 25px;
++  }
++  .five-hero-copy {
++    padding: 45px 7% 35px;
++  }
++  .five-hero .eyebrow {
++    font-size: 8px;
++    letter-spacing: 0.6px;
++  }
++  .five-hero h1 {
++    font-size: 46px;
++    letter-spacing: -2.5px;
++    margin: 26px 0;
++  }
++  .five-hero-copy > p {
++    font-size: 13px;
++  }
++  .five-hero-data {
++    gap: 0;
++    justify-content: space-between;
++    margin-top: 35px;
++  }
++  .five-hero-data strong {
++    font-size: 28px;
++  }
++  .five-hero-data small {
++    font-size: 6px;
++    letter-spacing: 0.3px;
++  }
++  .five-art {
++    min-height: 425px;
++    border-top: 1px solid #ffffff15;
++    border-left: 0;
++  }
++  .five-art > .timer {
++    max-width: 380px;
++  }
++  .five-art-top,
++  .five-art-bottom {
++    font-size: 7px;
++  }
++  .five-strip {
++    display: grid;
++    grid-template-columns: 1fr 1fr;
++    padding: 22px 7%;
++    gap: 16px;
++    font-size: 8px;
++  }
++  .five-strip > span:first-child {
++    grid-column: 1/-1;
++  }
++  .five-system {
++    padding: 60px 7%;
++  }
++  .five-section-head {
++    display: block;
++  }
++  .five-section-head h2 {
++    font-size: 32px;
++    margin-top: 25px;
++  }
++  .five-process {
++    grid-template-columns: 1fr;
++    gap: 30px;
++    margin-top: 38px;
++  }
++  .five-process .mini-spec {
++    padding-top: 18px;
++  }
++  .five-specifications {
++    grid-template-columns: 1fr;
++    gap: 35px;
++    padding: 50px 7%;
++  }
++  .five-specifications h2 {
++    font-size: 41px;
++  }
++  .five-small-timer {
++    margin-top: 10px;
++  }
++  .five-table > div {
++    font-size: 9px;
++    gap: 15px;
++  }
++  .five-table > div:first-child {
++    font-size: 7px;
++  }
++  .five-status {
++    padding: 25px 20px;
++    margin: 40px 7% 0;
++    gap: 15px;
++  }
++  .status-tag {
++    display: none;
++  }
++  .five-status .eyebrow {
++    font-size: 8px;
++  }
++  .five-status h3 {
++    font-size: 18px;
++  }
++  .five-faq {
++    grid-template-columns: 1fr;
++    padding: 60px 7%;
++    gap: 15px;
++  }
++  .five-faq h2 {
++    font-size: 38px;
++    margin-top: 18px;
++  }
++  .five-close {
++    padding: 55px 7%;
++  }
++  .five-close h2 {
++    font-size: 54px;
++    letter-spacing: -3px;
++  }
++  .five-close > div {
++    flex-direction: column;
++    align-items: flex-start;
++    gap: 22px;
++  }
++  .index-page {
++    padding: 0 6%;
++  }
++  .index-header {
++    padding: 24px 0;
++  }
++  .index-header > span {
++    font-size: 7px;
++    text-align: right;
++    max-width: 100px;
++    line-height: 1.8;
++  }
++  .index-header > span:last-child {
++    display: none;
++  }
++  .index-intro {
++    padding: 45px 0 40px;
++    display: block;
++  }
++  .index-intro h1 {
++    font-size: 43px;
++    letter-spacing: -1.8px;
++    margin-top: 20px;
++  }
++  .index-about {
++    max-width: 100%;
++    margin-top: 25px;
++  }
++  .index-about > p {
++    font-size: 12px;
++    max-width: 330px;
++  }
++  .index-about > span {
++    font-size: 10px;
++  }
++  .theme-grid {
++    grid-template-columns: 1fr;
++    gap: 35px;
++  }
++  .theme-preview {
++    aspect-ratio: 1.35;
++    padding: 22px;
++  }
++  .preview-heading {
++    font-size: 10vw;
++    margin-top: 35px;
++    letter-spacing: -1.5px;
++  }
++  .preview-bottom {
++    left: 22px;
++    right: 22px;
++    font-size: 6px;
++  }
++  .card-2 .preview-heading {
++    font-size: 12vw;
++    letter-spacing: -2px;
++    margin-top: 40px;
++  }
++  .card-3 .preview-heading {
++    font-size: 10vw;
++    margin-top: 20px;
++  }
++  .card-4 .preview-heading {
++    font-size: 12vw;
++    margin-top: 35px;
++  }
++  .card-5 .preview-heading {
++    font-size: 8.5vw;
++    margin-top: 40px;
++  }
++  .card-info {
++    padding-top: 17px;
++    gap: 13px;
++  }
++  .card-info h2 {
++    font-size: 23px;
++  }
++  .card-info p {
++    font-size: 11px;
++  }
++  .card-arrow {
++    font-size: 25px;
++  }
++  .index-end-card {
++    min-height: 340px;
++    margin-top: 5px;
++  }
++  .index-footer {
++    flex-wrap: wrap;
++    padding: 25px 0;
++    margin-top: 40px;
++    font-size: 7px;
++  }
++  .index-footer > span:first-child {
++    flex-basis: 100%;
++  }
++  .order-dialog[open] {
++    grid-template-columns: 1fr;
++  }
++  .order-visual {
++    max-height: 190px;
++    padding: 5px 15px 15px;
++  }
++  .order-visual > .timer {
++    width: 190px;
++    margin-top: -10px;
++  }
++  .order-visual > span {
++    font-size: 7px;
++    margin-top: -10px;
++  }
++  .order-content {
++    padding: 25px;
++  }
++  .order-content h2 {
++    font-size: 36px;
++    margin: 12px 0;
++  }
++  .order-content h2 br {
++    display: none;
++  }
++  .order-price {
++    margin: 15px 0;
++  }
++  .order-content fieldset {
++    margin: 18px 0;
++  }
++  .order-content .preview-note {
++    padding-top: 15px;
++  }
++  .save-selection {
++    margin-top: 15px;
++  }
++  .dialog-close {
++    top: 10px;
++    right: 10px;
++    width: 34px;
++    height: 34px;
++  }
++}
++@media (prefers-reduced-motion: reduce) {
++  html {
++    scroll-behavior: auto;
++  }
++  *,
++  *:before,
++  *:after {
++    animation: none !important;
++    transition: none !important;
++  }
++  .cta:hover,
++  .theme-card:hover .theme-preview {
++    transform: none;
++  }
++}
++/* Keep expressive artwork inside its canvas and long display words readable. */
++.four-hero {
++  overflow: clip;
++}
++.four-product {
++  inset: 15% 2% 5%;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++}
++.four-product .timer {
++  max-width: 500px;
++}
++.three-object > * {
++  min-width: 0;
++}
++@media (max-width: 700px) {
++  .three-hero h1 {
++    font-size: 13.5vw;
++  }
++  .three-close h2 {
++    font-size: clamp(37px, 11vw, 46px);
++  }
++  .four-product {
++    inset: 16% -1% 5%;
++  }
++  .four-product .timer {
++    max-width: 360px;
++  }
++  .four-hero h1 {
++    font-size: clamp(70px, 21.5vw, 84px);
++  }
++  .three-pedestal {
++    max-width: 100%;
++    left: 50%;
++    transform: translateX(-50%);
++  }
++}
++@media (max-width: 360px) {
++  .theme-four .site-nav {
++    padding-left: 5%;
++    padding-right: 5%;
++    gap: 8px;
++  }
++  .theme-four .logo {
++    font-size: 26px;
++  }
++  .theme-four .logo > span:first-child {
++    font-size: 21px;
++    margin-right: 3px;
++  }
++  .theme-four .site-nav .cta {
++    font-size: 8px;
++    gap: 9px;
++    padding: 11px;
++  }
++  .theme-five .site-nav .cta {
++    font-size: 9px;
++    gap: 10px;
++  }
++  .five-hero h1 {
++    font-size: 40px;
++  }
++}
++.three-object-art {
++  overflow: hidden;
+ }
+diff --git a/app/layout.tsx b/app/layout.tsx
+index fb034ab..3a03f99 100644
+--- a/app/layout.tsx
++++ b/app/layout.tsx
+@@ -3,16 +3,12 @@ import type { ReactNode } from "react";
+ import "./globals.css";
+ 
+ export const metadata: Metadata = {
+-  title: "shipshit.dev",
++  title: "Offhour — Five ways to make time",
+   description:
+-    "shipshit.dev is a studio that ships open-source developer tools live on stream.",
++    "Meet Offhour, a mechanical desk timer for an hour of your own. Explore five original design directions.",
+ };
+ 
+-export default function RootLayout({
+-  children,
+-}: {
+-  children: ReactNode;
+-}) {
++export default function RootLayout({ children }: { children: ReactNode }) {
+   return (
+     <html lang="en">
+       <body className="antialiased">{children}</body>
+diff --git a/app/page.tsx b/app/page.tsx
+index cd11eee..357852e 100644
+--- a/app/page.tsx
++++ b/app/page.tsx
+@@ -1,7 +1,162 @@
++import { Logo, Timer } from "./components/product";
++const themes = [
++  {
++    n: 1,
++    name: "The everyday ritual",
++    type: "WARM / EDITORIAL",
++    description:
++      "Sunlit still lifes, soft serif type, and a calmer kind of everyday.",
++    headline: (
++      <>
++        A little room
++        <br />
++        for <em>focus.</em>
++      </>
++    ),
++    color: "sand",
++  },
++  {
++    n: 2,
++    name: "The attention rebellion",
++    type: "BOLD / GRAPHIC",
++    description:
++      "Acid yellow, unapologetic type, and a rallying cry to get offline.",
++    headline: (
++      <>
++        TAKE YOUR
++        <br />
++        TIME BACK.
++      </>
++    ),
++    color: "black",
++  },
++  {
++    n: 3,
++    name: "The quiet object",
++    type: "MINIMAL / CONTEMPLATIVE",
++    description:
++      "Gallery-like space and cool blue tones let the object do the talking.",
++    headline: (
++      <>
++        An hour,
++        <br />
++        <em>uninterrupted.</em>
++      </>
++    ),
++    color: "blue",
++  },
++  {
++    n: 4,
++    name: "The good-time club",
++    type: "PLAYFUL / RETRO",
++    description:
++      "Buttery colors, cheerful illustrations, and permission to make time for you.",
++    headline: (
++      <>
++        Go make
++        <br />
++        some <em>time.</em>
++      </>
++    ),
++    color: "orange",
++  },
++  {
++    n: 5,
++    name: "The focus instrument",
++    type: "DARK / INDUSTRIAL",
++    description:
++      "Technical precision, graphite surfaces, and a system for deep work.",
++    headline: (
++      <>
++        Distraction off.
++        <br />
++        <em>Deep work on.</em>
++      </>
++    ),
++    color: "black",
++  },
++] as const;
+ export default function Home() {
+   return (
+-    <main>
+-      <p>Coming soon</p>
++    <main className="index-page">
++      <header className="index-header">
++        <Logo />
++        <span>ONE OBJECT. FIVE PERSPECTIVES.</span>
++        <span>DESIGN STUDIES — 2026</span>
++      </header>
++      <section className="index-intro">
++        <div>
++          <span className="eyebrow">THE OFFHOUR COLLECTION / 01—05</span>
++          <h1>
++            Same little timer.
++            <br />
++            <em>Five different worlds.</em>
++          </h1>
++        </div>
++        <div className="index-about">
++          <p>
++            Meet Offhour: a $48 mechanical desk timer for people who want less
++            screen time and more time of their own.
++          </p>
++          <span>
++            Explore five complete landing-page directions below. Each starts
++            with the same idea: your attention belongs to you.
++          </span>
++        </div>
++      </section>
++      <section className="theme-grid" aria-label="Five landing page designs">
++        {themes.map((t) => (
++          <a
++            href={`/themes/${t.n}`}
++            className={`theme-card card-${t.n}`}
++            key={t.n}
++          >
++            <div className="theme-preview">
++              <div className="preview-nav">
++                <strong>offhour®</strong>
++                <span>EDITION 001 ↗</span>
++              </div>
++              <div className="preview-heading">{t.headline}</div>
++              <Timer color={t.color} />
++              <div className="preview-bottom">
++                A LITTLE LESS ONLINE. <span>MAKE TIME ↗</span>
++              </div>
++              {t.n === 4 && <span className="preview-flower">✳</span>}
++            </div>
++            <div className="card-info">
++              <span className="card-number">0{t.n}</span>
++              <div>
++                <span className="eyebrow">{t.type}</span>
++                <h2>{t.name}</h2>
++                <p>{t.description}</p>
++              </div>
++              <span className="card-arrow" aria-label="View theme">
++                ↗
++              </span>
++            </div>
++          </a>
++        ))}
++        <div className="index-end-card">
++          <span>✳</span>
++          <h2>
++            A small object.
++            <br />A bigger idea.
++          </h2>
++          <p>
++            Turn the dial.
++            <br />
++            Put down your phone.
++            <br />
++            Make room for what matters.
++          </p>
++          <span className="eyebrow">NO APPS. NO BATTERIES. JUST TIME.</span>
++        </div>
++      </section>
++      <footer className="index-footer">
++        <span>OFFHOUR® — A PRODUCT & DESIGN CONCEPT</span>
++        <span>Five directions. One hour of your own.</span>
++        <a href="/themes/1">Start with our favorite ↗</a>
++      </footer>
+     </main>
+   );
+ }
+diff --git a/app/themes/[theme]/page.tsx b/app/themes/[theme]/page.tsx
+new file mode 100644
+index 0000000..d5f36d0
+--- /dev/null
++++ b/app/themes/[theme]/page.tsx
+@@ -0,0 +1,45 @@
++import { notFound } from "next/navigation";
++import type { Metadata } from "next";
++import {
++  ThemeOne,
++  ThemeTwo,
++  ThemeThree,
++  ThemeFour,
++  ThemeFive,
++} from "../../components/themes";
++
++const names = [
++  "A little room for focus",
++  "Take your time back",
++  "An hour, uninterrupted",
++  "Go make some time",
++  "Designed for deep work",
++];
++export function generateStaticParams() {
++  return [1, 2, 3, 4, 5].map((theme) => ({ theme: String(theme) }));
++}
++export async function generateMetadata({
++  params,
++}: {
++  params: Promise<{ theme: string }>;
++}): Promise<Metadata> {
++  const { theme } = await params;
++  return { title: `${names[Number(theme) - 1] ?? "Not found"} — Offhour` };
++}
++export default async function ThemePage({
++  params,
++}: {
++  params: Promise<{ theme: string }>;
++}) {
++  const { theme } = await params;
++  const pages = {
++    "1": ThemeOne,
++    "2": ThemeTwo,
++    "3": ThemeThree,
++    "4": ThemeFour,
++    "5": ThemeFive,
++  };
++  const Page = pages[theme as keyof typeof pages];
++  if (!Page) notFound();
++  return <Page />;
++}
+diff --git a/next-env.d.ts b/next-env.d.ts
+new file mode 100644
+index 0000000..ce4e94a
+--- /dev/null
++++ b/next-env.d.ts
+@@ -0,0 +1,7 @@
++/// <reference types="next" />
++/// <reference types="next/image-types/global" />
++import "./.next/types/routes.d.ts";
++import "./.next/types/root-params.d.ts";
++
++// NOTE: This file should not be edited
++// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.
+diff --git a/next.config.ts b/next.config.ts
+index cb651cd..64f7cd6 100644
+--- a/next.config.ts
++++ b/next.config.ts
+@@ -1,5 +1,8 @@
+ import type { NextConfig } from "next";
+ 
+-const nextConfig: NextConfig = {};
++const nextConfig: NextConfig = {
++  turbopack: { root: process.cwd() },
++  outputFileTracingRoot: process.cwd(),
++};
+ 
+ export default nextConfig;
+diff --git a/package.json b/package.json
+index 1a20062..273e5f1 100644
+--- a/package.json
++++ b/package.json
+@@ -5,7 +5,8 @@
+   "scripts": {
+     "dev": "next dev",
+     "build": "next build",
+-    "start": "next start -p ${PORT:-4176}"
++    "start": "next start -p ${PORT:-4176}",
++    "test:e2e": "playwright test"
+   },
+   "dependencies": {
+     "next": "16.3.4",
+@@ -13,13 +14,14 @@
+     "react-dom": "19.2.8"
+   },
+   "devDependencies": {
+-    "typescript": "7.0.2",
+-    "tailwindcss": "4.3.3",
++    "@playwright/test": "^1.63.0",
+     "@tailwindcss/postcss": "4.3.3",
+-    "postcss": "8.5.28",
++    "@types/bun": "1.4.1",
+     "@types/node": "26.4.1",
+     "@types/react": "19.2.18",
+     "@types/react-dom": "19.2.7",
+-    "@types/bun": "1.4.1"
++    "postcss": "8.5.28",
++    "tailwindcss": "4.3.3",
++    "typescript": "7.0.2"
+   }
+ }
+diff --git a/playwright.config.ts b/playwright.config.ts
+new file mode 100644
+index 0000000..7d60952
+--- /dev/null
++++ b/playwright.config.ts
+@@ -0,0 +1,13 @@
++import { defineConfig } from "@playwright/test";
++export default defineConfig({
++  testDir: "./tests",
++  fullyParallel: false,
++  workers: 1,
++  reporter: "list",
++  webServer: {
++    command: "bun run start",
++    url: "http://localhost:4176",
++    reuseExistingServer: !process.env.CI,
++  },
++  use: { browserName: "chromium", headless: true },
++});
+diff --git a/tests/landing.spec.ts b/tests/landing.spec.ts
+new file mode 100644
+index 0000000..fc70af8
+--- /dev/null
++++ b/tests/landing.spec.ts
+@@ -0,0 +1,75 @@
++import { test, expect } from "@playwright/test";
++
++for (const width of [1440, 390, 320]) {
++  test(`all pages render and work at ${width}px`, async ({ page }) => {
++    await page.setViewportSize({ width, height: 900 });
++    const errors: string[] = [];
++    page.on("pageerror", (error) => errors.push(error.message));
++    page.on("console", (message) => {
++      if (message.type() === "error") errors.push(message.text());
++    });
++    for (const route of [
++      "/",
++      "/themes/1",
++      "/themes/2",
++      "/themes/3",
++      "/themes/4",
++      "/themes/5",
++    ]) {
++      const response = await page.goto(`http://localhost:4176${route}`);
++      expect(response?.status()).toBe(200);
++      await expect(page.locator("h1")).toBeVisible();
++      expect(
++        await page.evaluate(
++          () => document.documentElement.scrollWidth <= innerWidth,
++        ),
++      ).toBeTruthy();
++      if (route === "/") {
++        for (let i = 1; i <= 5; i++)
++          await expect(
++            page.locator(`.theme-card[href='/themes/${i}']`),
++          ).toBeVisible();
++      } else {
++        const action = page.locator(".site-nav .cta");
++        await expect(action).toBeInViewport();
++        await action.click();
++        const dialog = page.locator("dialog[open]");
++        await expect(dialog).toBeVisible();
++        await dialog
++          .getByRole("radio", { name: "orange", exact: true })
++          .check();
++        await dialog.getByRole("button", { name: "Save my selection" }).click();
++        await expect(dialog.getByRole("status")).toContainText(
++          "not a reservation or an order",
++        );
++        await page.keyboard.press("Escape");
++        await expect(dialog).toHaveCount(0);
++        await expect(action).toBeFocused();
++        await page.reload();
++        await action.click();
++        await expect(
++          page
++            .locator("dialog[open]")
++            .getByRole("radio", { name: "orange", exact: true }),
++        ).toBeChecked();
++        await page
++          .locator("dialog[open]")
++          .getByRole("button", { name: "Close preorder preview" })
++          .click();
++        const question = page.locator("details").first();
++        await question.locator("summary").click();
++        await expect(question).toHaveAttribute("open", "");
++      }
++      await page.screenshot({
++        path: `.qa/${width}-${route.replaceAll("/", "-") || "index"}.png`,
++        fullPage: true,
++      });
++    }
++    expect(errors).toEqual([]);
++  });
++}
++
++test("invalid theme returns 404", async ({ page }) => {
++  const response = await page.goto("http://localhost:4176/themes/6");
++  expect(response?.status()).toBe(404);
++});
+diff --git a/tsconfig.json b/tsconfig.json
+index 4a468da..ac5c732 100644
+--- a/tsconfig.json
++++ b/tsconfig.json
+@@ -11,13 +11,23 @@
+     "moduleResolution": "bundler",
+     "resolveJsonModule": true,
+     "isolatedModules": true,
+-    "jsx": "preserve",
++    "jsx": "react-jsx",
+     "incremental": true,
+-    "plugins": [{ "name": "next" }],
++    "plugins": [
++      {
++        "name": "next"
++      }
++    ],
+     "paths": {
+       "@/*": ["./*"]
+     }
+   },
+-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
++  "include": [
++    "next-env.d.ts",
++    "**/*.ts",
++    "**/*.tsx",
++    ".next/types/**/*.ts",
++    ".next/dev/types/**/*.ts"
++  ],
+   "exclude": ["node_modules"]
+ }
